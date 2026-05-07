@@ -8,6 +8,7 @@ features:
     source_docs:
       - docs/PRD.md
       - docs/TDD.md
+      - docs/provider-catalog.md
       - AGENTS.md
       - /Users/aktn/project/api-capture/README.md
       - /Users/aktn/project/api-capture/ARCHITECTURE.md
@@ -56,7 +57,7 @@ features:
         status: pending
         verification: npm test
       - id: AC2
-        description: Implement provider adapter interfaces, provider registry, provider router, credential requirement metadata, rate-limit hooks, and cache TTL hooks.
+        description: Implement provider adapter interfaces, provider registry, provider router, credential requirement metadata, provider landing/signup URLs, rate-limit hooks, and cache TTL hooks.
         status: pending
         verification: npm test
       - id: AC3
@@ -99,7 +100,7 @@ features:
         status: pending
         verification: npm test
       - id: AC2
-        description: Ensure every tool response includes source, retrievedAt, observedAt when available, freshness, coverage, and confidence metadata.
+        description: Ensure every tool response includes source, retrievedAt, observedAt when available, freshness, coverage, confidence metadata, and upgradeHints with provider landing URLs when paid/satellite AIS is likely required.
         status: pending
         verification: npm test
 
@@ -123,7 +124,7 @@ features:
         description: Return ranked candidates with matchedSignals, missingSignals, latestPosition when available, confidence, and needsConfirmation for ambiguous results.
         status: pending
         verification: npm test
-      - id: AC3
+      - id: AC4
         description: Return structured no-data and stale-data states instead of generic failures for unavailable AIS data.
         status: pending
         verification: npm test
@@ -135,6 +136,7 @@ features:
     source_docs:
       - docs/PRD.md
       - docs/TDD.md
+      - docs/provider-catalog.md
     acceptance_criteria:
       - id: AC1
         description: Implement an AISStream adapter that can subscribe to a configured bounding box or MMSI list and maintain a bounded in-memory latest-position cache.
@@ -156,6 +158,32 @@ features:
         description: Maintain a provider catalogue documenting global provider coverage, auth mode, cost/quota model, supported capabilities, and implementation status.
         status: pending
         verification: docs-review
+
+  - id: F4A
+    title: Global provider discovery catalog
+    phase: P1
+    status: not_implemented
+    source_docs:
+      - docs/PRD.md
+      - docs/TDD.md
+      - docs/provider-catalog.md
+    acceptance_criteria:
+      - id: AC1
+        description: Maintain docs/provider-catalog.md as a researched service inventory covering official APIs, open-data sources, free/community APIs, commercial BYOK APIs, enterprise providers, and web-only capture candidates with source URLs.
+        status: pending
+        verification: docs-review
+      - id: AC2
+        description: Add a structured provider catalog example that records provider id, access class, coverage, auth mode, cost/quota model, capabilities, source docs, landing/signup URL, implementation status, live-test env vars, and capture eligibility.
+        status: pending
+        verification: npm test
+      - id: AC3
+        description: Add provider discovery validation that prevents adapter/capture tasks from starting without documented terms/auth assumptions, source URLs, and implementation status.
+        status: pending
+        verification: npm test
+      - id: AC4
+        description: Add routing metadata so no-key MCP setup uses terrestrial AIS first and returns paid/satellite provider signup URLs when no terrestrial source can satisfy the request.
+        status: pending
+        verification: npm test
 
   - id: F5
     title: Authorized capture fixture workflow
@@ -187,6 +215,31 @@ features:
         status: pending
         verification: docs-review
 
+  - id: F5A
+    title: Maritime capture execution program based on api-capture
+    phase: P1
+    status: not_implemented
+    source_docs:
+      - docs/PRD.md
+      - docs/TDD.md
+      - docs/provider-catalog.md
+      - /Users/aktn/project/api-capture/README.md
+      - /Users/aktn/project/api-capture/ARCHITECTURE.md
+      - /Users/aktn/project/api-capture/docs/LOCAL_AGENT_HARNESS.md
+    acceptance_criteria:
+      - id: AC1
+        description: Add safe maritime site-profile examples and capture queue metadata for provider-catalog entries such as MarineTraffic, VesselFinder, MyShipTracking, FleetMon, and other web-only candidates, with allowed origins, forbidden actions, session-loss indicators, pacing, and terms-review status.
+        status: pending
+        verification: npm test
+      - id: AC2
+        description: Implement an operator-only capture workflow that reuses api-capture patterns for Playwright browser control, XHR/fetch hooks, HAR backup, replay validation, traffic IR, schema summaries, redaction, and disabled-by-default sanitized fixtures.
+        status: pending
+        verification: npm test
+      - id: AC3
+        description: Add a runbook for performing authorized maritime captures, including where raw private artifacts live, how sanitized fixtures are promoted, and why default autodev/CI must never call live paid providers or capture private sessions.
+        status: pending
+        verification: docs-review
+
   - id: F6
     title: Security, observability, and deployment readiness
     phase: P2
@@ -206,5 +259,28 @@ features:
         verification: npm run build
       - id: AC3
         description: Add an operator runbook covering provider credentials, rate limits, live-test toggles, and client setup.
+        status: pending
+        verification: docs-review
+
+  - id: F7
+    title: Open source release and plugin discoverability
+    phase: P2
+    status: not_implemented
+    source_docs:
+      - docs/PRD.md
+      - docs/TDD.md
+      - README.md
+      - AGENTS.md
+    acceptance_criteria:
+      - id: AC1
+        description: Prepare open-source release assets including license, security policy, contribution guide, public README positioning, safe examples, and a release checklist that confirms no secrets or private captures are committed.
+        status: pending
+        verification: docs-review
+      - id: AC2
+        description: Add package, repository, and documentation metadata so the project is searchable for vessel AIS MCP, ship tracking MCP, MarineTraffic MCP, Claude MCP, ChatGPT MCP, and Codex plugin workflows.
+        status: pending
+        verification: npm test
+      - id: AC3
+        description: Add Claude Desktop, Claude Code, ChatGPT remote MCP, generic MCP Inspector, and Codex setup/distribution docs, including Codex plugin manifest or marketplace metadata when ready.
         status: pending
         verification: docs-review
