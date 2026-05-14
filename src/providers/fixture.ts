@@ -1,4 +1,14 @@
-import type { DataSource, ProviderCapability, ProviderStatus, SourceMetadata, VesselDataProvider } from './types.js';
+import type {
+  CacheTtlPolicy,
+  CredentialRequirement,
+  DataSource,
+  ProviderCapability,
+  ProviderMetadata,
+  ProviderStatus,
+  RateLimitPolicy,
+  SourceMetadata,
+  VesselDataProvider,
+} from './types.js';
 
 const adapterVersion = 'fixture-0.1.0';
 const fixtureRetrievedAt = '2026-01-01T00:00:00.000Z';
@@ -72,6 +82,45 @@ export class FixtureProvider implements VesselDataProvider {
         source: fixtureSource(),
       },
     ];
+  }
+
+  metadata(): ProviderMetadata {
+    return {
+      id: this.id,
+      displayName: 'Fixture Provider',
+      accessClass: 'fixture',
+      tier: 'fixture',
+      coverage: 'Local deterministic fixture data only.',
+      capabilities: this.capabilities(),
+      captureEligibility: 'allowed',
+      notes: 'Default provider for deterministic tests and MCP smoke checks.',
+    };
+  }
+
+  credentialRequirement(): CredentialRequirement {
+    return {
+      required: false,
+      mode: 'none',
+      profileFields: [],
+      notes: 'Fixture provider does not require credentials.',
+    };
+  }
+
+  rateLimitPolicy(): RateLimitPolicy {
+    return {
+      requestsPerInterval: Number.MAX_SAFE_INTEGER,
+      intervalMs: 1_000,
+      scope: 'per-instance',
+      notes: 'Fixture provider is local and not rate-limited; policy retained for routing parity.',
+    };
+  }
+
+  cacheTtlPolicy(): CacheTtlPolicy {
+    return {
+      defaultTtlMs: 60_000,
+      scope: 'per-instance',
+      notes: 'Fixture data is static; cache TTL is informational only.',
+    };
   }
 }
 

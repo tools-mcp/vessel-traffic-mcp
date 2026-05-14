@@ -58,7 +58,7 @@ features:
         verification: npm test
       - id: AC2
         description: Implement provider adapter interfaces, provider registry, provider router, credential requirement metadata, provider landing/signup URLs, rate-limit hooks, and cache TTL hooks.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC3
         description: Implement a deterministic fixture provider with search, latest position, area query, track, and port-call sample data.
