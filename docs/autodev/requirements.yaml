@@ -114,7 +114,7 @@ features:
     acceptance_criteria:
       - id: AC1
         description: Implement document signal extraction for B/L-style text, including vessel names, voyage numbers, carrier names, ports, dates, container numbers, and explicit IMO/MMSI/callsign identifiers.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC2
         description: Implement vessel-name normalization and candidate ranking that combines exact/fuzzy name match, identifier match, provider evidence, and port/date/voyage context.
