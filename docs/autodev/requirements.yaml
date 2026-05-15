@@ -148,7 +148,7 @@ features:
         verification: npm test
       - id: AC3
         description: Implement at least one regional/open-data REST adapter such as BarentsWatch or OpenAIS using credentials/config only when required.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC4
         description: Implement adapter templates for paid BYOK providers such as MarineTraffic, VesselFinder, Spire, ORBCOMM/CommTrace, Datalastic, VesselAPI, Data Docked, and Poseidon AIS, with at least two documented providers implemented behind credential profiles.

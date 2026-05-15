@@ -321,7 +321,7 @@
         "landingUrl": "https://www.barentswatch.no/en/articles/open-data-via-barentswatch/",
         "signupUrl": "https://www.barentswatch.no/en/articles/open-data-via-barentswatch/"
       },
-      "implementationStatus": "planned",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_BARENTSWATCH",
         "requiredEnvVars": [
