@@ -251,7 +251,7 @@ features:
     acceptance_criteria:
       - id: AC1
         description: Add secret-safe structured logging, provider status diagnostics, and request IDs without logging query credentials or raw provider responses by default.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC2
         description: Add Dockerfile or deployment notes for hosting the HTTP MCP endpoint behind HTTPS.

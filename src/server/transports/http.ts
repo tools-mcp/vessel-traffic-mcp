@@ -7,6 +7,9 @@ import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 
 import type { HttpRuntimeConfig } from '../../config/runtime.js';
+import { createProviderRegistry, type ProviderRegistry } from '../../providers/registry.js';
+import type { ProviderStatus } from '../../providers/types.js';
+import { createJsonLogger, type JsonLogger } from '../../util/logger.js';
 import { redactForLog } from '../../util/redact.js';
 import { createVesselMcpServer } from '../create-server.js';
 
@@ -24,6 +27,7 @@ export interface StartHttpServerOptions extends HttpRuntimeConfig {
   healthPath?: string;
   maxBodyBytes?: number;
   logger?: HttpEventLogger | false;
+  registry?: ProviderRegistry;
 }
 
 export interface HttpServerHandle {
@@ -59,7 +63,42 @@ export type HttpEventLogEntry =
       healthPath: string;
       authRequired: boolean;
       transport: 'streamable-http';
+    }
+  | {
+      ts: string;
+      level: 'info' | 'warn';
+      event: 'provider_status_diagnostics';
+      transport: 'streamable-http';
+      providerCount: number;
+      summary: ProviderDiagnosticsSummary;
+      providers: ProviderDiagnosticEntry[];
+    }
+  | {
+      ts: string;
+      level: 'error';
+      event: 'http_request_error' | 'http_response_error' | 'http_logger_error';
+      requestId?: string;
+      reason: string;
+      transport: 'streamable-http';
     };
+
+export interface ProviderDiagnosticsSummary {
+  total: number;
+  available: number;
+  degraded: number;
+  unavailable: number;
+  fixtureBacked: number;
+  liveCapable: number;
+}
+
+export interface ProviderDiagnosticEntry {
+  id: string;
+  status: 'available' | 'degraded' | 'unavailable' | 'unknown';
+  authState: string;
+  capabilityCount: number;
+  sourceTransport: string;
+  fixtureBacked: boolean;
+}
 
 export type HttpEventLogger = (entry: HttpEventLogEntry) => void;
 
@@ -100,7 +139,14 @@ export function createMcpHttpHandler(options: StartHttpServerOptions): McpHttpHa
         }
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        console.error(`HTTP MCP request failed: ${redactForLog(message)}`);
+        logHttpEvent(options.logger, {
+          ts: new Date().toISOString(),
+          level: 'error',
+          event: 'http_request_error',
+          requestId,
+          reason: redactForLog(message),
+          transport: 'streamable-http',
+        });
 
         response = withCors(jsonRpcErrorResponse(500, -32603, 'Internal server error'));
       }
@@ -139,7 +185,13 @@ export async function startHttpServer(options: StartHttpServerOptions): Promise<
       await writeWebResponseToNode(res, response);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      console.error(`HTTP MCP response failed: ${redactForLog(message)}`);
+      logHttpEvent(logger, {
+        ts: new Date().toISOString(),
+        level: 'error',
+        event: 'http_response_error',
+        reason: redactForLog(message),
+        transport: 'streamable-http',
+      });
 
       if (!res.headersSent) {
         await writeWebResponseToNode(res, withCors(jsonRpcErrorResponse(500, -32603, 'Internal server error')));
@@ -174,6 +226,10 @@ export async function startHttpServer(options: StartHttpServerOptions): Promise<
     authRequired: Boolean(options.authToken),
     transport: 'streamable-http',
   });
+
+  const diagnosticsRegistry = options.registry ?? createProviderRegistry();
+  const diagnosticsEntry = await buildProviderStatusDiagnosticsEntry(diagnosticsRegistry);
+  logHttpEvent(logger, diagnosticsEntry);
 
   return {
     server: httpServer,
@@ -476,12 +532,102 @@ function logHttpEvent(logger: HttpEventLogger | false | undefined, entry: HttpEv
     logger(entry);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    console.error(`HTTP MCP logger failed: ${redactForLog(message)}`);
+    fallbackLogger.error('http_logger_error', {
+      reason: redactForLog(message),
+      transport: 'streamable-http',
+      droppedEvent: entry.event,
+    });
   }
 }
 
+const fallbackLogger: JsonLogger = createJsonLogger();
+
 function defaultHttpEventLogger(entry: HttpEventLogEntry): void {
-  console.error(JSON.stringify(entry));
+  fallbackLogger.log(entry.level as 'info' | 'warn' | 'error' | 'debug', entry.event, entry);
+}
+
+export async function buildProviderStatusDiagnosticsEntry(
+  registry: ProviderRegistry,
+): Promise<HttpEventLogEntry & { event: 'provider_status_diagnostics' }> {
+  const providers = registry.providers();
+  const entries: ProviderDiagnosticEntry[] = [];
+  let degraded = 0;
+  let available = 0;
+  let unavailable = 0;
+  let fixtureBacked = 0;
+  let liveCapable = 0;
+
+  for (const provider of providers) {
+    const isFixtureLike = isFixtureBacked(provider);
+    if (isFixtureLike) {
+      fixtureBacked += 1;
+    } else {
+      liveCapable += 1;
+    }
+
+    const safeStatus = isFixtureLike
+      ? await safeProviderStatus(provider)
+      : undefined;
+
+    const sourceTransport = safeStatus?.source.transport ?? safeProviderTransport(provider);
+    const status = safeStatus?.status ?? 'unknown';
+    if (status === 'available') {
+      available += 1;
+    } else if (status === 'degraded') {
+      degraded += 1;
+    } else if (status === 'unavailable') {
+      unavailable += 1;
+    }
+
+    entries.push({
+      id: provider.id,
+      status,
+      authState: safeStatus?.authState ?? 'unknown',
+      capabilityCount: provider.capabilities().length,
+      sourceTransport,
+      fixtureBacked: isFixtureLike,
+    });
+  }
+
+  return {
+    ts: new Date().toISOString(),
+    level: liveCapable > 0 ? 'warn' : 'info',
+    event: 'provider_status_diagnostics',
+    transport: 'streamable-http',
+    providerCount: providers.length,
+    summary: {
+      total: providers.length,
+      available,
+      degraded,
+      unavailable,
+      fixtureBacked,
+      liveCapable,
+    },
+    providers: entries,
+  };
+}
+
+function isFixtureBacked(provider: ReturnType<ProviderRegistry['providers']>[number]): boolean {
+  const accessClass = provider.metadata?.().accessClass;
+  return accessClass === 'fixture' || accessClass === 'capture-fixture';
+}
+
+async function safeProviderStatus(
+  provider: ReturnType<ProviderRegistry['providers']>[number],
+): Promise<ProviderStatus | undefined> {
+  try {
+    return await provider.status();
+  } catch {
+    return undefined;
+  }
+}
+
+function safeProviderTransport(provider: ReturnType<ProviderRegistry['providers']>[number]): string {
+  const accessClass = provider.metadata?.().accessClass;
+  if (accessClass === 'fixture' || accessClass === 'capture-fixture') {
+    return accessClass;
+  }
+  return 'unknown';
 }
 
 function nodeRequestToWebRequest(req: IncomingMessage): Request {
