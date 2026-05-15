@@ -363,3 +363,205 @@ export function catalogEntriesByCapability(
 ): readonly ProviderCatalogEntry[] {
   return catalog.entries.filter((entry) => entry.capabilities.includes(capability));
 }
+
+export const discoveryGateValues = ['adapter', 'capture'] as const;
+
+export type DiscoveryGate = (typeof discoveryGateValues)[number];
+
+export const discoveryIssueCodeValues = [
+  'unknown_provider',
+  'missing_source_urls',
+  'missing_implementation_status',
+  'discovery_only_blocks_adapter',
+  'capture_only_blocks_adapter',
+  'missing_auth_mode',
+  'missing_auth_credentials',
+  'byok_profile_missing_fields',
+  'missing_documented_terms',
+  'capture_blocked_by_terms',
+  'capture_eligibility_unknown',
+] as const;
+
+export type DiscoveryIssueCode = (typeof discoveryIssueCodeValues)[number];
+
+export interface DiscoveryValidationIssue {
+  readonly path: string;
+  readonly code: DiscoveryIssueCode;
+  readonly message: string;
+}
+
+export interface DiscoveryValidationResult {
+  readonly providerId: string;
+  readonly gate: DiscoveryGate;
+  readonly ok: boolean;
+  readonly issues: readonly DiscoveryValidationIssue[];
+}
+
+function countSourceUrls(entry: ProviderCatalogEntry): number {
+  let count = 0;
+  for (const field of URL_FIELDS) {
+    if (typeof entry.sources[field] === 'string' && entry.sources[field]!.length > 0) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+function collectIssues(entry: ProviderCatalogEntry, gate: DiscoveryGate): DiscoveryValidationIssue[] {
+  const issues: DiscoveryValidationIssue[] = [];
+
+  if (countSourceUrls(entry) === 0) {
+    issues.push({
+      path: 'sources',
+      code: 'missing_source_urls',
+      message: `${entry.id}: at least one source URL (apiDocsUrl, landingUrl, signupUrl, termsUrl, or referenceUrl) must be documented before starting ${gate} work`,
+    });
+  }
+
+  if (!IMPL_STATUSES.has(entry.implementationStatus)) {
+    issues.push({
+      path: 'implementationStatus',
+      code: 'missing_implementation_status',
+      message: `${entry.id}: implementationStatus is not declared in the catalog`,
+    });
+  }
+
+  if (!CREDENTIAL_MODES.has(entry.auth.mode)) {
+    issues.push({
+      path: 'auth.mode',
+      code: 'missing_auth_mode',
+      message: `${entry.id}: auth.mode is not declared`,
+    });
+  }
+
+  if (entry.auth.required && entry.auth.profileFields.length === 0 && entry.auth.envVars.length === 0) {
+    issues.push({
+      path: 'auth',
+      code: 'missing_auth_credentials',
+      message: `${entry.id}: auth.required=true but no profileFields or envVars are documented`,
+    });
+  }
+
+  if (entry.auth.mode === 'byok-profile' && entry.auth.required && entry.auth.profileFields.length === 0) {
+    issues.push({
+      path: 'auth.profileFields',
+      code: 'byok_profile_missing_fields',
+      message: `${entry.id}: byok-profile mode requires at least one auth.profileFields entry so the credential profile loader can find the key`,
+    });
+  }
+
+  const termsDocumented =
+    typeof entry.sources.termsUrl === 'string' || entry.captureEligibility !== 'unknown';
+  if (!termsDocumented) {
+    issues.push({
+      path: 'sources.termsUrl',
+      code: 'missing_documented_terms',
+      message: `${entry.id}: terms are undocumented — declare sources.termsUrl or set captureEligibility to a non-"unknown" value`,
+    });
+  }
+
+  if (gate === 'adapter') {
+    if (entry.implementationStatus === 'discovery_only') {
+      issues.push({
+        path: 'implementationStatus',
+        code: 'discovery_only_blocks_adapter',
+        message: `${entry.id}: implementationStatus="discovery_only" means this provider is catalog-only; adapter work is not authorized until status is updated`,
+      });
+    }
+    if (entry.implementationStatus === 'capture_only') {
+      issues.push({
+        path: 'implementationStatus',
+        code: 'capture_only_blocks_adapter',
+        message: `${entry.id}: implementationStatus="capture_only" means only sanitized capture is authorized; do not start adapter implementation`,
+      });
+    }
+  }
+
+  if (gate === 'capture') {
+    if (entry.captureEligibility === 'blocked') {
+      issues.push({
+        path: 'captureEligibility',
+        code: 'capture_blocked_by_terms',
+        message: `${entry.id}: captureEligibility="blocked" — terms forbid web UI capture for this provider`,
+      });
+    }
+    if (entry.captureEligibility === 'unknown') {
+      issues.push({
+        path: 'captureEligibility',
+        code: 'capture_eligibility_unknown',
+        message: `${entry.id}: captureEligibility is "unknown"; review the provider terms and set an explicit value before starting capture`,
+      });
+    }
+  }
+
+  return issues;
+}
+
+export function validateProviderForDiscovery(
+  entry: ProviderCatalogEntry,
+  gate: DiscoveryGate,
+): DiscoveryValidationResult {
+  const issues = collectIssues(entry, gate);
+  return Object.freeze({
+    providerId: entry.id,
+    gate,
+    ok: issues.length === 0,
+    issues: Object.freeze(issues) as readonly DiscoveryValidationIssue[],
+  });
+}
+
+export function validateProviderForDiscoveryInCatalog(
+  catalog: ProviderCatalog,
+  providerId: string,
+  gate: DiscoveryGate,
+): DiscoveryValidationResult {
+  const entry = findCatalogEntry(catalog, providerId);
+  if (!entry) {
+    return Object.freeze({
+      providerId,
+      gate,
+      ok: false,
+      issues: Object.freeze([
+        {
+          path: 'catalog',
+          code: 'unknown_provider' as const,
+          message: `provider "${providerId}" is not declared in the catalog; add a catalog entry with terms, auth, source URLs, and implementation status before starting ${gate} work`,
+        },
+      ]) as readonly DiscoveryValidationIssue[],
+    });
+  }
+  return validateProviderForDiscovery(entry, gate);
+}
+
+export class ProviderDiscoveryValidationError extends Error {
+  readonly providerId: string;
+  readonly gate: DiscoveryGate;
+  readonly issues: readonly DiscoveryValidationIssue[];
+
+  constructor(result: DiscoveryValidationResult) {
+    const summary = result.issues.map((issue) => `[${issue.code}] ${issue.message}`).join('; ');
+    super(
+      `provider "${result.providerId}" is not ready for ${result.gate} work: ${summary || 'no specific issue recorded'}`,
+    );
+    this.name = 'ProviderDiscoveryValidationError';
+    this.providerId = result.providerId;
+    this.gate = result.gate;
+    this.issues = result.issues;
+  }
+}
+
+export function assertProviderReadyForDiscovery(
+  catalog: ProviderCatalog,
+  providerId: string,
+  gate: DiscoveryGate,
+): ProviderCatalogEntry {
+  const result = validateProviderForDiscoveryInCatalog(catalog, providerId, gate);
+  if (!result.ok) {
+    throw new ProviderDiscoveryValidationError(result);
+  }
+  const entry = findCatalogEntry(catalog, providerId);
+  if (!entry) {
+    throw new ProviderDiscoveryValidationError(result);
+  }
+  return entry;
+}

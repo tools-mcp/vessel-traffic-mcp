@@ -178,7 +178,7 @@ features:
         verification: npm test
       - id: AC3
         description: Add provider discovery validation that prevents adapter/capture tasks from starting without documented terms/auth assumptions, source URLs, and implementation status.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC4
         description: Add routing metadata so no-key MCP setup uses terrestrial AIS first and returns paid/satellite provider signup URLs when no terrestrial source can satisfy the request.
