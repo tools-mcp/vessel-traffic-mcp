@@ -139,40 +139,33 @@ export async function documentVesselLookup(
     coverageHint: input.coverageHint,
   };
 
-  if (!signals.vesselName && !signals.mmsi && !signals.imo) {
+  if (!signals.vesselName && !signals.mmsi && !signals.imo && !signals.callsign) {
     return {
       ok: false,
       reason: 'identifier_not_found',
-      message: 'No vessel name, IMO, or MMSI detected in the supplied document text.',
+      message:
+        'No vessel name, IMO, MMSI, or call sign detected in the supplied document text.',
       retrievedAt,
       signals,
       candidates: [],
-      caveats: ['First-pass document parser; full B/L scoring is owned by F3B.'],
+      caveats: ['Document parser found no vessel signals; supply a name, IMO, MMSI, or call sign.'],
     };
   }
 
-  const nameForSearch = signals.vesselName ?? '';
-  if (nameForSearch.length > 0) {
-    const resolution = await vesselNameResolve(deps, {
-      name: nameForSearch,
-      ports: input.hint?.expectedPorts ?? signals.ports,
-      voyageNumber: input.hint?.voyageNumber ?? signals.voyageNumber,
-      carrier: input.hint?.carrier ?? signals.carrier,
-      limit: input.limit,
-      ...routing,
-    });
-    return {
-      ...resolution,
-      signals,
-    };
-  }
+  const resolution = await vesselNameResolve(deps, {
+    name: signals.vesselName || undefined,
+    mmsi: signals.mmsi,
+    imo: signals.imo,
+    callsign: signals.callsign,
+    ports: input.hint?.expectedPorts ?? signals.ports,
+    voyageNumber: input.hint?.voyageNumber ?? signals.voyageNumber,
+    carrier: input.hint?.carrier ?? signals.carrier,
+    dates: signals.dates,
+    limit: input.limit,
+    ...routing,
+  });
   return {
-    ok: false,
-    reason: 'unsupported_query',
-    message: 'Document contained identifiers but no vessel name; pass mmsi/imo to vessel_position instead.',
-    retrievedAt,
+    ...resolution,
     signals,
-    candidates: [],
-    caveats: ['First-pass document parser; full B/L scoring is owned by F3B.'],
   };
 }

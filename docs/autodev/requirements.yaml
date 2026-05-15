@@ -118,7 +118,7 @@ features:
         verification: npm test
       - id: AC2
         description: Implement vessel-name normalization and candidate ranking that combines exact/fuzzy name match, identifier match, provider evidence, and port/date/voyage context.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC3
         description: Return ranked candidates with matchedSignals, missingSignals, latestPosition when available, confidence, and needsConfirmation for ambiguous results.
