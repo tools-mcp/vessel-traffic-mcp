@@ -170,7 +170,7 @@ features:
     acceptance_criteria:
       - id: AC1
         description: Maintain docs/provider-catalog.md as a researched service inventory covering official APIs, open-data sources, free/community APIs, commercial BYOK APIs, enterprise providers, and web-only capture candidates with source URLs.
-        status: pending
+        status: implemented
         verification: docs-review
       - id: AC2
         description: Add a structured provider catalog example that records provider id, access class, coverage, auth mode, cost/quota model, capabilities, source docs, landing/signup URL, implementation status, live-test env vars, and capture eligibility.

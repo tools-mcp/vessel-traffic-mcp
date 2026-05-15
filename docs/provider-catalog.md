@@ -1,9 +1,10 @@
 # Vessel Provider Catalog
 
-Research snapshot checked on 2026-05-07. This catalog is the working backlog for
-official API adapters, open-data adapters, BYOK commercial adapters, and
-authorized capture candidates. It is intentionally conservative: an entry being
-listed here does not mean the project may scrape it or bypass access controls.
+Research snapshot checked on 2026-05-15. This catalog is the working backlog
+for official API adapters, open-data adapters, free/community APIs, BYOK
+commercial adapters, enterprise providers, and authorized capture candidates.
+It is intentionally conservative: an entry being listed here does not mean the
+project may scrape it or bypass access controls.
 
 ## Product Priority
 
@@ -43,56 +44,116 @@ obtain their own key and reconnect through BYOK.
 - Commit only sanitized fixtures, endpoint fingerprints, traffic IR summaries,
   schema summaries, and provider-adapter tickets.
 
-## Priority Providers
+## Provider Categories
 
-| Provider | Access class | Coverage | API/capture direction | Initial priority | Source |
-| --- | --- | --- | --- | --- | --- |
-| MarineTraffic / Kpler | Commercial BYOK official API; web UI capture candidate only with authorization | Global AIS, events, ports, vessel data depending on plan | Implement BYOK adapter template first; use official service docs before any capture | P1 | https://servicedocs.marinetraffic.com/ |
-| MarineTraffic `exportvesseltrack` | Commercial BYOK official API endpoint family | Vessel historical track | Document endpoint shape and credential profile; no live default tests | P1 | https://servicedocs.marinetraffic.com/tag/Vessel-Historical-Track |
-| VesselFinder | Commercial credit API | Terrestrial AIS positions, voyage, master data | BYOK REST adapter candidate with JSON/XML normalization | P1 | https://api.vesselfinder.com/docs/vessels.html |
-| MyShipTracking | Trial/commercial API | Terrestrial AIS, vessel position, zone, history, ports | BYOK/trial REST adapter candidate; useful early because docs expose current-position endpoint and trial key flow | P1 | https://api.myshiptracking.com/docs/vessel-current-position-api |
-| AISStream | Free WebSocket API | Global receiver network, best-effort live AIS stream | Live stream/cache adapter for initial no-paid-API coverage checks | P1 | https://aisstream.io/ |
-| AISHub | Community/member API | Contributor AIS network | Member API adapter with strict one-request-per-minute throttle | P1 | https://www.aishub.net/api |
-| BarentsWatch / Norwegian Coastal Administration | Open regional API | Norway/regional real-time AIS | Open-data regional adapter | P1 | https://www.barentswatch.no/en/articles/open-data-via-barentswatch/ |
-| OpenAIS | Open AIS-oriented API | Varies by project/data scope | Open/reference adapter after terms and coverage validation | P2 | https://open-ais.org/docs/API/ |
-| NOAA MarineCadastre / USCG NAIS | Open historical data | United States AIS, generally delayed historical data | Historical data importer/reference identity source, not low-latency position provider | P2 | https://www.fisheries.noaa.gov/inport/item/77594 |
-| Global Fishing Watch | Token API/public data | Fishing activity, vessel identity, public registry context | Identity/context provider; not a universal live-position fallback | P2 | https://globalfishingwatch.org/our-apis/documentation |
+The catalog organizes vessel-data providers into the six AC1-aligned categories
+below. Each section is the authoritative list for its category and the source
+URLs that adapter tickets, credential-profile loaders, and the structured
+`config/provider-catalog.example.json` consume. A single provider may appear in
+more than one category — for example, MarineTraffic is both an Official API and
+a Commercial BYOK API — because adapter, credential, and capture workflows are
+gated on different axes.
 
-## Commercial And Enterprise Backlog
+### Official APIs
 
-| Provider | Access class | Notes | Source |
-| --- | --- | --- | --- |
-| Spire Maritime | Commercial satellite/terrestrial AIS API | Global AIS data products and API offerings; BYOK adapter candidate | https://spire.com/maritime/solutions/standard-ais/ |
-| ORBCOMM / CommTrace / exactEarth | Commercial satellite AIS API | Beyond-coastal satellite AIS; BYOK adapter candidate | https://api.commtrace.com/ |
-| VesselAPI | Commercial/trial maritime API | Terrestrial AIS ship-tracking endpoints and maritime data API | https://vesselapi.com/ship-tracking-api |
-| Data Docked | Commercial maritime data API | Vessel location, historical location, port calls, details by name, route planner, weather | https://datadocked.com/ |
-| Poseidon AIS | Commercial AIS API | Vessel details, area/radius search, historical positions | https://poseidonais.com/ |
-| ais.now | Commercial API/web platform candidate | Real-time AIS platform with REST API claims; validate docs, terms, and coverage before implementation | https://ais.now/ |
-| FleetMon / Kpler | Commercial maritime intelligence | Treat as BYOK or authorized capture candidate only after account-specific terms review | https://www.fleetmon.com/ |
-| Windward | Enterprise maritime intelligence | Enterprise provider; likely contract/API review required | https://windward.ai/ |
-| Pole Star Global | Enterprise maritime intelligence | Enterprise compliance/tracking provider; likely contract/API review required | https://www.polestarglobal.com/ |
-| S&P Global Sea-web | Enterprise maritime intelligence | Enterprise ship, ownership, casualty, and movement context candidate | https://www.spglobal.com/marketintelligence/en/solutions/products/sea-web |
-| Lloyd's List Intelligence | Enterprise maritime intelligence | Enterprise maritime intelligence and vessel movement context candidate | https://www.lloydslistintelligence.com/ |
+Providers that publish official documented APIs. Prefer the official API
+surface over any other access path; capture against these providers is allowed
+only with explicit operator authorization and only where provider terms permit
+it. Source URLs point to first-party developer docs.
 
-## Community, Free, And Candidate Web Sources
-
-These entries need terms, API, coverage, and freshness validation before any
-adapter or capture work. They should be modeled as discovery tickets first.
-
-| Provider | Access class | Capture/API status |
+| Provider | Coverage | Source |
 | --- | --- | --- |
-| AIS Friends | Community/contributor API candidate | Validate registration, contribution requirements, API terms, and whether data redistribution is allowed. |
-| MyShipTracking web UI | Web UI plus official API | Prefer official API; capture only for authorized UI-only workflows not covered by API. |
-| ShipXplorer | Web UI/API candidate | Validate whether a supported ship API exists and whether UI capture is allowed. |
-| MarineVesselTraffic / similar map sites | Web UI candidates | Discovery-only until terms and technical feasibility are documented. |
-| Regional government AIS portals | Open/regional candidates | Prioritize official open APIs and static/historical datasets before UI capture. |
+| MarineTraffic / Kpler | Global AIS, events, ports, vessel data depending on plan | https://servicedocs.marinetraffic.com/ |
+| MarineTraffic `exportvesseltrack` | Vessel historical track endpoint family | https://servicedocs.marinetraffic.com/tag/Vessel-Historical-Track |
+| VesselFinder | Terrestrial AIS positions, voyage, and master data | https://api.vesselfinder.com/docs/vessels.html |
+| MyShipTracking | Terrestrial AIS, vessel position, zones, history, ports | https://api.myshiptracking.com/docs/vessel-current-position-api |
+| Spire Maritime | Global satellite and terrestrial AIS data products | https://spire.com/maritime/solutions/standard-ais/ |
+| ORBCOMM / CommTrace / exactEarth | Beyond-coastal satellite AIS | https://api.commtrace.com/ |
+| Global Fishing Watch | Token API for fishing activity and vessel identity | https://globalfishingwatch.org/our-apis/documentation |
+
+### Open-Data Sources
+
+Governmental, regional, and open-standards data feeds. Coverage is typically
+narrower (national waters, historical archives, or special-purpose datasets)
+than commercial providers but is licensed for open reuse, sometimes after
+account registration.
+
+| Provider | Coverage | Source |
+| --- | --- | --- |
+| BarentsWatch / Norwegian Coastal Administration | Norway/regional real-time AIS via open data | https://www.barentswatch.no/en/articles/open-data-via-barentswatch/ |
+| OpenAIS | Open AIS-oriented API; coverage and freshness vary by contributor | https://open-ais.org/docs/API/ |
+| NOAA MarineCadastre / USCG NAIS | United States historical AIS, generally delayed and bulk-distributed | https://www.fisheries.noaa.gov/inport/item/77594 |
+| Global Fishing Watch | Public registry context and fishing activity (token-gated open API) | https://globalfishingwatch.org/our-apis/documentation |
+| Regional government AIS portals | Various national/regional portals; prioritize official open APIs and static/historical datasets before any UI capture | Discovery only — see Provider Discovery Backlog below |
+
+### Free / Community APIs
+
+Free or community-contributor APIs. Typically require account registration or
+feed contribution and enforce strict rate limits. Treat them as the no-paid-key
+fallback for terrestrial AIS coverage probes.
+
+| Provider | Coverage | Source |
+| --- | --- | --- |
+| AISStream | Best-effort global terrestrial AIS WebSocket stream | https://aisstream.io/ |
+| AISHub | Contributor-pooled terrestrial AIS network; one-request-per-minute member API | https://www.aishub.net/api |
+| AIS Friends | Community/contributor API candidate; validate registration, contribution requirements, API terms, and whether data redistribution is allowed | Discovery only — see Provider Discovery Backlog below |
+
+### Commercial BYOK APIs
+
+Paid commercial APIs that require user-supplied credentials via redacted BYOK
+credential profiles. Default verification does not call these; live tests are
+gated behind `VESSEL_MCP_LIVE_TEST_*` flags and `VESSEL_MCP_PROFILE_*`
+credential slots so the standard `npm test` run never reaches a paid endpoint.
+
+| Provider | Coverage | Source |
+| --- | --- | --- |
+| MarineTraffic / Kpler | Global AIS, events, ports, vessel data depending on plan | https://servicedocs.marinetraffic.com/ |
+| MarineTraffic `exportvesseltrack` | Vessel historical track endpoint family | https://servicedocs.marinetraffic.com/tag/Vessel-Historical-Track |
+| VesselFinder | Terrestrial AIS positions, voyage, and master data | https://api.vesselfinder.com/docs/vessels.html |
+| MyShipTracking | Trial/commercial API for terrestrial AIS position, zone, history, ports | https://api.myshiptracking.com/docs/vessel-current-position-api |
+| Spire Maritime | Commercial satellite/terrestrial AIS API; BYOK adapter candidate | https://spire.com/maritime/solutions/standard-ais/ |
+| ORBCOMM / CommTrace / exactEarth | Commercial satellite AIS API; BYOK adapter candidate | https://api.commtrace.com/ |
+| VesselAPI | Commercial/trial maritime API; terrestrial AIS ship-tracking endpoints | https://vesselapi.com/ship-tracking-api |
+| Data Docked | Vessel location, historical location, port calls, details by name, route planner, weather | https://datadocked.com/ |
+| Poseidon AIS | Vessel details, area/radius search, historical positions | https://poseidonais.com/ |
+| ais.now | Commercial API/web platform candidate with REST API claims; validate docs, terms, and coverage before implementation | https://ais.now/ |
+| FleetMon / Kpler | Commercial maritime intelligence; treat as BYOK or authorized capture candidate only after account-specific terms review | https://www.fleetmon.com/ |
+
+### Enterprise Providers
+
+Enterprise maritime intelligence platforms that typically require contract
+negotiation and account-team onboarding before API access is granted. Capture
+is blocked across enterprise providers — only BYOK adapters backed by an
+explicit operator contract are permitted.
+
+| Provider | Coverage | Source |
+| --- | --- | --- |
+| Windward | Enterprise maritime intelligence; satellite + terrestrial AIS plus risk overlays | https://windward.ai/ |
+| Pole Star Global | Enterprise compliance/tracking provider; likely contract/API review required | https://www.polestarglobal.com/ |
+| S&P Global Sea-web | Enterprise ship, ownership, casualty, and movement context candidate | https://www.spglobal.com/marketintelligence/en/solutions/products/sea-web |
+| Lloyd's List Intelligence | Enterprise maritime intelligence and vessel movement context candidate | https://www.lloydslistintelligence.com/ |
+
+### Web-Only Capture Candidates
+
+Sites that do not expose a first-class official API for the data we need, or
+whose API access is restrictive enough that the operator-authorized web UI is
+the only realistic discovery path. Capture only when provider terms allow it.
+Always prefer an official API once one becomes available.
+
+| Provider | Capture/API status |
+| --- | --- |
+| MyShipTracking web UI | Web UI plus official API; prefer the official API and capture only for authorized UI-only workflows not covered by the API. |
+| ShipXplorer | Web UI/API candidate. Validate whether a supported ship API exists and whether UI capture is allowed. |
+| MarineVesselTraffic / similar map sites | Web UI candidates. Discovery-only until terms and technical feasibility are documented. |
+| FleetMon web UI | Treat as BYOK or authorized capture candidate only after account-specific terms review (<https://www.fleetmon.com/>). |
+| AIS Friends web UI | Community/contributor candidate; capture only after validating registration, contribution requirements, API terms, and redistribution policy. |
 
 ## Provider Discovery Backlog
 
 The autonomous development process should keep this catalog alive:
 
-1. Add a structured provider inventory file, such as `config/provider-catalog.example.json`, derived from this catalog.
+1. Maintain the structured provider inventory file `config/provider-catalog.example.json` so it stays in sync with this markdown source.
 2. Record each provider's access class, auth mode, cost/quota model, supported capabilities, coverage, freshness expectations, source URLs, implementation status, and capture eligibility.
-3. Create adapter tickets for official/open/BYOK providers.
-4. Create capture tickets only for web-only services where the operator has authorized access and the terms review does not block capture.
+3. Create adapter tickets for official/open/BYOK providers; the provider-discovery validator must clear the adapter gate before work starts.
+4. Create capture tickets only for web-only services where the operator has authorized access and the terms review does not block capture; the validator must clear the capture gate.
 5. Feed capture tickets into the api-capture-derived workflow: site profile, controlled Playwright session, HAR/XHR capture, replay validation, redaction, traffic IR, schema summary, sanitized fixture, and disabled-by-default adapter candidate.
