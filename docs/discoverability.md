@@ -42,10 +42,11 @@ MCP ecosystem grows.
 | `files`      | Explicit allowlist of artifacts that ship if the package is ever published. Keeps operator-sensitive directories (`captures/`, `state/`, `.env*`, raw fixtures) out by construction. |
 
 `"private": true` is intentionally **kept** today: the package must
-not be published to npm until the full F7 release (AC3 client setup
-docs) is signed off. The metadata is shaped so that a later
-`"private": false` flip is the only step needed to publish — every
-other field already matches npm's publication requirements.
+not be published to npm until the full F7 release is signed off and
+the F7 parent feature flips to `implemented` in
+`docs/autodev/requirements.yaml`. The metadata is shaped so that a
+later `"private": false` flip is the only step needed to publish —
+every other field already matches npm's publication requirements.
 
 ## GitHub Topics
 
@@ -90,6 +91,9 @@ in one click:
 - [`docs/runbooks/clients.md`](./runbooks/clients.md) — Claude
   Desktop, Claude Code, ChatGPT remote MCP, and MCP Inspector setup
   instructions.
+- [`docs/runbooks/codex.md`](./runbooks/codex.md) — F7.AC3 Codex CLI
+  MCP wiring (`~/.codex/config.toml`), Streamable HTTP path, and the
+  current Codex plugin manifest / marketplace readiness state.
 - [`docs/runbooks/release-checklist.md`](./runbooks/release-checklist.md)
   — release gate that verifies these metadata fields stay current.
 
@@ -107,8 +111,8 @@ Discoverability metadata is covered by deterministic tests in
    and never lists operator-sensitive paths.
 4. The metadata contains no credential-shaped strings.
 5. README links back here and surfaces the Topics section.
-6. F7.AC2 is `status: implemented` while F7 parent and F7.AC3 remain
-   pending (no silent rollups).
+6. F7.AC2 is `status: implemented` and the F7 parent feature stays
+   `not_implemented` until release sign-off (no silent rollups).
 
 The test runs as part of the default `npm test` gate, so any change
 that drifts the metadata out of alignment with this contract fails CI

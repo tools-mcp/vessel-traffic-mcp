@@ -88,6 +88,16 @@ documentation examples). No real values.
       `files` allowlist contains only `dist`, `README.md`, `LICENSE`,
       `SECURITY.md`, `CONTRIBUTING.md`, `AGENTS.md`, and `docs`. See
       `docs/discoverability.md` for the full contract.
+- [ ] `docs/runbooks/clients.md` (F1.AC3) and
+      `docs/runbooks/codex.md` (F7.AC3) describe the same registered
+      read-only tool surface as `src/server/create-server.ts`, and
+      the env-var contract (`VESSEL_MCP_TRANSPORT`,
+      `VESSEL_MCP_HTTP_*`, `VESSEL_MCP_AUTH_TOKEN`,
+      `VESSEL_MCP_PROFILE_*`) is consistent across both. If a Codex
+      plugin manifest or marketplace metadata file has been promoted
+      out of the F7.AC3 scaffold, confirm it carries `readOnly`,
+      `notForNavigation`, and only env-var *names* — no real
+      credentials.
 - [ ] `AGENTS.md` hard rules are unchanged or strengthened — never
       weakened.
 

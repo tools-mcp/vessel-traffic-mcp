@@ -279,9 +279,12 @@ test('F7.AC2 status in requirements.yaml is set to implemented', () => {
   assert.match(ac2Block, /verification: npm test/, 'F7.AC2 verification must remain npm test');
 });
 
-test('F7 parent feature remains not_implemented while AC3 is still pending', () => {
-  // Closing F7.AC2 must NOT flip the parent feature to implemented while
-  // F7.AC3 (client setup / Codex plugin manifest docs) is still pending.
+test('F7 parent feature remains not_implemented per the task brief', () => {
+  // The F7.AC3 task brief is explicit that the parent F7 feature stays
+  // not_implemented even after every child criterion lands. The parent
+  // only flips at release sign-off, not as a silent rollup. F7.AC3's own
+  // status is asserted by test/codex-setup.test.js, not here, so changes
+  // to that criterion's status do not require touching this file.
   const reqs = read(REQUIREMENTS_URL);
   const f7Index = reqs.indexOf('id: F7');
   assert.ok(f7Index > 0, 'requirements.yaml must contain feature F7');
@@ -289,17 +292,6 @@ test('F7 parent feature remains not_implemented while AC3 is still pending', () 
   assert.match(
     f7Header,
     /title: Open source release and plugin discoverability[\s\S]*?status: not_implemented/,
-    'F7 parent feature must remain not_implemented until all child criteria are done',
-  );
-
-  // F7.AC3 must still be pending.
-  const f7Block = reqs.slice(f7Index);
-  const ac3Index = f7Block.indexOf('id: AC3');
-  assert.ok(ac3Index > 0, 'F7 must contain acceptance criterion AC3');
-  const ac3Block = f7Block.slice(ac3Index, ac3Index + 400);
-  assert.match(
-    ac3Block,
-    /status: pending/,
-    'F7.AC3 must remain pending until client setup / Codex plugin docs land',
+    'F7 parent feature must remain not_implemented per the task brief',
   );
 });

@@ -158,6 +158,9 @@ docs/
 - [`docs/runbooks/clients.md`](./docs/runbooks/clients.md) — client
   setup for Claude Desktop, Claude Code, ChatGPT remote MCP, and the
   generic MCP Inspector.
+- [`docs/runbooks/codex.md`](./docs/runbooks/codex.md) — F7.AC3 Codex
+  CLI MCP wiring (`~/.codex/config.toml`), Streamable HTTP path, and
+  the current Codex plugin manifest / marketplace readiness state.
 - [`docs/runbooks/deployment-https.md`](./docs/runbooks/deployment-https.md)
   — Dockerfile and HTTPS reverse-proxy deployment notes for hosting
   the Streamable HTTP MCP endpoint.
