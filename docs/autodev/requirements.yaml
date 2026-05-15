@@ -156,7 +156,7 @@ features:
         verification: npm test
       - id: AC5
         description: Maintain a provider catalogue documenting global provider coverage, auth mode, cost/quota model, supported capabilities, and implementation status.
-        status: pending
+        status: implemented
         verification: docs-review
 
   - id: F4A

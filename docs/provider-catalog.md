@@ -30,6 +30,30 @@ coverage, or likely requires satellite AIS, the response should include
 provider-specific signup or landing URLs from this catalog so the user can
 obtain their own key and reconnect through BYOK.
 
+## F4.AC5 Catalogue Axes
+
+PRD acceptance criterion F4.AC5 requires this catalogue to document global
+provider coverage, auth mode, cost/quota model, supported capabilities, and
+implementation status for every entry. The five axes are kept in lock-step
+between the human-readable markdown sections below and the structured
+`config/provider-catalog.example.json` so docs-review reviewers, adapter
+ticketing, and the credential-profile loader read the same source of truth.
+
+| Axis | Where it lives in this doc | Where it lives in `config/provider-catalog.example.json` |
+| --- | --- | --- |
+| Global provider coverage | "Coverage" column of every category table below | `entries[].coverage` (free-text) plus `entries[].tier` (`fixture` / `terrestrial-open` / `community` / `paid-commercial`) |
+| Auth mode | Implied by category placement (Official APIs, Free / Community APIs, Commercial BYOK APIs, Enterprise Providers, Web-Only Capture Candidates) and called out in entry notes | `entries[].auth.mode` plus `entries[].auth.required`, `entries[].auth.profileFields`, and `entries[].auth.envVars` |
+| Cost / quota model | Category section intro describes the cost class; per-provider quota/throttle quirks appear in entry notes | `entries[].cost.model` (`fixture` / `free` / `open-data` / `community` / `trial` / `freemium` / `credit-based` / `subscription` / `enterprise`) plus `entries[].cost.quotaNote` |
+| Supported capabilities | Implied by the per-row "Coverage" column ("positions", "tracks", "port calls", etc.) and the tool surface listed in `README.md` | `entries[].capabilities[]` (subset of `provider_status`, `data_sources`, `vessel_search`, `vessel_position`, `vessel_area`, `vessel_track`, `port_calls`) |
+| Implementation status | "Implementation status" row underneath each category table (see one-liners below) | `entries[].implementationStatus` (`fixture` / `not_started` / `planned` / `in_progress` / `implemented` / `capture_only` / `discovery_only`) |
+
+The structured JSON is the machine-readable contract for the five axes. Any
+new provider added to a markdown table below must land an entry in
+`config/provider-catalog.example.json` covering the same five axes — the
+`provider-catalog.test.js`, `provider-catalog-categories.test.js`,
+`provider-catalog-live-gating.test.js`, and `provider-catalog-ac5-axes.test.js`
+tests fail closed if the two views drift.
+
 ## Capture And Access Policy
 
 - Prefer official APIs and open-data feeds.
@@ -71,6 +95,8 @@ it. Source URLs point to first-party developer docs.
 | ORBCOMM / CommTrace / exactEarth | Beyond-coastal satellite AIS | https://api.commtrace.com/ |
 | Global Fishing Watch | Token API for fishing activity and vessel identity | https://globalfishingwatch.org/our-apis/documentation |
 
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` for each provider above (MarineTraffic and VesselFinder are `implemented` via the shared BYOK template; other rows are `not_started` or `discovery_only`).
+
 ### Open-Data Sources
 
 Governmental, regional, and open-standards data feeds. Coverage is typically
@@ -86,6 +112,8 @@ account registration.
 | Global Fishing Watch | Public registry context and fishing activity (token-gated open API) | https://globalfishingwatch.org/our-apis/documentation |
 | Regional government AIS portals | Various national/regional portals; prioritize official open APIs and static/historical datasets before any UI capture | Discovery only — see Provider Discovery Backlog below |
 
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (BarentsWatch is `implemented`; OpenAIS, NOAA MarineCadastre, Global Fishing Watch, and regional portals remain `discovery_only`).
+
 ### Free / Community APIs
 
 Free or community-contributor APIs. Typically require account registration or
@@ -97,6 +125,8 @@ fallback for terrestrial AIS coverage probes.
 | AISStream | Best-effort global terrestrial AIS WebSocket stream | https://aisstream.io/ |
 | AISHub | Contributor-pooled terrestrial AIS network; one-request-per-minute member API | https://www.aishub.net/api |
 | AIS Friends | Community/contributor API candidate; validate registration, contribution requirements, API terms, and whether data redistribution is allowed | Discovery only — see Provider Discovery Backlog below |
+
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (AISStream and AISHub are `implemented`; AIS Friends is `discovery_only`).
 
 ### Commercial BYOK APIs
 
@@ -119,6 +149,8 @@ credential slots so the standard `npm test` run never reaches a paid endpoint.
 | ais.now | Commercial API/web platform candidate with REST API claims; validate docs, terms, and coverage before implementation | https://ais.now/ |
 | FleetMon / Kpler | Commercial maritime intelligence; treat as BYOK or authorized capture candidate only after account-specific terms review | https://www.fleetmon.com/ |
 
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (MarineTraffic and VesselFinder are `implemented` behind redacted BYOK profiles; the remaining commercial backlog entries are `not_started` or `discovery_only`).
+
 ### Enterprise Providers
 
 Enterprise maritime intelligence platforms that typically require contract
@@ -132,6 +164,8 @@ explicit operator contract are permitted.
 | Pole Star Global | Enterprise compliance/tracking provider; likely contract/API review required | https://www.polestarglobal.com/ |
 | S&P Global Sea-web | Enterprise ship, ownership, casualty, and movement context candidate | https://www.spglobal.com/marketintelligence/en/solutions/products/sea-web |
 | Lloyd's List Intelligence | Enterprise maritime intelligence and vessel movement context candidate | https://www.lloydslistintelligence.com/ |
+
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (all enterprise providers are `discovery_only` pending operator contract; capture is `blocked` across this category).
 
 ### Web-Only Capture Candidates
 
@@ -147,6 +181,8 @@ Always prefer an official API once one becomes available.
 | MarineVesselTraffic / similar map sites | Web UI candidates. Discovery-only until terms and technical feasibility are documented. |
 | FleetMon web UI | Treat as BYOK or authorized capture candidate only after account-specific terms review (<https://www.fleetmon.com/>). |
 | AIS Friends web UI | Community/contributor candidate; capture only after validating registration, contribution requirements, API terms, and redistribution policy. |
+
+Implementation status: web-only candidates do not have JSON adapter entries — they are tracked by capture-queue tickets and are not part of the default routing fallback chain. See `Provider Discovery Backlog` below.
 
 ## Provider Discovery Backlog
 
