@@ -77,7 +77,7 @@
         "landingUrl": "https://servicedocs.marinetraffic.com/",
         "signupUrl": "https://servicedocs.marinetraffic.com/"
       },
-      "implementationStatus": "not_started",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_MARINETRAFFIC",
         "requiredEnvVars": [
@@ -87,7 +87,7 @@
         "notes": "Live tests require an operator-supplied BYOK profile."
       },
       "captureEligibility": "needs-terms-review",
-      "notes": "Web UI capture only with explicit operator authorization and terms review."
+      "notes": "Web UI capture only with explicit operator authorization and terms review. Adapter is implemented via the shared paid-byok-rest template behind a redacted credential profile; default verification never calls the live API."
     },
     {
       "id": "marinetraffic-exportvesseltrack",
@@ -157,7 +157,7 @@
         "landingUrl": "https://api.vesselfinder.com/docs/vessels.html",
         "signupUrl": "https://api.vesselfinder.com/docs/vessels.html"
       },
-      "implementationStatus": "not_started",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_VESSELFINDER",
         "requiredEnvVars": [
@@ -165,7 +165,8 @@
         ],
         "defaultDisabled": true
       },
-      "captureEligibility": "needs-terms-review"
+      "captureEligibility": "needs-terms-review",
+      "notes": "Adapter is implemented via the shared paid-byok-rest template behind a redacted credential profile; default verification never calls the live API."
     },
     {
       "id": "myshiptracking",

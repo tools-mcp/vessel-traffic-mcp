@@ -152,7 +152,7 @@ features:
         verification: npm test
       - id: AC4
         description: Implement adapter templates for paid BYOK providers such as MarineTraffic, VesselFinder, Spire, ORBCOMM/CommTrace, Datalastic, VesselAPI, Data Docked, and Poseidon AIS, with at least two documented providers implemented behind credential profiles.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC5
         description: Maintain a provider catalogue documenting global provider coverage, auth mode, cost/quota model, supported capabilities, and implementation status.

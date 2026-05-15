@@ -195,6 +195,47 @@ and not exposed by any MCP tool. Repeated calls without the
 - **Refusal is the default.** Treat `oneTimeCredential` as ignored unless
   `VESSEL_MCP_ONE_TIME_CREDENTIALS` is set to an opt-in token.
 
+## Paid BYOK REST adapters (F4.AC4)
+
+Paid commercial providers (MarineTraffic, VesselFinder, Spire,
+ORBCOMM/CommTrace, VesselAPI, Data Docked, Poseidon AIS, …) share a
+single adapter template at `src/providers/paid-byok-rest.ts`. Concrete
+adapters wire that template up with provider-specific URL, auth style,
+and response shape.
+
+Two adapters ship implemented behind credential profiles:
+
+| Provider | Module | Credential profile field | Env var slot | Auth style |
+| --- | --- | --- | --- | --- |
+| MarineTraffic | `src/providers/marinetraffic.ts` | `api_key` | `VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY` | Path segment in `/api/{product}/{version}/{api_key}` |
+| VesselFinder  | `src/providers/vesselfinder.ts`  | `api_key` | `VESSEL_MCP_PROFILE_VESSELFINDER__API_KEY`  | Query parameter `?userkey=…` |
+
+Both adapters:
+
+- Resolve the secret on demand from `CredentialStore.resolveSecret(label, "api_key")`;
+  the secret never appears in the MCP `credential_profiles` payload.
+- Apply per-credential token-bucket throttling (conservative ~1 RPS with
+  a small burst) before any network I/O.
+- Return structured `{ ok: false, reason: "auth_missing" | "auth_failed"
+  | "rate_limited" | "provider_error" | "network_error" |
+  "invalid_response" | "unsupported_query" }` results — never throw an
+  unredacted message that contains the credential.
+- Surface a diagnostic `endpointUrlFor(...)` that substitutes the literal
+  `REDACTED` for the api_key (path-segment auth) or omits it entirely
+  (query auth), so the URL is safe to log and to surface in catalog
+  tooling.
+
+The default `npm test` run never reaches a paid provider. Live calls
+require both the credential profile and the corresponding
+`VESSEL_MCP_LIVE_TEST_*` flag (declared `defaultDisabled: true` in
+`config/provider-catalog.example.json`). The catalog's
+`implementationStatus` for these two providers is now `implemented`.
+
+Adapter authors adding new paid REST providers should reuse the
+`createPaidByokProvider(template, options)` factory rather than copying
+the surrounding auth/throttle/error code, so secret-handling guarantees
+stay centralized.
+
 ### Verifying
 
 The `test/credential-one-time.test.js` suite covers, deterministically
