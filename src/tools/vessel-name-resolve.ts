@@ -3,7 +3,14 @@ import { z } from 'zod/v4';
 import type { CredentialStore } from '../config/credentials.js';
 import type { ProviderRegistry } from '../providers/registry.js';
 import { isDataResult, type VesselIdentity, type VesselSearchResult } from '../providers/types.js';
-import { nowIso, resolveProvider, routingInputShape, type RoutingInput } from './vessel-routing.js';
+import {
+  applyUpgradeHints,
+  mergeUpgradeHints,
+  nowIso,
+  resolveProvider,
+  routingInputShape,
+  type RoutingInput,
+} from './vessel-routing.js';
 
 export const vesselNameResolveInputSchema = z
   .object({
@@ -115,12 +122,15 @@ export async function vesselNameResolve(
   }
   const searchResult = await resolved.provider.search({ name: rawName, limit: input.limit });
   if (!isDataResult<VesselSearchResult>(searchResult)) {
-    return {
-      ...searchResult,
-      normalizedName,
-      candidates: [],
-      note: 'First-pass name resolution stub; full B/L scoring is owned by F3B.',
-    };
+    return applyUpgradeHints(
+      {
+        ...searchResult,
+        normalizedName,
+        candidates: [],
+        note: 'First-pass name resolution stub; full B/L scoring is owned by F3B.',
+      },
+      resolved.upgradeHints,
+    );
   }
   const candidates: VesselResolutionCandidate[] = searchResult.data.matches.map((identity) => {
     const score = scoreCandidate(identity, normalizedName);
@@ -146,6 +156,6 @@ export async function vesselNameResolve(
       ...(searchResult.caveats ?? []),
       'First-pass name resolution stub; full B/L scoring is owned by F3B.',
     ],
-    upgradeHints: searchResult.upgradeHints,
+    upgradeHints: mergeUpgradeHints(searchResult.upgradeHints, resolved.upgradeHints),
   };
 }

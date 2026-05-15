@@ -2,7 +2,13 @@ import { z } from 'zod/v4';
 
 import type { CredentialStore } from '../config/credentials.js';
 import type { ProviderRegistry } from '../providers/registry.js';
-import { nowIso, resolveProvider, routingInputShape, type RoutingInput } from './vessel-routing.js';
+import {
+  applyUpgradeHints,
+  nowIso,
+  resolveProvider,
+  routingInputShape,
+  type RoutingInput,
+} from './vessel-routing.js';
 
 export const vesselTrackInputSchema = z
   .object({
@@ -72,5 +78,5 @@ export async function vesselTrack(deps: Deps, input: VesselTrackInput): Promise<
     windowStart: input.windowStart,
     windowEnd: input.windowEnd,
   });
-  return { ...result };
+  return applyUpgradeHints({ ...result }, resolved.upgradeHints);
 }

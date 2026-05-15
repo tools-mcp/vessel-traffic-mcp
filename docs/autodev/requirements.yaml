@@ -101,7 +101,7 @@ features:
         verification: npm test
       - id: AC2
         description: Ensure every tool response includes source, retrievedAt, observedAt when available, freshness, coverage, confidence metadata, and upgradeHints with provider landing URLs when paid/satellite AIS is likely required.
-        status: pending
+        status: implemented
         verification: npm test
 
   - id: F3B

@@ -2,7 +2,13 @@ import { z } from 'zod/v4';
 
 import type { CredentialStore } from '../config/credentials.js';
 import type { ProviderRegistry } from '../providers/registry.js';
-import { nowIso, resolveProvider, routingInputShape, type RoutingInput } from './vessel-routing.js';
+import {
+  applyUpgradeHints,
+  nowIso,
+  resolveProvider,
+  routingInputShape,
+  type RoutingInput,
+} from './vessel-routing.js';
 
 export const portCallsInputSchema = z
   .object({
@@ -66,5 +72,5 @@ export async function portCalls(deps: Deps, input: PortCallsInput): Promise<Reco
     portUnlocode: input.portUnlocode,
     limit: input.limit,
   });
-  return { ...result };
+  return applyUpgradeHints({ ...result }, resolved.upgradeHints);
 }

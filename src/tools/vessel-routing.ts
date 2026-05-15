@@ -58,6 +58,36 @@ export function nowIso(): string {
   return new Date().toISOString();
 }
 
+export function mergeUpgradeHints(
+  base: ProviderUpgradeHint[] | undefined,
+  extra: ProviderUpgradeHint[],
+): ProviderUpgradeHint[] | undefined {
+  if (!extra || extra.length === 0) {
+    return base && base.length > 0 ? base : undefined;
+  }
+  const seen = new Set<string>();
+  const merged: ProviderUpgradeHint[] = [];
+  for (const hint of [...(base ?? []), ...extra]) {
+    const key = `${hint.provider}|${hint.reason}|${hint.landingUrl}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(hint);
+  }
+  return merged.length > 0 ? merged : undefined;
+}
+
+export function applyUpgradeHints<T extends Record<string, unknown>>(
+  result: T,
+  extraHints: ProviderUpgradeHint[],
+): T {
+  const baseHints = Array.isArray((result as { upgradeHints?: ProviderUpgradeHint[] }).upgradeHints)
+    ? ((result as { upgradeHints?: ProviderUpgradeHint[] }).upgradeHints as ProviderUpgradeHint[])
+    : undefined;
+  const merged = mergeUpgradeHints(baseHints, extraHints);
+  if (!merged) return result;
+  return { ...result, upgradeHints: merged } as T;
+}
+
 export function resolveProvider(args: ResolveProviderArgs): ResolveProviderSuccess | ResolveProviderFailure {
   const { registry, credentialStore, capability, routing, retrievedAtFallback } = args;
 

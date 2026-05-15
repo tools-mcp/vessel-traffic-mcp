@@ -2,7 +2,13 @@ import { z } from 'zod/v4';
 
 import type { CredentialStore } from '../config/credentials.js';
 import type { ProviderRegistry } from '../providers/registry.js';
-import { nowIso, resolveProvider, routingInputShape, type RoutingInput } from './vessel-routing.js';
+import {
+  applyUpgradeHints,
+  nowIso,
+  resolveProvider,
+  routingInputShape,
+  type RoutingInput,
+} from './vessel-routing.js';
 
 export const vesselPositionInputSchema = z
   .object({
@@ -57,5 +63,5 @@ export async function vesselPosition(deps: Deps, input: VesselPositionInput): Pr
     mmsi: input.mmsi,
     imo: input.imo,
   });
-  return { ...result };
+  return applyUpgradeHints({ ...result }, resolved.upgradeHints);
 }

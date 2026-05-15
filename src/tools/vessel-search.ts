@@ -2,7 +2,13 @@ import { z } from 'zod/v4';
 
 import type { CredentialStore } from '../config/credentials.js';
 import type { ProviderRegistry } from '../providers/registry.js';
-import { nowIso, resolveProvider, routingInputShape, type RoutingInput } from './vessel-routing.js';
+import {
+  applyUpgradeHints,
+  nowIso,
+  resolveProvider,
+  routingInputShape,
+  type RoutingInput,
+} from './vessel-routing.js';
 
 export const vesselSearchInputSchema = z
   .object({
@@ -63,5 +69,5 @@ export async function vesselSearch(deps: Deps, input: VesselSearchInput): Promis
     callsign: input.callsign,
     limit: input.limit,
   });
-  return { ...result };
+  return applyUpgradeHints({ ...result }, resolved.upgradeHints);
 }
