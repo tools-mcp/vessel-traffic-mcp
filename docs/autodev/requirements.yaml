@@ -76,7 +76,7 @@ features:
     acceptance_criteria:
       - id: AC1
         description: Implement a redacted credential profile loader that supports provider-specific API keys from env/local ignored config and exposes only profile labels/status through MCP tools.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC2
         description: Implement paid-provider routing inputs such as provider, credentialProfile, and fallbackPolicy without logging or echoing raw keys.

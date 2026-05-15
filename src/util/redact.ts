@@ -2,6 +2,7 @@ const secretPatterns: RegExp[] = [
   /\b(authorization\s*:\s*bearer\s+)[^\s,;]+/gi,
   /\b(set-cookie|cookie)(\s*:\s*).*?(?=\s+\b(?:set-cookie|cookie|authorization|api[_-]?key|token|secret|password|session[_-]?id)\s*[:=]|\r?\n|$)/gi,
   /\b(api[_-]?key|token|secret|password|session[_-]?id)(\s*[:=]\s*)[^,\s;]+/gi,
+  /\b(VESSEL_MCP_PROFILE_[A-Z0-9_]+)(\s*[:=]\s*)[^,\s;]+/gi,
 ];
 
 export function redactForLog(value: string): string {

@@ -1,5 +1,6 @@
 import { z } from 'zod/v4';
 
+import { credentialProfileFieldValues } from '../config/credentials.js';
 import { providerCapabilityValues, providerTransportValues, sourceConfidenceValues } from '../providers/types.js';
 
 const providerCapabilitySchema = z.enum(providerCapabilityValues);
@@ -63,4 +64,26 @@ export const dataSourcesOutputSchema = {
     fixtureBacked: z.number().int().nonnegative(),
     liveBacked: z.number().int().nonnegative(),
   }),
+};
+
+const credentialProfileFieldSchema = z.enum(credentialProfileFieldValues);
+
+const credentialProfileSummarySchema = z.object({
+  label: z.string(),
+  provider: z.string().optional(),
+  source: z.enum(['env', 'local-config']),
+  fieldsPresent: z.array(credentialProfileFieldSchema),
+  status: z.enum(['configured', 'incomplete']),
+});
+
+export const credentialProfilesOutputSchema = {
+  profiles: z.array(credentialProfileSummarySchema),
+  summary: z.object({
+    total: z.number().int().nonnegative(),
+    configured: z.number().int().nonnegative(),
+    incomplete: z.number().int().nonnegative(),
+    fromEnv: z.number().int().nonnegative(),
+    fromLocalConfig: z.number().int().nonnegative(),
+  }),
+  notes: z.array(z.string()),
 };

@@ -1,7 +1,13 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
+import { loadCredentialProfiles, type CredentialStore } from '../config/credentials.js';
 import { createProviderRegistry, type ProviderRegistry } from '../providers/registry.js';
-import { dataSourcesOutputSchema, providerStatusOutputSchema } from '../tools/contracts.js';
+import {
+  credentialProfilesOutputSchema,
+  dataSourcesOutputSchema,
+  providerStatusOutputSchema,
+} from '../tools/contracts.js';
+import { getCredentialProfiles } from '../tools/credential-profiles.js';
 import { getDataSources } from '../tools/data-sources.js';
 import { getProviderStatus } from '../tools/provider-status.js';
 
@@ -21,10 +27,12 @@ function jsonToolResult(structuredContent: Record<string, unknown>) {
 
 export interface CreateVesselMcpServerOptions {
   registry?: ProviderRegistry;
+  credentialStore?: CredentialStore;
 }
 
 export function createVesselMcpServer(options: CreateVesselMcpServerOptions = {}): McpServer {
   const registry = options.registry ?? createProviderRegistry();
+  const credentialStore = options.credentialStore ?? loadCredentialProfiles();
   const server = new McpServer({
     name: 'vessel-traffic-mcp',
     version: serverVersion,
@@ -60,6 +68,23 @@ export function createVesselMcpServer(options: CreateVesselMcpServerOptions = {}
       },
     },
     async () => jsonToolResult(await getDataSources(registry)),
+  );
+
+  server.registerTool(
+    'credential_profiles',
+    {
+      title: 'Credential Profiles',
+      description:
+        'List BYOK credential profile labels, provider hints, declared field names, and status. Raw keys are never returned.',
+      outputSchema: credentialProfilesOutputSchema,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+    },
+    async () => jsonToolResult(await getCredentialProfiles(credentialStore)),
   );
 
   return server;

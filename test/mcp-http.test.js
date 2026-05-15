@@ -62,7 +62,7 @@ test('Streamable HTTP endpoint exposes fixture-backed read-only MCP tools', asyn
       const tools = await client.listTools();
       const toolNames = tools.tools.map((tool) => tool.name).sort();
 
-      assert.deepEqual(toolNames, ['data_sources', 'provider_status']);
+      assert.deepEqual(toolNames, ['credential_profiles', 'data_sources', 'provider_status']);
       assert.ok(tools.tools.every((tool) => tool.annotations.readOnlyHint === true));
 
       const result = await client.callTool({ name: 'provider_status', arguments: {} });

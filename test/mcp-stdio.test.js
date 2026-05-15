@@ -25,16 +25,18 @@ async function withInMemoryClient(run) {
   }
 }
 
-test('MCP server registers fixture-backed provider_status and data_sources tools', async () => {
+test('MCP server registers fixture-backed provider_status, data_sources, and credential_profiles tools', async () => {
   await withInMemoryClient(async (client) => {
     const tools = await client.listTools();
     const toolNames = tools.tools.map((tool) => tool.name).sort();
     const providerStatusTool = tools.tools.find((tool) => tool.name === 'provider_status');
     const dataSourcesTool = tools.tools.find((tool) => tool.name === 'data_sources');
+    const credentialProfilesTool = tools.tools.find((tool) => tool.name === 'credential_profiles');
 
-    assert.deepEqual(toolNames, ['data_sources', 'provider_status']);
+    assert.deepEqual(toolNames, ['credential_profiles', 'data_sources', 'provider_status']);
     assert.ok(providerStatusTool);
     assert.ok(dataSourcesTool);
+    assert.ok(credentialProfilesTool);
     for (const tool of tools.tools) {
       assert.equal(tool.annotations.readOnlyHint, true);
       assert.equal(tool.annotations.destructiveHint, false);
@@ -45,6 +47,9 @@ test('MCP server registers fixture-backed provider_status and data_sources tools
     assert.ok(providerStatusTool.outputSchema.properties.summary);
     assert.ok(dataSourcesTool.outputSchema.properties.sources);
     assert.ok(dataSourcesTool.outputSchema.properties.summary);
+    assert.ok(credentialProfilesTool.outputSchema.properties.profiles);
+    assert.ok(credentialProfilesTool.outputSchema.properties.summary);
+    assert.ok(credentialProfilesTool.outputSchema.properties.notes);
   });
 });
 
