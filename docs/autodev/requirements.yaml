@@ -278,7 +278,7 @@ features:
         verification: docs-review
       - id: AC2
         description: Add package, repository, and documentation metadata so the project is searchable for vessel AIS MCP, ship tracking MCP, MarineTraffic MCP, Claude MCP, ChatGPT MCP, and Codex plugin workflows.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC3
         description: Add Claude Desktop, Claude Code, ChatGPT remote MCP, generic MCP Inspector, and Codex setup/distribution docs, including Codex plugin manifest or marketplace metadata when ready.

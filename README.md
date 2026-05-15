@@ -170,6 +170,28 @@ docs/
   — F5A.AC3 operator runbook for performing an authorized maritime
   capture, promoting a sanitized fixture, and why default autodev/CI
   must never call live paid providers or capture private sessions.
+- [`docs/discoverability.md`](./docs/discoverability.md) — F7.AC2
+  package/repository/documentation discoverability metadata contract
+  (npm keywords, GitHub Topics, search surfaces).
+
+## Topics
+
+`vessel-traffic-mcp` is intended to be findable from any of these
+MCP and plugin search surfaces. The same set is reflected in the
+`package.json` keywords array and is suggested as GitHub Topics on
+the repository page. See [`docs/discoverability.md`](./docs/discoverability.md)
+for the full contract.
+
+- vessel AIS MCP
+- ship tracking MCP
+- MarineTraffic MCP
+- Claude MCP (Claude Desktop, Claude Code)
+- ChatGPT MCP (ChatGPT remote MCP connector)
+- Codex plugin (Codex / OpenAI plugin / marketplace workflows)
+- MCP / Model Context Protocol server
+- AIS / vessel tracking / ship tracking
+- BYOK paid-provider routing (MarineTraffic, VesselFinder, AISStream,
+  AISHub, Spire, and other catalog entries)
 
 ## Contributing
 

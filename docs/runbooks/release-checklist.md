@@ -80,6 +80,14 @@ documentation examples). No real values.
       link, and links to `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`,
       `AGENTS.md`, and the operator runbook.
 - [ ] `package.json` declares `"license": "MIT"`.
+- [ ] `package.json` discoverability metadata (F7.AC2) is current:
+      non-empty `keywords` array covering vessel-ais-mcp,
+      ship-tracking-mcp, marinetraffic-mcp, claude-mcp, chatgpt-mcp,
+      and codex-plugin; `repository`, `homepage`, and `bugs` URLs
+      point at the canonical GitHub repo; `author` is set; the
+      `files` allowlist contains only `dist`, `README.md`, `LICENSE`,
+      `SECURITY.md`, `CONTRIBUTING.md`, `AGENTS.md`, and `docs`. See
+      `docs/discoverability.md` for the full contract.
 - [ ] `AGENTS.md` hard rules are unchanged or strengthened — never
       weakened.
 
