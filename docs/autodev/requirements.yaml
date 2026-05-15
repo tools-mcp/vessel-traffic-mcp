@@ -144,7 +144,7 @@ features:
         verification: npm test
       - id: AC2
         description: Implement an AISHub adapter using username-based JSON output with strict one-request-per-minute throttling.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC3
         description: Implement at least one regional/open-data REST adapter such as BarentsWatch or OpenAIS using credentials/config only when required.

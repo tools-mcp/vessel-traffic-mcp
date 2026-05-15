@@ -280,7 +280,7 @@
         "landingUrl": "https://www.aishub.net/api",
         "signupUrl": "https://www.aishub.net/api"
       },
-      "implementationStatus": "planned",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_AISHUB",
         "requiredEnvVars": [
