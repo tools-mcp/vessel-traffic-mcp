@@ -229,7 +229,7 @@ features:
     acceptance_criteria:
       - id: AC1
         description: Add safe maritime site-profile examples and capture queue metadata for provider-catalog entries such as MarineTraffic, VesselFinder, MyShipTracking, FleetMon, and other web-only candidates, with allowed origins, forbidden actions, session-loss indicators, pacing, and terms-review status.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC2
         description: Implement an operator-only capture workflow that reuses api-capture patterns for Playwright browser control, XHR/fetch hooks, HAR backup, replay validation, traffic IR, schema summaries, redaction, and disabled-by-default sanitized fixtures.
