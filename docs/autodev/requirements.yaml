@@ -140,7 +140,7 @@ features:
     acceptance_criteria:
       - id: AC1
         description: Implement an AISStream adapter that can subscribe to a configured bounding box or MMSI list and maintain a bounded in-memory latest-position cache.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC2
         description: Implement an AISHub adapter using username-based JSON output with strict one-request-per-minute throttling.

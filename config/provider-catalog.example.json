@@ -238,7 +238,7 @@
         "landingUrl": "https://aisstream.io/",
         "signupUrl": "https://aisstream.io/"
       },
-      "implementationStatus": "planned",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_AISSTREAM",
         "requiredEnvVars": [
