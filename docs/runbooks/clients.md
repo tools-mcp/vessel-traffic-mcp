@@ -1,0 +1,246 @@
+# MCP Client Setup Runbook (F1.AC3)
+
+This runbook is the single client-facing entry point for connecting an MCP
+client to `vessel-traffic-mcp`. It covers four supported clients:
+
+1. **Claude Desktop** (local stdio)
+2. **Claude Code** (local stdio)
+3. **ChatGPT remote MCP** (Streamable HTTP at `/mcp`)
+4. **Generic MCP Inspector** (`@modelcontextprotocol/inspector`)
+
+Transport-level mechanics live in
+[`stdio-fixture-server.md`](./stdio-fixture-server.md) and
+[`streamable-http-server.md`](./streamable-http-server.md); BYOK credential
+state lives in [`credential-profiles.md`](./credential-profiles.md). This
+file documents the client wiring only.
+
+## Hard rules (must hold for every client wiring)
+
+- **Read-only.** MCP tools must not modify provider accounts, fleets,
+  billing settings, saved searches, or user profiles. The registered
+  tools — `provider_status`, `data_sources`, `credential_profiles`, and
+  the F3.AC1 vessel tools — all declare `readOnlyHint: true`.
+- **Default verification stays fixture-only.** `npm run lint`,
+  `npm test`, and `npm run build` exercise the fixture provider; no
+  client configuration in this runbook implies a paid or live call by
+  default.
+- **Never paste secrets into chat.** `VESSEL_MCP_AUTH_TOKEN` and any
+  BYOK provider key must come from the deployment secret store, an OS
+  keychain, a sourced shell file, or a gitignored env file — not from a
+  pasted client message.
+- **stdout is the MCP protocol stream.** When running stdio servers,
+  the binary writes only the MCP JSON-RPC frames to stdout. Diagnostic
+  output, when emitted at all, must go to stderr with credentials
+  redacted.
+
+## Prerequisites
+
+Use Node.js 22 or newer. From a clean checkout:
+
+```bash
+npm ci
+npm run build
+```
+
+After `npm run build` succeeds, the package binary is available at
+`dist/index.js` and the symlink `node_modules/.bin/vessel-traffic-mcp`
+(when installed as a dependency) or directly at `./dist/index.js`
+(when running from the repo). The default transport is stdio; set
+`VESSEL_MCP_TRANSPORT=http` to start the Streamable HTTP server
+instead.
+
+The current registered tool surface is fixture-backed and read-only:
+
+- `provider_status`, `data_sources`, `credential_profiles`
+- `vessel_search`, `vessel_name_resolve`, `document_vessel_lookup`,
+  `vessel_position`, `vessel_area`, `vessel_track`, `port_calls`
+
+## Claude Desktop (stdio)
+
+Claude Desktop launches MCP servers from its
+`claude_desktop_config.json` file. Add a `vessel-traffic-mcp` entry
+that runs the built binary with `VESSEL_MCP_TRANSPORT=stdio`. Use an
+absolute path; Claude Desktop does not run inside the repository
+checkout.
+
+```json
+{
+  "mcpServers": {
+    "vessel-traffic-mcp": {
+      "command": "node",
+      "args": ["/absolute/path/to/vessel-traffic-mcp/dist/index.js"],
+      "env": {
+        "VESSEL_MCP_TRANSPORT": "stdio"
+      }
+    }
+  }
+}
+```
+
+Restart Claude Desktop after editing the config. In a new chat, the
+`vessel-traffic-mcp` server should appear in the tool listing with the
+read-only tools enumerated above.
+
+BYOK profile env vars (only when you have explicit authorization for
+that provider and account) go in the same `env` block:
+
+```json
+"env": {
+  "VESSEL_MCP_TRANSPORT": "stdio",
+  "VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY": "<your key>"
+}
+```
+
+Do not paste real keys into chat. Keep them in this local config file
+only; the config file lives outside this repository.
+
+Reference: [`stdio-fixture-server.md`](./stdio-fixture-server.md).
+
+## Claude Code (stdio)
+
+Claude Code reads the same `claude_desktop_config.json`-style schema
+through its CLI. To register the server for a single project, add a
+`.mcp.json` file at the project root (or use `claude mcp add`):
+
+```json
+{
+  "mcpServers": {
+    "vessel-traffic-mcp": {
+      "command": "node",
+      "args": ["/absolute/path/to/vessel-traffic-mcp/dist/index.js"],
+      "env": {
+        "VESSEL_MCP_TRANSPORT": "stdio"
+      }
+    }
+  }
+}
+```
+
+Alternatively, run the binary inline for an ad-hoc session:
+
+```bash
+VESSEL_MCP_TRANSPORT=stdio /absolute/path/to/vessel-traffic-mcp/dist/index.js
+```
+
+Claude Code will surface the read-only tools and route tool calls
+through stdio. The same secret rules as Claude Desktop apply: BYOK
+keys go in the project-local `.mcp.json` env block (gitignored) or in
+the operator shell — never pasted into chat.
+
+## ChatGPT remote MCP (Streamable HTTP)
+
+ChatGPT remote MCP connects over Streamable HTTP. The server must be
+reachable over HTTPS from ChatGPT, so this client always runs against
+the HTTP transport behind a trusted TLS reverse proxy. Local-only
+testing is supported by tunnelling to `127.0.0.1`.
+
+Server side, start the HTTP transport:
+
+```bash
+export VESSEL_MCP_TRANSPORT=http
+export VESSEL_MCP_HTTP_HOST=127.0.0.1
+export VESSEL_MCP_HTTP_PORT=3000
+export VESSEL_MCP_AUTH_TOKEN="<a-strong-random-token-you-generated>"
+npm run start:http
+```
+
+Endpoints:
+
+- `GET /health` and `HEAD /health` — public, no bearer token required.
+- `POST /mcp`, `GET /mcp`, `DELETE /mcp`, `OPTIONS /mcp` — Streamable
+  HTTP MCP. Requires `Authorization: Bearer <token>` when
+  `VESSEL_MCP_AUTH_TOKEN` is non-empty.
+
+Every response includes an `X-Request-Id` header (UUID v4) for log
+correlation. Request logs go to stderr as JSON and never include
+request headers, request bodies, bearer tokens, provider query
+credentials, or raw provider responses.
+
+In the ChatGPT remote MCP connector UI, configure:
+
+| Field | Value |
+| --- | --- |
+| Endpoint URL | `https://<your-public-host>/mcp` |
+| Authentication | Bearer token: `<the same value as VESSEL_MCP_AUTH_TOKEN>` |
+| Transport | Streamable HTTP |
+
+Health probe (no auth):
+
+```bash
+curl -sf "https://<your-public-host>/health"
+```
+
+MCP probe (bearer auth):
+
+```bash
+curl -sS -X POST "https://<your-public-host>/mcp" \
+  -H "Authorization: Bearer $VESSEL_MCP_AUTH_TOKEN" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  --data '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+Bind to `0.0.0.0` only behind a trusted HTTPS reverse proxy that
+terminates TLS. For the full deployment contract — multi-stage
+`Dockerfile`, `.dockerignore` secret boundary, nginx/Caddy/managed-
+platform HTTPS topologies, and token rotation — see
+[`deployment-https.md`](./deployment-https.md).
+
+Reference: [`streamable-http-server.md`](./streamable-http-server.md).
+
+## Generic MCP Inspector
+
+The generic [`@modelcontextprotocol/inspector`](https://www.npmjs.com/package/@modelcontextprotocol/inspector)
+is the supported tool for ad-hoc exploration and tool-schema
+inspection. It can drive either transport.
+
+### Inspector against stdio
+
+```bash
+npx @modelcontextprotocol/inspector node dist/index.js
+```
+
+You should see the read-only tools list and be able to call
+`provider_status`, `data_sources`, and `credential_profiles` against
+the fixture provider.
+
+### Inspector against Streamable HTTP
+
+Start the HTTP server as in the ChatGPT section above, then point the
+Inspector at the `/mcp` endpoint with the bearer token:
+
+```bash
+npx @modelcontextprotocol/inspector \
+  --transport streamable-http \
+  --server-url "http://127.0.0.1:3000/mcp" \
+  --header "Authorization: Bearer $VESSEL_MCP_AUTH_TOKEN"
+```
+
+Use `127.0.0.1` for local-only inspection; do not expose the bearer
+token over a non-TLS hop.
+
+## Read-only contract for every client
+
+Whichever client you wire up, the registered tools must remain
+read-only. When live providers are added later they continue to
+honour the same contract: no fleet edits, no saved-search mutations,
+no account changes. Missing AIS coverage, stale positions, and
+no-data provider responses are valid result states, not infrastructure
+errors.
+
+## Verifying this runbook
+
+Run from the project root:
+
+```bash
+npm run lint
+npm test
+npm run build
+```
+
+The deterministic test `test/client-setup.test.js` asserts that this
+runbook covers all four required clients, names the read-only tools,
+points at both transports with the right env-var contract, and does
+not contain credential-shaped strings. Default verification does not
+call any paid or live vessel-data provider; everything above is
+checked from local file contents only.

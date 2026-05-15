@@ -41,7 +41,7 @@ features:
         verification: npm test
       - id: AC3
         description: Add client setup documentation for Claude Desktop, Claude Code, ChatGPT remote MCP, and generic MCP Inspector usage.
-        status: pending
+        status: implemented
         verification: docs-review
 
   - id: F2

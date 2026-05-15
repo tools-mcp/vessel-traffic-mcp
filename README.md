@@ -155,6 +155,9 @@ docs/
 - [`docs/runbooks/operator.md`](./docs/runbooks/operator.md) —
   end-to-end operator runbook (credentials, rate limits, live-test
   toggles, client setup).
+- [`docs/runbooks/clients.md`](./docs/runbooks/clients.md) — client
+  setup for Claude Desktop, Claude Code, ChatGPT remote MCP, and the
+  generic MCP Inspector.
 - [`docs/runbooks/deployment-https.md`](./docs/runbooks/deployment-https.md)
   — Dockerfile and HTTPS reverse-proxy deployment notes for hosting
   the Streamable HTTP MCP endpoint.

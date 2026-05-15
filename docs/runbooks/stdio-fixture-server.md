@@ -6,7 +6,9 @@ This runbook covers the current F1.AC1 server surface: the package binary starts
 a stdio MCP server and exposes `provider_status` and `data_sources` backed by
 the local fixture provider. Streamable HTTP is covered separately in
 `docs/runbooks/streamable-http-server.md`; live providers and credential
-profiles are tracked by later acceptance criteria.
+profiles are tracked by later acceptance criteria. For end-to-end client
+wiring (Claude Desktop, Claude Code, ChatGPT remote MCP, generic MCP
+Inspector) see `docs/runbooks/clients.md`.
 
 ## Environment
 

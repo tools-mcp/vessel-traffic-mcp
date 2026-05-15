@@ -5,7 +5,9 @@
 This runbook covers the F1.AC2 HTTP surface: a Streamable HTTP MCP endpoint at
 `/mcp`, optional bearer-token authentication for MCP requests, and a public
 `/health` endpoint for load balancers and uptime checks. The current tools are
-fixture-backed and read-only.
+fixture-backed and read-only. For end-to-end client wiring (Claude Desktop,
+Claude Code, ChatGPT remote MCP, generic MCP Inspector) see
+`docs/runbooks/clients.md`.
 
 ## Environment
 
