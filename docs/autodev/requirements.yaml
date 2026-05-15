@@ -204,7 +204,7 @@ features:
         verification: npm test
       - id: AC3
         description: Implement a capture-fixture provider that can replay sanitized fixtures for tests and adapter development, disabled for live use by default.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC4
         description: Add a maritime capture harness design based on /Users/aktn/project/api-capture patterns, including site profiles, Playwright capture, HAR backup, replay validation, traffic IR, supervisor pacing, and redaction worker.
