@@ -35,7 +35,9 @@ The current MCP core exposes a stdio fixture server through the package binary
 `VESSEL_MCP_TRANSPORT=http` is set. `/health` is public; `/mcp` requires
 `Authorization: Bearer <token>` only when `VESSEL_MCP_AUTH_TOKEN` is configured.
 Operator notes are in `docs/runbooks/stdio-fixture-server.md` and
-`docs/runbooks/streamable-http-server.md`.
+`docs/runbooks/streamable-http-server.md`. Start with
+`docs/runbooks/operator.md` for the end-to-end overview of provider
+credentials, rate limits, live-test toggles, and client setup.
 
 ## Autodev
 

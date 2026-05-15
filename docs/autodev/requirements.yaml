@@ -259,7 +259,7 @@ features:
         verification: npm run build
       - id: AC3
         description: Add an operator runbook covering provider credentials, rate limits, live-test toggles, and client setup.
-        status: pending
+        status: implemented
         verification: docs-review
 
   - id: F7
