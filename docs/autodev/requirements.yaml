@@ -274,7 +274,7 @@ features:
     acceptance_criteria:
       - id: AC1
         description: Prepare open-source release assets including license, security policy, contribution guide, public README positioning, safe examples, and a release checklist that confirms no secrets or private captures are committed.
-        status: pending
+        status: implemented
         verification: docs-review
       - id: AC2
         description: Add package, repository, and documentation metadata so the project is searchable for vessel AIS MCP, ship tracking MCP, MarineTraffic MCP, Claude MCP, ChatGPT MCP, and Codex plugin workflows.

@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "description": "Read-only MCP server for authorized vessel position and AIS-style maritime data.",
+  "license": "MIT",
   "type": "module",
   "bin": {
     "vessel-traffic-mcp": "./dist/index.js",
