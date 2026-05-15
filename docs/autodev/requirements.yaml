@@ -97,7 +97,7 @@ features:
     acceptance_criteria:
       - id: AC1
         description: Implement vessel_search, vessel_name_resolve, document_vessel_lookup, vessel_position, vessel_area, vessel_track, and port_calls tools with runtime input validation.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC2
         description: Ensure every tool response includes source, retrievedAt, observedAt when available, freshness, coverage, confidence metadata, and upgradeHints with provider landing URLs when paid/satellite AIS is likely required.

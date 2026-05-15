@@ -25,7 +25,7 @@ async function withInMemoryClient(run) {
   }
 }
 
-test('MCP server registers fixture-backed provider_status, data_sources, and credential_profiles tools', async () => {
+test('MCP server registers fixture-backed provider_status, data_sources, credential_profiles, and F3.AC1 vessel tools', async () => {
   await withInMemoryClient(async (client) => {
     const tools = await client.listTools();
     const toolNames = tools.tools.map((tool) => tool.name).sort();
@@ -33,7 +33,18 @@ test('MCP server registers fixture-backed provider_status, data_sources, and cre
     const dataSourcesTool = tools.tools.find((tool) => tool.name === 'data_sources');
     const credentialProfilesTool = tools.tools.find((tool) => tool.name === 'credential_profiles');
 
-    assert.deepEqual(toolNames, ['credential_profiles', 'data_sources', 'provider_status']);
+    assert.deepEqual(toolNames, [
+      'credential_profiles',
+      'data_sources',
+      'document_vessel_lookup',
+      'port_calls',
+      'provider_status',
+      'vessel_area',
+      'vessel_name_resolve',
+      'vessel_position',
+      'vessel_search',
+      'vessel_track',
+    ]);
     assert.ok(providerStatusTool);
     assert.ok(dataSourcesTool);
     assert.ok(credentialProfilesTool);
