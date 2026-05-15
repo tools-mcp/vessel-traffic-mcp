@@ -219,6 +219,74 @@ npx @modelcontextprotocol/inspector \
 Use `127.0.0.1` for local-only inspection; do not expose the bearer
 token over a non-TLS hop.
 
+## Claude plugin manifest / installation metadata
+
+PRD §8.1 says: *"Add Claude-oriented installation metadata if a
+supported Claude MCP/plugin registry path is available; otherwise
+keep documented local/remote MCP setup as the canonical integration."*
+
+As of this runbook's last refresh on 2026-05-16, no stable, publicly
+documented Claude plugin manifest schema or Claude MCP marketplace
+publication API exists that `vessel-traffic-mcp` can target as a
+first-party listing. The Claude Desktop and Claude Code wirings above
+(via `claude_desktop_config.json` and `.mcp.json`) are the supported
+distribution path until that changes. This is the concrete blocker
+for shipping a real Claude manifest today.
+
+The project tracks the forward-looking surface here so it can be
+filled in without a schema redesign once a stable contract exists.
+The scaffold parallels the Codex one in
+[`./codex.md`](./codex.md) so a future manifest can be promoted into
+either ecosystem without breaking the security model.
+
+Sketch (illustrative; schema not yet finalized by Anthropic):
+
+```jsonc
+// claude-plugin.json — scaffold, not a published Anthropic schema.
+{
+  "name": "vessel-traffic-mcp",
+  "displayName": "Vessel Traffic MCP",
+  "description": "Read-only MCP server for vessel position and AIS-style maritime data (BYOK).",
+  "license": "MIT",
+  "homepage": "https://github.com/smgu/vessel-traffic-mcp#readme",
+  "repository": "https://github.com/smgu/vessel-traffic-mcp",
+  "transport": "stdio",
+  "entrypoint": {
+    "command": "node",
+    "args": ["./dist/index.js"]
+  },
+  "env": {
+    "VESSEL_MCP_TRANSPORT": "stdio"
+  },
+  "byok": {
+    "envVarPrefix": "VESSEL_MCP_PROFILE_",
+    "credentialPolicy": "redacted-labels-only"
+  },
+  "readOnly": true,
+  "notForNavigation": true
+}
+```
+
+This sketch is intentionally *not* shipped as a real manifest in
+this repository: writing it as if Claude Desktop or Claude Code
+consumed it today would encourage operators to install a file that
+has no defined effect. When a stable Claude plugin/marketplace
+schema lands, replace the sketch with a published manifest under
+version control and update the release checklist
+(`docs/runbooks/release-checklist.md`, section "Release assets are
+in place") to validate it.
+
+Cross-references:
+
+- [`./codex.md`](./codex.md) — sibling Codex scaffold with the same
+  invariants (read-only, BYOK redaction, env-var names only).
+- [`../discoverability.md`](../discoverability.md) — F7.AC2
+  discoverability surface (`claude-mcp` keyword and `Claude MCP`
+  GitHub Topic) so operators can find the project under
+  Claude-oriented search queries.
+- [`./release-checklist.md`](./release-checklist.md) — release gate
+  that locks the manifest invariants before any promotion.
+
 ## Read-only contract for every client
 
 Whichever client you wire up, the registered tools must remain
@@ -240,7 +308,9 @@ npm run build
 
 The deterministic test `test/client-setup.test.js` asserts that this
 runbook covers all four required clients, names the read-only tools,
-points at both transports with the right env-var contract, and does
-not contain credential-shaped strings. Default verification does not
+points at both transports with the right env-var contract, parses
+the Claude-oriented installation metadata scaffold above and locks
+its read-only / BYOK / no-credentials invariants, and does not
+contain credential-shaped strings. Default verification does not
 call any paid or live vessel-data provider; everything above is
 checked from local file contents only.

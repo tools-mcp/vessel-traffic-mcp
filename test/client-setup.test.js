@@ -183,6 +183,168 @@ test('client setup runbook enumerates the full registered read-only tool surface
   }
 });
 
+const CREDENTIAL_PATTERNS = [
+  { name: 'JWT', re: /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/ },
+  { name: 'AWS access key ID', re: /\b(AKIA|ASIA)[A-Z0-9]{16}\b/ },
+  { name: 'GitHub PAT', re: /\bghp_[A-Za-z0-9]{20,}\b/ },
+  { name: 'sk- secret', re: /\bsk-[A-Za-z0-9]{20,}\b/ },
+];
+
+test('client setup runbook documents the Claude-oriented installation metadata state', () => {
+  // PRD §8.1 asks for Claude-oriented installation metadata when a stable
+  // Claude MCP/plugin registry path exists, and otherwise keeping documented
+  // local/remote MCP setup as the canonical integration. The clients runbook
+  // is the F1.AC3 owner and is the natural home for the forward-looking
+  // Claude scaffold paralleling the Codex one in `codex.md`.
+  const text = readRunbook();
+  assert.match(
+    text,
+    /## Claude plugin manifest \/ installation metadata/i,
+    'clients runbook must contain a Claude plugin manifest / installation metadata section',
+  );
+  // The section must dated-document the manifest readiness state — either
+  // a real published manifest or a concrete dated blocker. We accept both
+  // forms as long as the state is concrete.
+  assert.match(
+    text,
+    /blocker.*2026|2026.*blocker|when ready|not yet (?:finalized|published)|schema not yet finalized/i,
+    'clients runbook must dated-document the Claude manifest readiness state',
+  );
+  // The forward-looking scaffold must surface the read-only and BYOK
+  // contract so a future manifest can be promoted without breaking the
+  // security model.
+  assert.match(text, /readOnly/i, 'manifest sketch must surface the read-only contract');
+  assert.match(text, /VESSEL_MCP_PROFILE_/, 'manifest sketch must surface the BYOK env-var prefix');
+});
+
+test('client setup runbook Claude plugin manifest scaffold parses as JSONC and carries the release-checklist invariants', () => {
+  const text = readRunbook();
+  const jsoncBlocks = extractFencedBlocks(text, 'jsonc');
+  assert.ok(
+    jsoncBlocks.length >= 1,
+    'clients runbook must include at least one jsonc manifest scaffold block',
+  );
+
+  // The forward-looking Claude plugin manifest sketch must be structurally
+  // valid JSON after stripping `// ...` line comments. Any sketch that drifts
+  // out of parseable shape would mislead future agents promoting it into a
+  // real manifest.
+  const stripLineComments = (block) => block.replace(/^\s*\/\/.*$/gm, '');
+  const manifest = jsoncBlocks
+    .map((block) => {
+      try {
+        return JSON.parse(stripLineComments(block));
+      } catch {
+        return null;
+      }
+    })
+    .find(
+      (parsed) =>
+        parsed &&
+        typeof parsed === 'object' &&
+        parsed.name === 'vessel-traffic-mcp' &&
+        parsed.entrypoint,
+    );
+  assert.ok(
+    manifest,
+    'clients runbook must include a jsonc sketch that parses with name="vessel-traffic-mcp" and an entrypoint',
+  );
+
+  // Lock the security/contract invariants that release-checklist.md (F7.AC1)
+  // requires before promoting the scaffold into a published manifest.
+  assert.equal(manifest.readOnly, true, 'manifest scaffold must declare readOnly: true');
+  assert.equal(
+    manifest.notForNavigation,
+    true,
+    'manifest scaffold must declare notForNavigation: true',
+  );
+  assert.equal(manifest.license, 'MIT', 'manifest scaffold license must be MIT');
+
+  // Entrypoint must match the package.json bin target and the stdio contract.
+  assert.equal(manifest.entrypoint.command, 'node');
+  assert.ok(
+    Array.isArray(manifest.entrypoint.args) &&
+      manifest.entrypoint.args.some((a) => typeof a === 'string' && a.endsWith('dist/index.js')),
+    'manifest scaffold entrypoint args must point at dist/index.js',
+  );
+  assert.equal(
+    manifest.transport,
+    'stdio',
+    'manifest scaffold transport must default to stdio (Streamable HTTP wiring is documented separately)',
+  );
+
+  // Env block must use the same env-var contract as the Claude Desktop /
+  // Claude Code JSON wirings above, and must contain only env-var *names* —
+  // no real credential values.
+  assert.ok(manifest.env && typeof manifest.env === 'object', 'manifest scaffold must define env block');
+  assert.equal(manifest.env.VESSEL_MCP_TRANSPORT, 'stdio');
+  for (const [name, value] of Object.entries(manifest.env)) {
+    assert.equal(typeof value, 'string', `env.${name} must be a string`);
+    for (const { name: shape, re } of CREDENTIAL_PATTERNS) {
+      assert.doesNotMatch(value, re, `manifest scaffold env.${name} must not contain a ${shape}-shaped value`);
+    }
+  }
+
+  // BYOK contract — operators are pointed at env-var prefix + redacted policy,
+  // matching the credential-profiles env-var contract.
+  assert.ok(manifest.byok && typeof manifest.byok === 'object', 'manifest scaffold must define byok block');
+  assert.equal(
+    manifest.byok.envVarPrefix,
+    'VESSEL_MCP_PROFILE_',
+    'manifest scaffold byok.envVarPrefix must match the credential-profiles env-var contract',
+  );
+  assert.match(
+    String(manifest.byok.credentialPolicy ?? ''),
+    /redacted/i,
+    'manifest scaffold byok.credentialPolicy must mention redaction',
+  );
+
+  // Homepage and repository should point at the same GitHub project that
+  // package.json declares — protects against the sketch drifting away from
+  // the canonical project URL.
+  const pkg = JSON.parse(readFileSync(PACKAGE_URL, 'utf8'));
+  if (manifest.homepage) {
+    assert.match(
+      manifest.homepage,
+      /^https:\/\/github\.com\/[^/]+\/vessel-traffic-mcp(#[^\s]*)?$/,
+      'manifest scaffold homepage must point at the canonical vessel-traffic-mcp GitHub URL',
+    );
+  }
+  if (manifest.repository) {
+    assert.match(
+      manifest.repository,
+      /github\.com\/[^/]+\/vessel-traffic-mcp/,
+      'manifest scaffold repository must point at the canonical vessel-traffic-mcp GitHub URL',
+    );
+  }
+  assert.equal(manifest.name, pkg.name, 'manifest scaffold name must match package.json name');
+});
+
+test('client setup runbook Claude manifest scaffold mirrors the Codex scaffold invariants', () => {
+  // Both scaffolds must share the same security/contract invariants so a
+  // future edit to one cannot silently weaken the other. Spot-check that the
+  // load-bearing keys appear in both runbooks.
+  const clients = readRunbook();
+  const codex = readFileSync(new URL('../docs/runbooks/codex.md', import.meta.url), 'utf8');
+  for (const phrase of [
+    '"readOnly": true',
+    '"notForNavigation": true',
+    '"license": "MIT"',
+    '"envVarPrefix": "VESSEL_MCP_PROFILE_"',
+    '"credentialPolicy": "redacted-labels-only"',
+    '"VESSEL_MCP_TRANSPORT": "stdio"',
+  ]) {
+    assert.ok(
+      clients.includes(phrase),
+      `clients runbook Claude scaffold must include shared invariant phrase: ${phrase}`,
+    );
+    assert.ok(
+      codex.includes(phrase),
+      `codex runbook scaffold must include shared invariant phrase: ${phrase}`,
+    );
+  }
+});
+
 test('F1.AC3 status in requirements.yaml is set to implemented for this acceptance criterion', () => {
   const reqs = readFileSync(REQUIREMENTS_URL, 'utf8');
   const f1Index = reqs.indexOf('id: F1');
