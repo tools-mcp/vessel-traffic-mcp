@@ -188,7 +188,7 @@ features:
   - id: F5
     title: Authorized capture fixture workflow
     phase: P1
-    status: not_implemented
+    status: implemented
     source_docs:
       - docs/PRD.md
       - docs/TDD.md

@@ -86,16 +86,16 @@ test('F3 acceptance criteria descriptions still match the F3.AC1/AC2 PRD contrac
   assert.match(f3, /id: AC2[\s\S]{0,400}?landing URLs/i);
 });
 
-test('promoting F3 does not promote downstream parent feature statuses (F4, F4A, F5, F5A, F6, F7 remain not_implemented)', () => {
+test('promoting F3 does not promote downstream parent feature statuses (F4, F5A, F6, F7 remain not_implemented)', () => {
   const reqs = readRequirements();
 
   // F1 and F2 are implemented (asserted by their own feature-status tests) and excluded here.
   // F3 is the promotion under test and excluded here.
   // F3B is implemented (asserted by f3b-feature-status.test.js) and excluded here.
   // F4A is implemented (asserted by f4a-feature-status.test.js) and excluded here.
+  // F5 is implemented (asserted by f5-feature-status.test.js) and excluded here.
   const guards = [
     ['F4', 'F4A'],
-    ['F5', 'F5A'],
     ['F5A', 'F6'],
     ['F6', 'F7'],
     ['F7', null],

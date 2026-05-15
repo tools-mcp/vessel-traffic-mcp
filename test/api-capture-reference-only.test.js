@@ -274,15 +274,18 @@ test('requirements.yaml F5.AC5 is set to implemented with docs-review verificati
   );
 });
 
-test('F5 parent feature remains not_implemented while sibling criteria are pending', () => {
+test('F5 parent feature is promoted to implemented now that AC1–AC5 are all closed', () => {
   const reqs = read(REQUIREMENTS_URL);
   const f5Index = reqs.indexOf('id: F5\n');
   assert.ok(f5Index > 0, 'requirements.yaml must contain feature F5');
   const f5Header = reqs.slice(f5Index, f5Index + 400);
-  // Closing F5.AC5 must not silently flip the parent feature.
+  // F5.AC5 was the final sibling criterion. Once every AC is implemented,
+  // F5.FOLLOWUP promotes the parent feature status to keep requirements.yaml
+  // in lock-step with reality. The dedicated promotion test lives in
+  // test/f5-feature-status.test.js; this assertion is the local guard.
   assert.match(
     f5Header,
-    /title: Authorized capture fixture workflow[\s\S]*?status: not_implemented/,
-    'F5 parent feature must remain not_implemented until every child criterion is complete',
+    /title: Authorized capture fixture workflow[\s\S]*?status: implemented/,
+    'F5 parent feature must be flipped to implemented once every child criterion is complete',
   );
 });

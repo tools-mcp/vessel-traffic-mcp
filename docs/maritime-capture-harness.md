@@ -315,6 +315,11 @@ each backed by code and at least one deterministic test:
 - `F5A.AC3` (pending) owns the operator runbook for performing
   authorized maritime captures.
 
-Parent feature `F5` remains `not_implemented` until F5.AC5 and the
-F5A series ACs close. `F5.AC4`'s scope is satisfied by this design
-synthesis and the supporting code/tests cited above.
+Parent feature `F5` is now `implemented` because all five F5 ACs
+(`F5.AC1`–`F5.AC5`) have shipped and are covered by deterministic
+tests; the promotion lives in `docs/autodev/requirements.yaml` and is
+guarded by `test/f5-feature-status.test.js`. `F5.AC4`'s scope is
+satisfied by this design synthesis and the supporting code/tests
+cited above. The downstream `F5A` series ACs are tracked separately
+and `F5A` remains `not_implemented` at the parent level until its own
+followup promotion lands.
