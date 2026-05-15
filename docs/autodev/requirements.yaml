@@ -200,7 +200,7 @@ features:
         verification: npm test
       - id: AC2
         description: Generate endpoint fingerprints, traffic IR, and schema summaries from sanitized captures without emitting credentials or replayable private session data.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC3
         description: Implement a capture-fixture provider that can replay sanitized fixtures for tests and adapter development, disabled for live use by default.
