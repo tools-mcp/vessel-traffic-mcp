@@ -126,7 +126,7 @@ features:
         verification: npm test
       - id: AC4
         description: Return structured no-data and stale-data states instead of generic failures for unavailable AIS data.
-        status: pending
+        status: implemented
         verification: npm test
 
   - id: F4

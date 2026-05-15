@@ -149,6 +149,7 @@ export async function documentVesselLookup(
       signals,
       candidates: [],
       caveats: ['Document parser found no vessel signals; supply a name, IMO, MMSI, or call sign.'],
+      dataState: 'no_candidates',
     };
   }
 

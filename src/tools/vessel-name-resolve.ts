@@ -4,8 +4,10 @@ import type { CredentialStore } from '../config/credentials.js';
 import type { ProviderRegistry } from '../providers/registry.js';
 import {
   isDataResult,
+  type NoDataReason,
   type PortCall,
   type ProviderUpgradeHint,
+  type SourceMetadata,
   type VesselDataProvider,
   type VesselIdentity,
   type VesselPosition,
@@ -52,6 +54,20 @@ interface Deps {
   credentialStore: CredentialStore;
 }
 
+export type CandidatePositionStatus = 'fresh' | 'stale' | 'unavailable' | 'not_attempted';
+
+export interface CandidatePositionNoData {
+  reason: NoDataReason | 'provider_threw';
+  message: string;
+  source?: SourceMetadata;
+}
+
+export interface CandidatePositionStaleness {
+  freshnessSeconds?: number;
+  staleAfterSeconds?: number;
+  staleReason?: string;
+}
+
 export interface VesselResolutionCandidate {
   identity: VesselIdentity;
   matchedSignals: string[];
@@ -60,7 +76,17 @@ export interface VesselResolutionCandidate {
   needsConfirmation: boolean;
   score: number;
   latestPosition?: VesselPosition;
+  positionStatus: CandidatePositionStatus;
+  positionNoData?: CandidatePositionNoData;
+  positionStaleness?: CandidatePositionStaleness;
 }
+
+export type ResolutionDataState =
+  | 'fresh'
+  | 'partial'
+  | 'stale'
+  | 'no_position_data'
+  | 'no_candidates';
 
 export function normalizeVesselName(raw: string): string {
   return raw
@@ -309,6 +335,40 @@ interface PositionEnrichment {
   upgradeHints: ProviderUpgradeHint[];
 }
 
+function classifyPosition(
+  position: VesselPosition,
+  staleAfterSeconds: number | undefined,
+): { status: 'fresh' | 'stale'; staleness?: CandidatePositionStaleness } {
+  // Provider may pre-flag a stale read (e.g. cached past TTL) via staleReason.
+  // Otherwise consult the provider's cacheTtlPolicy.staleAfterMs threshold.
+  // If neither signal is present, treat as fresh.
+  if (position.staleReason) {
+    return {
+      status: 'stale',
+      staleness: {
+        freshnessSeconds: position.freshnessSeconds,
+        staleAfterSeconds,
+        staleReason: position.staleReason,
+      },
+    };
+  }
+  if (
+    typeof staleAfterSeconds === 'number' &&
+    typeof position.freshnessSeconds === 'number' &&
+    position.freshnessSeconds > staleAfterSeconds
+  ) {
+    return {
+      status: 'stale',
+      staleness: {
+        freshnessSeconds: position.freshnessSeconds,
+        staleAfterSeconds,
+        staleReason: 'cache_ttl_exceeded',
+      },
+    };
+  }
+  return { status: 'fresh' };
+}
+
 async function enrichWithLatestPosition(
   provider: VesselDataProvider,
   candidates: VesselResolutionCandidate[],
@@ -316,26 +376,70 @@ async function enrichWithLatestPosition(
   const aggregateCaveats: string[] = [];
   const aggregateHints: ProviderUpgradeHint[] = [];
   if (!provider.latestPosition) {
+    for (const candidate of candidates) {
+      candidate.positionStatus = 'not_attempted';
+    }
     return { caveats: aggregateCaveats, upgradeHints: aggregateHints };
   }
+
+  const staleAfterMs = provider.cacheTtlPolicy?.().staleAfterMs;
+  const staleAfterSeconds =
+    typeof staleAfterMs === 'number' ? Math.floor(staleAfterMs / 1000) : undefined;
+
   for (const candidate of candidates) {
     const { mmsi, imo } = candidate.identity;
-    if (!mmsi && !imo) continue;
+    if (!mmsi && !imo) {
+      candidate.positionStatus = 'not_attempted';
+      continue;
+    }
     let result;
     try {
       result = await provider.latestPosition({ mmsi, imo });
-    } catch {
+    } catch (err) {
+      candidate.positionStatus = 'unavailable';
+      candidate.positionNoData = {
+        reason: 'provider_threw',
+        message: err instanceof Error ? err.message : 'Provider threw a non-Error value.',
+      };
       continue;
     }
     if (isDataResult<VesselPosition>(result)) {
       candidate.latestPosition = result.data;
+      const classification = classifyPosition(result.data, staleAfterSeconds);
+      candidate.positionStatus = classification.status;
+      if (classification.staleness) {
+        candidate.positionStaleness = classification.staleness;
+      }
       if (result.caveats) aggregateCaveats.push(...result.caveats);
       if (result.upgradeHints) aggregateHints.push(...result.upgradeHints);
-    } else if (result.upgradeHints) {
-      aggregateHints.push(...result.upgradeHints);
+    } else {
+      candidate.positionStatus = 'unavailable';
+      candidate.positionNoData = {
+        reason: result.reason,
+        message: result.message,
+        source: result.source,
+      };
+      if (result.upgradeHints) aggregateHints.push(...result.upgradeHints);
+      if (result.caveats) aggregateCaveats.push(...result.caveats);
     }
   }
   return { caveats: aggregateCaveats, upgradeHints: aggregateHints };
+}
+
+function aggregateDataState(candidates: VesselResolutionCandidate[]): ResolutionDataState {
+  if (candidates.length === 0) return 'no_candidates';
+  let fresh = 0;
+  let stale = 0;
+  let missing = 0;
+  for (const c of candidates) {
+    if (c.positionStatus === 'fresh') fresh += 1;
+    else if (c.positionStatus === 'stale') stale += 1;
+    else missing += 1; // unavailable | not_attempted
+  }
+  if (fresh === candidates.length) return 'fresh';
+  if (stale === candidates.length) return 'stale';
+  if (missing === candidates.length) return 'no_position_data';
+  return 'partial';
 }
 
 async function gatherPortCallEvidence(
@@ -407,6 +511,7 @@ export async function vesselNameResolve(
       ...resolved.noData,
       normalizedName,
       candidates: [],
+      dataState: 'no_candidates' as ResolutionDataState,
     };
   }
   if (!resolved.provider.search) {
@@ -418,6 +523,7 @@ export async function vesselNameResolve(
       upgradeHints: resolved.upgradeHints,
       normalizedName,
       candidates: [],
+      dataState: 'no_candidates' as ResolutionDataState,
     };
   }
   const searchResult = await resolved.provider.search({
@@ -433,6 +539,7 @@ export async function vesselNameResolve(
         ...searchResult,
         normalizedName,
         candidates: [],
+        dataState: 'no_candidates' as ResolutionDataState,
       },
       resolved.upgradeHints,
     );
@@ -468,6 +575,7 @@ export async function vesselNameResolve(
       confidence: score.confidence,
       needsConfirmation: score.confidence !== 'high',
       score: score.score,
+      positionStatus: 'not_attempted',
     };
   });
 
@@ -512,6 +620,8 @@ export async function vesselNameResolve(
     positionEnrichment.upgradeHints,
   );
 
+  const dataState = aggregateDataState(limited);
+
   return {
     ok: true,
     data: {
@@ -523,5 +633,6 @@ export async function vesselNameResolve(
     source: searchResult.source,
     caveats: dedupedCaveats,
     upgradeHints,
+    dataState,
   };
 }
