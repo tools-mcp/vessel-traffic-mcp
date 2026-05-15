@@ -174,7 +174,7 @@ features:
         verification: docs-review
       - id: AC2
         description: Add a structured provider catalog example that records provider id, access class, coverage, auth mode, cost/quota model, capabilities, source docs, landing/signup URL, implementation status, live-test env vars, and capture eligibility.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC3
         description: Add provider discovery validation that prevents adapter/capture tasks from starting without documented terms/auth assumptions, source URLs, and implementation status.

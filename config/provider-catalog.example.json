@@ -1,0 +1,872 @@
+{
+  "version": 1,
+  "generatedAt": "2026-05-15T00:00:00.000Z",
+  "sourceDoc": "docs/provider-catalog.md",
+  "entries": [
+    {
+      "id": "fixture",
+      "displayName": "Fixture Provider",
+      "accessClass": "fixture",
+      "tier": "fixture",
+      "priority": "P0",
+      "coverage": "Local deterministic sample data for tool and transport verification; not live AIS coverage.",
+      "capabilities": [
+        "provider_status",
+        "data_sources",
+        "vessel_search",
+        "vessel_position",
+        "vessel_area",
+        "vessel_track",
+        "port_calls"
+      ],
+      "auth": {
+        "mode": "none",
+        "required": false,
+        "profileFields": [],
+        "envVars": [],
+        "notes": "Fixture provider does not require credentials."
+      },
+      "cost": {
+        "model": "fixture",
+        "quotaNote": "Local fixtures only; no provider-side quota."
+      },
+      "sources": {
+        "referenceUrl": "https://modelcontextprotocol.io/"
+      },
+      "implementationStatus": "implemented",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_FIXTURE",
+        "requiredEnvVars": [],
+        "defaultDisabled": true,
+        "notes": "Live test flag is informational; fixture provider has no live mode."
+      },
+      "captureEligibility": "allowed",
+      "notes": "Default provider for deterministic tests and MCP smoke checks."
+    },
+    {
+      "id": "marinetraffic",
+      "displayName": "MarineTraffic / Kpler",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P1",
+      "coverage": "Global AIS, events, ports, and vessel data subject to subscription plan.",
+      "capabilities": [
+        "provider_status",
+        "data_sources",
+        "vessel_search",
+        "vessel_position",
+        "vessel_area",
+        "vessel_track",
+        "port_calls"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY"
+        ],
+        "notes": "Per-endpoint API keys; redact via credential profile loader."
+      },
+      "cost": {
+        "model": "subscription",
+        "quotaNote": "Per-call credits and plan-dependent rate limits; see service docs."
+      },
+      "sources": {
+        "apiDocsUrl": "https://servicedocs.marinetraffic.com/",
+        "landingUrl": "https://servicedocs.marinetraffic.com/",
+        "signupUrl": "https://servicedocs.marinetraffic.com/"
+      },
+      "implementationStatus": "not_started",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_MARINETRAFFIC",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY"
+        ],
+        "defaultDisabled": true,
+        "notes": "Live tests require an operator-supplied BYOK profile."
+      },
+      "captureEligibility": "needs-terms-review",
+      "notes": "Web UI capture only with explicit operator authorization and terms review."
+    },
+    {
+      "id": "marinetraffic-exportvesseltrack",
+      "displayName": "MarineTraffic exportvesseltrack",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P1",
+      "coverage": "Vessel historical track data via the MarineTraffic exportvesseltrack endpoint family.",
+      "capabilities": [
+        "vessel_track"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_MARINETRAFFIC_TRACK__API_KEY"
+        ],
+        "notes": "Track endpoints typically use a distinct per-endpoint credit pool."
+      },
+      "cost": {
+        "model": "credit-based",
+        "quotaNote": "Per-call credit consumption tied to the historical-track product."
+      },
+      "sources": {
+        "apiDocsUrl": "https://servicedocs.marinetraffic.com/tag/Vessel-Historical-Track",
+        "landingUrl": "https://servicedocs.marinetraffic.com/",
+        "signupUrl": "https://servicedocs.marinetraffic.com/"
+      },
+      "implementationStatus": "not_started",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_MARINETRAFFIC_TRACK",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_MARINETRAFFIC_TRACK__API_KEY"
+        ],
+        "defaultDisabled": true,
+        "notes": "Document credential and endpoint shape only; no default live calls."
+      },
+      "captureEligibility": "blocked"
+    },
+    {
+      "id": "vesselfinder",
+      "displayName": "VesselFinder",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P1",
+      "coverage": "Terrestrial AIS positions, voyage, and master data.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "vessel_track"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_VESSELFINDER__API_KEY"
+        ]
+      },
+      "cost": {
+        "model": "credit-based",
+        "quotaNote": "Credit-based API; refer to vesselfinder docs for current pricing."
+      },
+      "sources": {
+        "apiDocsUrl": "https://api.vesselfinder.com/docs/vessels.html",
+        "landingUrl": "https://api.vesselfinder.com/docs/vessels.html",
+        "signupUrl": "https://api.vesselfinder.com/docs/vessels.html"
+      },
+      "implementationStatus": "not_started",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_VESSELFINDER",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_VESSELFINDER__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "needs-terms-review"
+    },
+    {
+      "id": "myshiptracking",
+      "displayName": "MyShipTracking",
+      "accessClass": "free-trial",
+      "tier": "paid-commercial",
+      "priority": "P1",
+      "coverage": "Terrestrial AIS positions, vessel data, zones, port arrivals, and historical tracks.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "vessel_area",
+        "vessel_track",
+        "port_calls"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_MYSHIPTRACKING__API_KEY"
+        ],
+        "notes": "Trial keys available; production tiers use credit-based billing."
+      },
+      "cost": {
+        "model": "trial",
+        "quotaNote": "Trial allowance plus paid tiers; see provider docs."
+      },
+      "sources": {
+        "apiDocsUrl": "https://api.myshiptracking.com/docs/vessel-current-position-api",
+        "landingUrl": "https://api.myshiptracking.com/docs/vessel-current-position-api",
+        "signupUrl": "https://api.myshiptracking.com/docs/vessel-current-position-api"
+      },
+      "implementationStatus": "not_started",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_MYSHIPTRACKING",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_MYSHIPTRACKING__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "needs-terms-review"
+    },
+    {
+      "id": "aisstream",
+      "displayName": "AISStream",
+      "accessClass": "open",
+      "tier": "terrestrial-open",
+      "priority": "P1",
+      "coverage": "Best-effort global terrestrial AIS receiver network via WebSocket stream.",
+      "capabilities": [
+        "vessel_position",
+        "vessel_area"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_AISSTREAM__API_KEY"
+        ],
+        "notes": "Free key issued to authenticated AISStream account."
+      },
+      "cost": {
+        "model": "free",
+        "quotaNote": "Best-effort free WebSocket stream; throttled for abusive clients."
+      },
+      "sources": {
+        "apiDocsUrl": "https://aisstream.io/",
+        "landingUrl": "https://aisstream.io/",
+        "signupUrl": "https://aisstream.io/"
+      },
+      "implementationStatus": "planned",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_AISSTREAM",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_AISSTREAM__API_KEY"
+        ],
+        "defaultDisabled": true,
+        "notes": "Default tests must use fixtures; live stream is rate-limited."
+      },
+      "captureEligibility": "allowed",
+      "notes": "Primary fallback for no-paid-API terrestrial coverage checks."
+    },
+    {
+      "id": "aishub",
+      "displayName": "AISHub",
+      "accessClass": "community",
+      "tier": "community",
+      "priority": "P1",
+      "coverage": "Contributor-pooled terrestrial AIS network (member-only API).",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "vessel_area"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["username"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_AISHUB__USERNAME"
+        ],
+        "notes": "Username-based JSON output; membership requires contributing a feed."
+      },
+      "cost": {
+        "model": "community",
+        "quotaNote": "Strict one-request-per-minute throttle per member username."
+      },
+      "sources": {
+        "apiDocsUrl": "https://www.aishub.net/api",
+        "landingUrl": "https://www.aishub.net/api",
+        "signupUrl": "https://www.aishub.net/api"
+      },
+      "implementationStatus": "planned",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_AISHUB",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_AISHUB__USERNAME"
+        ],
+        "defaultDisabled": true,
+        "notes": "Live test must honour the one-request-per-minute throttle."
+      },
+      "captureEligibility": "needs-terms-review"
+    },
+    {
+      "id": "barentswatch",
+      "displayName": "BarentsWatch / Norwegian Coastal Administration",
+      "accessClass": "open",
+      "tier": "terrestrial-open",
+      "priority": "P1",
+      "coverage": "Norwegian and adjacent regional real-time terrestrial AIS via BarentsWatch open data.",
+      "capabilities": [
+        "vessel_position",
+        "vessel_area"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["client_id", "client_secret"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_BARENTSWATCH__CLIENT_ID",
+          "VESSEL_MCP_PROFILE_BARENTSWATCH__CLIENT_SECRET"
+        ],
+        "notes": "OAuth2 client credentials grant."
+      },
+      "cost": {
+        "model": "open-data",
+        "quotaNote": "Open regional API; respect documented rate limits."
+      },
+      "sources": {
+        "apiDocsUrl": "https://www.barentswatch.no/en/articles/open-data-via-barentswatch/",
+        "landingUrl": "https://www.barentswatch.no/en/articles/open-data-via-barentswatch/",
+        "signupUrl": "https://www.barentswatch.no/en/articles/open-data-via-barentswatch/"
+      },
+      "implementationStatus": "planned",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_BARENTSWATCH",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_BARENTSWATCH__CLIENT_ID",
+          "VESSEL_MCP_PROFILE_BARENTSWATCH__CLIENT_SECRET"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "allowed",
+      "notes": "Coverage limited to Norwegian and nearby waters."
+    },
+    {
+      "id": "openais",
+      "displayName": "OpenAIS",
+      "accessClass": "open",
+      "tier": "terrestrial-open",
+      "priority": "P2",
+      "coverage": "Open AIS-oriented API; scope and freshness vary by contributor.",
+      "capabilities": [
+        "vessel_position",
+        "vessel_area"
+      ],
+      "auth": {
+        "mode": "none",
+        "required": false,
+        "profileFields": [],
+        "envVars": [],
+        "notes": "Validate whether anonymous access is permitted before enabling."
+      },
+      "cost": {
+        "model": "open-data",
+        "quotaNote": "Validate published rate limits and acceptable-use terms."
+      },
+      "sources": {
+        "apiDocsUrl": "https://open-ais.org/docs/API/",
+        "landingUrl": "https://open-ais.org/docs/API/"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_OPENAIS",
+        "requiredEnvVars": [],
+        "defaultDisabled": true,
+        "notes": "Adapter not yet built; do not call live API by default."
+      },
+      "captureEligibility": "needs-terms-review"
+    },
+    {
+      "id": "noaa-marinecadastre",
+      "displayName": "NOAA MarineCadastre / USCG NAIS",
+      "accessClass": "open",
+      "tier": "terrestrial-open",
+      "priority": "P2",
+      "coverage": "United States historical AIS data, generally delayed and bulk-distributed.",
+      "capabilities": [
+        "vessel_track",
+        "port_calls"
+      ],
+      "auth": {
+        "mode": "none",
+        "required": false,
+        "profileFields": [],
+        "envVars": []
+      },
+      "cost": {
+        "model": "open-data",
+        "quotaNote": "Bulk historical downloads; not a low-latency position source."
+      },
+      "sources": {
+        "apiDocsUrl": "https://www.fisheries.noaa.gov/inport/item/77594",
+        "landingUrl": "https://www.fisheries.noaa.gov/inport/item/77594"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_NOAA",
+        "requiredEnvVars": [],
+        "defaultDisabled": true,
+        "notes": "Use cached/local snapshots in tests; do not pull bulk archives by default."
+      },
+      "captureEligibility": "allowed",
+      "notes": "Historical reference and identity context only."
+    },
+    {
+      "id": "globalfishingwatch",
+      "displayName": "Global Fishing Watch",
+      "accessClass": "open",
+      "tier": "community",
+      "priority": "P2",
+      "coverage": "Fishing activity, vessel identity, and public registry context.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["bearer_token"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_GLOBALFISHINGWATCH__BEARER_TOKEN"
+        ],
+        "notes": "GFW issues per-account tokens after agreeing to acceptable use."
+      },
+      "cost": {
+        "model": "free",
+        "quotaNote": "Free token-gated API; rate limits per GFW policy."
+      },
+      "sources": {
+        "apiDocsUrl": "https://globalfishingwatch.org/our-apis/documentation",
+        "landingUrl": "https://globalfishingwatch.org/our-apis/documentation",
+        "signupUrl": "https://globalfishingwatch.org/our-apis/documentation"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_GLOBALFISHINGWATCH",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_GLOBALFISHINGWATCH__BEARER_TOKEN"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "needs-terms-review",
+      "notes": "Identity/context provider; not a universal live-position fallback."
+    },
+    {
+      "id": "spire-maritime",
+      "displayName": "Spire Maritime",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P2",
+      "coverage": "Global satellite and terrestrial AIS data products.",
+      "capabilities": [
+        "vessel_position",
+        "vessel_area",
+        "vessel_track"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_SPIRE__API_KEY"
+        ]
+      },
+      "cost": {
+        "model": "enterprise",
+        "quotaNote": "Plan-dependent commercial pricing; satellite-AIS uplift required for blue-water coverage."
+      },
+      "sources": {
+        "apiDocsUrl": "https://spire.com/maritime/solutions/standard-ais/",
+        "landingUrl": "https://spire.com/maritime/solutions/standard-ais/",
+        "signupUrl": "https://spire.com/maritime/solutions/standard-ais/"
+      },
+      "implementationStatus": "not_started",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_SPIRE",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_SPIRE__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "blocked"
+    },
+    {
+      "id": "orbcomm-commtrace",
+      "displayName": "ORBCOMM / CommTrace / exactEarth",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P2",
+      "coverage": "Beyond-coastal satellite AIS.",
+      "capabilities": [
+        "vessel_position",
+        "vessel_area",
+        "vessel_track"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_COMMTRACE__API_KEY"
+        ]
+      },
+      "cost": {
+        "model": "enterprise",
+        "quotaNote": "Contract-based; satellite credits are the dominant cost driver."
+      },
+      "sources": {
+        "apiDocsUrl": "https://api.commtrace.com/",
+        "landingUrl": "https://api.commtrace.com/",
+        "signupUrl": "https://api.commtrace.com/"
+      },
+      "implementationStatus": "not_started",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_COMMTRACE",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_COMMTRACE__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "blocked"
+    },
+    {
+      "id": "vesselapi",
+      "displayName": "VesselAPI",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P2",
+      "coverage": "Terrestrial AIS ship-tracking endpoints and maritime data API.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "vessel_track"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_VESSELAPI__API_KEY"
+        ]
+      },
+      "cost": {
+        "model": "trial",
+        "quotaNote": "Trial and paid tiers; confirm credit/quota structure before adapter work."
+      },
+      "sources": {
+        "apiDocsUrl": "https://vesselapi.com/ship-tracking-api",
+        "landingUrl": "https://vesselapi.com/ship-tracking-api",
+        "signupUrl": "https://vesselapi.com/ship-tracking-api"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_VESSELAPI",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_VESSELAPI__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "needs-terms-review"
+    },
+    {
+      "id": "datadocked",
+      "displayName": "Data Docked",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P2",
+      "coverage": "Vessel location, historical location, port calls, details by name, route planning, and weather.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "vessel_track",
+        "port_calls"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_DATADOCKED__API_KEY"
+        ]
+      },
+      "cost": {
+        "model": "subscription",
+        "quotaNote": "Subscription pricing; validate plan tiers and call volume."
+      },
+      "sources": {
+        "apiDocsUrl": "https://datadocked.com/",
+        "landingUrl": "https://datadocked.com/",
+        "signupUrl": "https://datadocked.com/"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_DATADOCKED",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_DATADOCKED__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "needs-terms-review"
+    },
+    {
+      "id": "poseidon-ais",
+      "displayName": "Poseidon AIS",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P2",
+      "coverage": "Vessel details, area/radius search, and historical positions.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "vessel_area",
+        "vessel_track"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_POSEIDONAIS__API_KEY"
+        ]
+      },
+      "cost": {
+        "model": "subscription",
+        "quotaNote": "Subscription/credit pricing; validate plan tiers before adapter work."
+      },
+      "sources": {
+        "apiDocsUrl": "https://poseidonais.com/",
+        "landingUrl": "https://poseidonais.com/",
+        "signupUrl": "https://poseidonais.com/"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_POSEIDONAIS",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_POSEIDONAIS__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "needs-terms-review"
+    },
+    {
+      "id": "ais-now",
+      "displayName": "ais.now",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P3",
+      "coverage": "Real-time AIS platform with REST API claims; coverage and terms require validation.",
+      "capabilities": [
+        "vessel_position",
+        "vessel_area"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_AISNOW__API_KEY"
+        ]
+      },
+      "cost": {
+        "model": "subscription",
+        "quotaNote": "Pricing and quota structure unverified; document before adapter work."
+      },
+      "sources": {
+        "apiDocsUrl": "https://ais.now/",
+        "landingUrl": "https://ais.now/"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_AISNOW",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_AISNOW__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "needs-terms-review"
+    },
+    {
+      "id": "fleetmon",
+      "displayName": "FleetMon / Kpler",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P2",
+      "coverage": "Commercial maritime intelligence; vessel positions, port calls, fleet views.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "vessel_track",
+        "port_calls"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_FLEETMON__API_KEY"
+        ]
+      },
+      "cost": {
+        "model": "subscription",
+        "quotaNote": "Subscription/credit billing; validate account-specific terms."
+      },
+      "sources": {
+        "landingUrl": "https://www.fleetmon.com/"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_FLEETMON",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_FLEETMON__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "needs-terms-review",
+      "notes": "Capture only if operator account terms allow it."
+    },
+    {
+      "id": "windward",
+      "displayName": "Windward",
+      "accessClass": "enterprise",
+      "tier": "paid-commercial",
+      "priority": "P3",
+      "coverage": "Enterprise maritime intelligence; satellite + terrestrial AIS plus risk overlays.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "vessel_track"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_WINDWARD__API_KEY"
+        ],
+        "notes": "Enterprise contract typically required; consult account team for API access."
+      },
+      "cost": {
+        "model": "enterprise",
+        "quotaNote": "Enterprise contract pricing; consult account team."
+      },
+      "sources": {
+        "landingUrl": "https://windward.ai/"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_WINDWARD",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_WINDWARD__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "blocked"
+    },
+    {
+      "id": "polestar-global",
+      "displayName": "Pole Star Global",
+      "accessClass": "enterprise",
+      "tier": "paid-commercial",
+      "priority": "P3",
+      "coverage": "Enterprise compliance and vessel-tracking platform.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "vessel_track"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_POLESTAR__API_KEY"
+        ],
+        "notes": "Enterprise contract; capture not permitted."
+      },
+      "cost": {
+        "model": "enterprise",
+        "quotaNote": "Enterprise contract pricing."
+      },
+      "sources": {
+        "landingUrl": "https://www.polestarglobal.com/"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_POLESTAR",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_POLESTAR__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "blocked"
+    },
+    {
+      "id": "spglobal-seaweb",
+      "displayName": "S&P Global Sea-web",
+      "accessClass": "enterprise",
+      "tier": "paid-commercial",
+      "priority": "P3",
+      "coverage": "Enterprise ship, ownership, casualty, and movement context.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "port_calls"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_SEAWEB__API_KEY"
+        ],
+        "notes": "Enterprise contract; capture not permitted."
+      },
+      "cost": {
+        "model": "enterprise",
+        "quotaNote": "Enterprise contract pricing; ownership and casualty data are premium."
+      },
+      "sources": {
+        "landingUrl": "https://www.spglobal.com/marketintelligence/en/solutions/products/sea-web"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_SEAWEB",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_SEAWEB__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "blocked"
+    },
+    {
+      "id": "lloyds-list-intelligence",
+      "displayName": "Lloyd's List Intelligence",
+      "accessClass": "enterprise",
+      "tier": "paid-commercial",
+      "priority": "P3",
+      "coverage": "Enterprise maritime intelligence and vessel movement context.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "port_calls"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_LLOYDSLIST__API_KEY"
+        ],
+        "notes": "Enterprise contract required."
+      },
+      "cost": {
+        "model": "enterprise",
+        "quotaNote": "Enterprise contract pricing."
+      },
+      "sources": {
+        "landingUrl": "https://www.lloydslistintelligence.com/"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_LLOYDSLIST",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_LLOYDSLIST__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "blocked"
+    }
+  ]
+}
