@@ -166,6 +166,10 @@ docs/
 - [`docs/runbooks/api-capture-reference-only.md`](./docs/runbooks/api-capture-reference-only.md)
   — F5.AC5 contract: raw `api-capture` sessions, `.env`, cookies, and
   logs are reference-only and must not be imported or committed.
+- [`docs/runbooks/capture-execution.md`](./docs/runbooks/capture-execution.md)
+  — F5A.AC3 operator runbook for performing an authorized maritime
+  capture, promoting a sanitized fixture, and why default autodev/CI
+  must never call live paid providers or capture private sessions.
 
 ## Contributing
 

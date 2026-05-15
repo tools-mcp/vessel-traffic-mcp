@@ -133,7 +133,12 @@ repository.
    fixture is safe.
 
 See `docs/runbooks/capture-fixture-import.md` and
-`docs/runbooks/capture-traffic-ir.md`.
+`docs/runbooks/capture-traffic-ir.md`. For the end-to-end authorized
+capture workflow — including the triple-gated live driver, where raw
+private artifacts live on the operator's disk, how sanitized fixtures
+are promoted, and why default autodev/CI must never call live paid
+providers or capture private sessions — see
+`docs/runbooks/capture-execution.md` (F5A.AC3).
 
 ## Reporting Security Issues
 

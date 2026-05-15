@@ -237,7 +237,7 @@ features:
         verification: npm test
       - id: AC3
         description: Add a runbook for performing authorized maritime captures, including where raw private artifacts live, how sanitized fixtures are promoted, and why default autodev/CI must never call live paid providers or capture private sessions.
-        status: pending
+        status: implemented
         verification: docs-review
 
   - id: F6
