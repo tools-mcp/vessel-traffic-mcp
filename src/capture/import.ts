@@ -41,6 +41,15 @@ export interface FixtureEntry {
   startedAt?: string;
 }
 
+export interface CaptureProvenance {
+  siteProfileId: string;
+  siteProfileVersion: number;
+  recorderDriver: 'mock' | 'playwright';
+  liveReplayDisabled: true;
+  capturedAt: string;
+  notes?: string[];
+}
+
 export interface CaptureFixture {
   version: number;
   label: string;
@@ -53,6 +62,7 @@ export interface CaptureFixture {
   entries: FixtureEntry[];
   redactionReport: RedactionReport;
   notes: string[];
+  provenance?: CaptureProvenance;
 }
 
 export interface ImportResult {

@@ -8,10 +8,11 @@
   "bin": {
     "vessel-traffic-mcp": "./dist/index.js",
     "vessel-capture-import": "./dist/capture/cli.js",
-    "vessel-capture-ir": "./dist/capture/ir-cli.js"
+    "vessel-capture-ir": "./dist/capture/ir-cli.js",
+    "vessel-capture-runner": "./dist/capture/runner-cli.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json && chmod +x dist/index.js dist/capture/cli.js dist/capture/ir-cli.js",
+    "build": "tsc -p tsconfig.json && chmod +x dist/index.js dist/capture/cli.js dist/capture/ir-cli.js dist/capture/runner-cli.js",
     "lint": "tsc --noEmit -p tsconfig.json",
     "pretest": "npm run build",
     "test": "node --test test/*.test.js",
@@ -19,7 +20,8 @@
     "start:http": "VESSEL_MCP_TRANSPORT=http node --enable-source-maps dist/index.js",
     "dev": "npm run build && node --enable-source-maps dist/index.js",
     "capture:import": "node --enable-source-maps dist/capture/cli.js",
-    "capture:ir": "node --enable-source-maps dist/capture/ir-cli.js"
+    "capture:ir": "node --enable-source-maps dist/capture/ir-cli.js",
+    "capture:run": "node --enable-source-maps dist/capture/runner-cli.js"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

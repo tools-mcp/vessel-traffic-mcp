@@ -233,7 +233,7 @@ features:
         verification: npm test
       - id: AC2
         description: Implement an operator-only capture workflow that reuses api-capture patterns for Playwright browser control, XHR/fetch hooks, HAR backup, replay validation, traffic IR, schema summaries, redaction, and disabled-by-default sanitized fixtures.
-        status: pending
+        status: implemented
         verification: npm test
       - id: AC3
         description: Add a runbook for performing authorized maritime captures, including where raw private artifacts live, how sanitized fixtures are promoted, and why default autodev/CI must never call live paid providers or capture private sessions.
