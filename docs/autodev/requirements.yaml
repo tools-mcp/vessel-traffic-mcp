@@ -62,7 +62,7 @@ features:
         verification: npm test
       - id: AC3
         description: Implement a deterministic fixture provider with search, latest position, area query, track, and port-call sample data.
-        status: pending
+        status: implemented
         verification: npm test
 
   - id: F2B

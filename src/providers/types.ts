@@ -184,6 +184,60 @@ export interface ProviderUpgradeHint {
   costNote?: string;
 }
 
+export interface VesselSearchQuery {
+  mmsi?: string;
+  imo?: string;
+  name?: string;
+  callsign?: string;
+  limit?: number;
+}
+
+export interface VesselSearchResult {
+  matches: VesselIdentity[];
+  total: number;
+}
+
+export interface VesselPositionQuery {
+  mmsi?: string;
+  imo?: string;
+}
+
+export interface BoundingBox {
+  latMin: number;
+  latMax: number;
+  lonMin: number;
+  lonMax: number;
+}
+
+export interface VesselAreaQuery {
+  boundingBox: BoundingBox;
+  limit?: number;
+}
+
+export interface VesselAreaResult {
+  positions: VesselPosition[];
+  total: number;
+}
+
+export interface VesselTrackQuery {
+  mmsi?: string;
+  imo?: string;
+  windowStart?: string;
+  windowEnd?: string;
+}
+
+export interface PortCallsQuery {
+  mmsi?: string;
+  imo?: string;
+  portUnlocode?: string;
+  limit?: number;
+}
+
+export interface PortCallsResult {
+  calls: PortCall[];
+  total: number;
+}
+
 export interface VesselDataProvider {
   id: string;
   capabilities(): ProviderCapability[];
@@ -193,6 +247,11 @@ export interface VesselDataProvider {
   credentialRequirement?(): CredentialRequirement;
   rateLimitPolicy?(): RateLimitPolicy;
   cacheTtlPolicy?(): CacheTtlPolicy;
+  search?(query: VesselSearchQuery): Promise<ProviderResult<VesselSearchResult>>;
+  latestPosition?(query: VesselPositionQuery): Promise<ProviderResult<VesselPosition>>;
+  area?(query: VesselAreaQuery): Promise<ProviderResult<VesselAreaResult>>;
+  track?(query: VesselTrackQuery): Promise<ProviderResult<VesselTrack>>;
+  portCalls?(query: PortCallsQuery): Promise<ProviderResult<PortCallsResult>>;
 }
 
 export interface VesselIdentity {
