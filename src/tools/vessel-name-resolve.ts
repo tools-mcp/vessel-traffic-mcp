@@ -496,6 +496,7 @@ export async function vesselNameResolve(
   const routing: RoutingInput = {
     provider: input.provider,
     credentialProfile: input.credentialProfile,
+    oneTimeCredential: input.oneTimeCredential,
     fallbackPolicy: input.fallbackPolicy,
     coverageHint: input.coverageHint,
   };

@@ -1,6 +1,12 @@
 import { z } from 'zod/v4';
 
-import type { CredentialStore } from '../config/credentials.js';
+import {
+  createOneTimeCredentialOverlay,
+  credentialProfileFieldValues,
+  readOneTimeCredentialGate,
+  type CredentialStore,
+  type OneTimeCredentialInput,
+} from '../config/credentials.js';
 import type { ProviderRegistry } from '../providers/registry.js';
 import { routeProvider, type FallbackPolicy, type ProviderRouteRequest } from '../providers/router.js';
 import type {
@@ -20,9 +26,22 @@ export const credentialProfileRefSchema = z
   })
   .strict();
 
+const oneTimeCredentialFieldsShape = Object.fromEntries(
+  credentialProfileFieldValues.map((field) => [field, z.string().min(1).optional()]),
+) as Record<(typeof credentialProfileFieldValues)[number], z.ZodOptional<z.ZodString>>;
+
+export const oneTimeCredentialSchema = z
+  .object({
+    providerId: z.string().min(1),
+    label: z.string().min(1),
+    fields: z.object(oneTimeCredentialFieldsShape).strict(),
+  })
+  .strict();
+
 export const routingInputShape = {
   provider: z.string().min(1).optional(),
   credentialProfile: credentialProfileRefSchema.optional(),
+  oneTimeCredential: oneTimeCredentialSchema.optional(),
   fallbackPolicy: z.enum(fallbackPolicyValues).optional(),
   coverageHint: z.enum(coverageHintValues).optional(),
 } as const;
@@ -30,6 +49,7 @@ export const routingInputShape = {
 export interface RoutingInput {
   provider?: string;
   credentialProfile?: { providerId: string; label: string };
+  oneTimeCredential?: OneTimeCredentialInput;
   fallbackPolicy?: FallbackPolicy;
   coverageHint?: 'terrestrial' | 'satellite' | 'regional' | 'unknown';
 }
@@ -40,11 +60,13 @@ export interface ResolveProviderArgs {
   capability: ProviderCapability;
   routing: RoutingInput;
   retrievedAtFallback: string;
+  env?: NodeJS.ProcessEnv;
 }
 
 export interface ResolveProviderSuccess {
   ok: true;
   provider: VesselDataProvider;
+  credentialStore: CredentialStore;
   upgradeHints: ProviderUpgradeHint[];
   considered: Array<{ providerId: string; tier: string; skippedReason?: string }>;
 }
@@ -91,9 +113,34 @@ export function applyUpgradeHints<T extends Record<string, unknown>>(
 export function resolveProvider(args: ResolveProviderArgs): ResolveProviderSuccess | ResolveProviderFailure {
   const { registry, credentialStore, capability, routing, retrievedAtFallback } = args;
 
+  let activeStore: CredentialStore = credentialStore;
   let credentialProfile = routing.credentialProfile;
+
+  if (routing.oneTimeCredential) {
+    const gate = readOneTimeCredentialGate(args.env ?? process.env);
+    if (!gate.enabled) {
+      return {
+        ok: false,
+        noData: {
+          ok: false,
+          reason: 'no_credential_profile',
+          message:
+            'One-time credential path is disabled. Set VESSEL_MCP_ONE_TIME_CREDENTIALS=enabled to opt in.',
+          retrievedAt: retrievedAtFallback,
+        },
+      };
+    }
+    activeStore = createOneTimeCredentialOverlay(credentialStore, routing.oneTimeCredential);
+    if (!credentialProfile) {
+      credentialProfile = {
+        providerId: routing.oneTimeCredential.providerId,
+        label: routing.oneTimeCredential.label,
+      };
+    }
+  }
+
   if (credentialProfile) {
-    const stored = credentialStore.get(credentialProfile.label);
+    const stored = activeStore.get(credentialProfile.label);
     if (!stored || stored.status !== 'configured') {
       return {
         ok: false,
@@ -146,6 +193,7 @@ export function resolveProvider(args: ResolveProviderArgs): ResolveProviderSucce
   return {
     ok: true,
     provider,
+    credentialStore: activeStore,
     upgradeHints: decision.upgradeHints,
     considered: decision.considered,
   };

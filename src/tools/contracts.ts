@@ -71,7 +71,7 @@ const credentialProfileFieldSchema = z.enum(credentialProfileFieldValues);
 const credentialProfileSummarySchema = z.object({
   label: z.string(),
   provider: z.string().optional(),
-  source: z.enum(['env', 'local-config']),
+  source: z.enum(['env', 'local-config', 'one-time']),
   fieldsPresent: z.array(credentialProfileFieldSchema),
   status: z.enum(['configured', 'incomplete']),
 });

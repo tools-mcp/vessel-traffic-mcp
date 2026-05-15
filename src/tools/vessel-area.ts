@@ -63,6 +63,7 @@ export async function vesselArea(deps: Deps, input: VesselAreaInput): Promise<Re
   const routing: RoutingInput = {
     provider: input.provider,
     credentialProfile: input.credentialProfile,
+    oneTimeCredential: input.oneTimeCredential,
     fallbackPolicy: input.fallbackPolicy,
     coverageHint: input.coverageHint,
   };

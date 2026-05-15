@@ -1,4 +1,4 @@
-# BYOK credential profiles runbook (F2B.AC1)
+# BYOK credential profiles runbook (F2B.AC1, F2B.AC3)
 
 Vessel Traffic MCP supports Bring-Your-Own-Key (BYOK) credentials for paid
 or rate-limited vessel data providers. Credentials live entirely on the
@@ -113,3 +113,101 @@ The `test/credential-profiles.test.js` suite covers:
 
 The test suite does not call any live or paid provider; verification is
 deterministic and fixture-only.
+
+## One-time request credential path (F2B.AC3)
+
+In addition to env vars and the gitignored local config, the routing layer
+supports a **disabled-by-default, in-memory-only** one-time credential
+overlay. This is intended for ad-hoc operator sessions where pasting a
+short-lived key into a single MCP request is preferable to writing it to
+disk.
+
+### How it is gated
+
+The path is **off by default**. To enable it for the lifetime of the
+current process, set:
+
+```
+export VESSEL_MCP_ONE_TIME_CREDENTIALS=enabled
+```
+
+Accepted opt-in tokens (case-insensitive, trimmed): `1`, `true`, `on`,
+`enabled`, `yes`. Any other value — including unset, empty string, `0`,
+`no`, `off`, `disabled` — leaves the path refused.
+
+When the gate is off and a request includes `oneTimeCredential`, the
+routing layer returns a structured `no_credential_profile` result and the
+raw key is never inspected, logged, or echoed.
+
+### How the overlay behaves
+
+When enabled and supplied, a request can include:
+
+```jsonc
+{
+  "provider": "marinetraffic",
+  "fallbackPolicy": "strict",
+  "oneTimeCredential": {
+    "providerId": "marinetraffic",
+    "label": "one-time-request",
+    "fields": { "api_key": "<redacted-in-logs>" }
+  }
+}
+```
+
+The router wraps the persistent `CredentialStore` in an in-memory overlay
+for that single resolution:
+
+- `list()` on the overlay returns **only** the persistent profiles — the
+  one-time entry is intentionally invisible to the `credential_profiles`
+  MCP tool and to anything that calls `list()`.
+- `get(label)` returns a summary marked `source: "one-time"` for the
+  overlay label, and falls through to the base store for other labels.
+- `resolveSecret(label, field)` returns the overlay value for the
+  one-time label, and falls through to the base store otherwise.
+
+The overlay is created for the duration of a single `resolveProvider`
+call. It is not persisted to disk, not written back to the base store,
+and not exposed by any MCP tool. Repeated calls without the
+`oneTimeCredential` input do not see it.
+
+### Redaction guarantees
+
+- `redactForLog` scrubs `api_key=`, `password=`, `token=`, `Authorization:
+  Bearer ...`, `subscription_key=`, and `VESSEL_MCP_PROFILE_*` fragments
+  from any string the logger touches.
+- The structured `createJsonLogger` redacts fields named after any of the
+  `sensitiveKeyPatterns` (e.g. `api_key`, `bearer_token`, `password`,
+  `subscription_key`, `credential`, `Authorization`, `cookie`) — both
+  top-level and nested.
+- Error messages constructed with template strings must be passed
+  through `redactForLog` before being surfaced. Adapter authors should
+  treat any string built from `resolveSecret(...)` as toxic until
+  redacted.
+
+### Hard rules for the one-time path
+
+- **In-memory only.** Never write the one-time fields to disk, never echo
+  them back through MCP responses, never include them in the
+  `credential_profiles` payload.
+- **No silent persistence.** The overlay must not mutate the base store
+  and must not survive across requests.
+- **Refusal is the default.** Treat `oneTimeCredential` as ignored unless
+  `VESSEL_MCP_ONE_TIME_CREDENTIALS` is set to an opt-in token.
+
+### Verifying
+
+The `test/credential-one-time.test.js` suite covers, deterministically
+and without any live provider call:
+
+- env-gate semantics (default-off, canonical opt-in tokens, rejected
+  values),
+- overlay `list()` exclusion (`credential_profiles` MCP payload never
+  emits the one-time entry),
+- overlay `get()` / `resolveSecret()` returning the in-memory value,
+- non-persistence across repeated `resolveProvider` calls,
+- empty/whitespace field values dropped with an `incomplete` status,
+- `redactForLog` and `createJsonLogger` scrubbing one-time secrets,
+- the credential profile output schema accepts `one-time` as a source
+  enum (for future deliberate emission), but the production tool never
+  emits it.

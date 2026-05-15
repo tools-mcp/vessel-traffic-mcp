@@ -20,7 +20,7 @@ export type CredentialProfileField = (typeof credentialProfileFieldValues)[numbe
 const ALLOWED_FIELDS: ReadonlySet<string> = new Set(credentialProfileFieldValues);
 const META_FIELD_PROVIDER = 'provider';
 
-export type CredentialProfileSource = 'env' | 'local-config';
+export type CredentialProfileSource = 'env' | 'local-config' | 'one-time';
 
 export type CredentialProfileStatus = 'configured' | 'incomplete';
 
@@ -36,6 +36,32 @@ export interface CredentialStore {
   list(): readonly CredentialProfileSummary[];
   get(label: string): CredentialProfileSummary | undefined;
   resolveSecret(label: string, field: CredentialProfileField): string | undefined;
+}
+
+export const ONE_TIME_CREDENTIAL_ENV_GATE = 'VESSEL_MCP_ONE_TIME_CREDENTIALS';
+
+export interface OneTimeCredentialInput {
+  readonly providerId: string;
+  readonly label: string;
+  readonly fields: Partial<Record<CredentialProfileField, string>>;
+}
+
+export interface OneTimeCredentialGate {
+  readonly enabled: boolean;
+  readonly reason?: 'env_not_set' | 'env_value_invalid';
+}
+
+const ONE_TIME_GATE_TRUE = /^(1|true|on|enabled|yes)$/i;
+
+export function readOneTimeCredentialGate(env: NodeJS.ProcessEnv = process.env): OneTimeCredentialGate {
+  const raw = env[ONE_TIME_CREDENTIAL_ENV_GATE];
+  if (raw === undefined || raw === '') {
+    return { enabled: false, reason: 'env_not_set' };
+  }
+  if (ONE_TIME_GATE_TRUE.test(raw.trim())) {
+    return { enabled: true };
+  }
+  return { enabled: false, reason: 'env_value_invalid' };
 }
 
 export interface LoadCredentialProfilesOptions {
@@ -230,6 +256,58 @@ export function emptyCredentialStore(): CredentialStore {
     },
     resolveSecret() {
       return undefined;
+    },
+  };
+}
+
+function normalizeOneTimeFields(
+  fields: Partial<Record<CredentialProfileField, string>>,
+): Map<CredentialProfileField, string> {
+  const accepted = new Map<CredentialProfileField, string>();
+  for (const field of credentialProfileFieldValues) {
+    const raw = fields[field];
+    if (typeof raw !== 'string') continue;
+    if (raw.trim().length === 0) continue;
+    accepted.set(field, raw);
+  }
+  return accepted;
+}
+
+export function createOneTimeCredentialOverlay(
+  base: CredentialStore,
+  overlay: OneTimeCredentialInput,
+): CredentialStore {
+  const overlayLabel = normalizeLabel(overlay.label);
+  const acceptedFields = normalizeOneTimeFields(overlay.fields);
+  const fieldsPresent = credentialProfileFieldValues.filter((field) => acceptedFields.has(field));
+  const summary: CredentialProfileSummary = Object.freeze({
+    label: overlayLabel,
+    provider: overlay.providerId,
+    source: 'one-time',
+    fieldsPresent: Object.freeze(fieldsPresent.slice()) as readonly CredentialProfileField[],
+    status: acceptedFields.size > 0 ? 'configured' : 'incomplete',
+  });
+
+  return {
+    list() {
+      // The one-time overlay is intentionally absent from the public list so
+      // it never appears in the credential_profiles MCP tool payload.
+      return base.list();
+    },
+    get(label) {
+      const normalized = normalizeLabel(label);
+      if (normalized === overlayLabel) {
+        return summary;
+      }
+      return base.get(label);
+    },
+    resolveSecret(label, field) {
+      const normalized = normalizeLabel(label);
+      if (normalized === overlayLabel) {
+        if (!isAllowedField(field)) return undefined;
+        return acceptedFields.get(field);
+      }
+      return base.resolveSecret(label, field);
     },
   };
 }

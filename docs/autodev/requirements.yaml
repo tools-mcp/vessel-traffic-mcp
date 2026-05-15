@@ -84,7 +84,7 @@ features:
         verification: npm test
       - id: AC3
         description: Add a disabled-by-default one-time request credential path that is in-memory only, redacted from errors/logs, and covered by tests.
-        status: pending
+        status: implemented
         verification: npm test
 
   - id: F3
