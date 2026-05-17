@@ -31,13 +31,13 @@
     "anthropic",
     "openai"
   ],
-  "homepage": "https://github.com/smgu/vessel-traffic-mcp#readme",
+  "homepage": "https://github.com/tools-mcp/vessel-traffic-mcp#readme",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/smgu/vessel-traffic-mcp.git"
+    "url": "git+https://github.com/tools-mcp/vessel-traffic-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/smgu/vessel-traffic-mcp/issues"
+    "url": "https://github.com/tools-mcp/vessel-traffic-mcp/issues"
   },
   "files": [
     "dist",

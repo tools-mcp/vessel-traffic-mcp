@@ -155,8 +155,8 @@ schema redesign once a stable contract exists:
     "displayName": "Vessel Traffic MCP",
     "description": "Read-only MCP server for vessel position and AIS-style maritime data (BYOK).",
     "license": "MIT",
-    "homepage": "https://github.com/smgu/vessel-traffic-mcp#readme",
-    "repository": "https://github.com/smgu/vessel-traffic-mcp",
+    "homepage": "https://github.com/tools-mcp/vessel-traffic-mcp#readme",
+    "repository": "https://github.com/tools-mcp/vessel-traffic-mcp",
     "transport": "stdio",
     "entrypoint": {
       "command": "node",
