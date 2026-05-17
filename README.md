@@ -173,6 +173,9 @@ docs/
   — F5A.AC3 operator runbook for performing an authorized maritime
   capture, promoting a sanitized fixture, and why default autodev/CI
   must never call live paid providers or capture private sessions.
+- [`docs/runbooks/browser-api-capture-results.md`](./docs/runbooks/browser-api-capture-results.md)
+  — sanitized browser capture results for vessel-name autocomplete,
+  IMO/MMSI lookup, detail pages, and latest-position API candidates.
 - [`docs/discoverability.md`](./docs/discoverability.md) — F7.AC2
   package/repository/documentation discoverability metadata contract
   (npm keywords, GitHub Topics, search surfaces).

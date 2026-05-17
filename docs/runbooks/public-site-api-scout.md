@@ -2,6 +2,12 @@
 
 Purpose: discover only browser-visible, no-login vessel-position request shapes for adapter planning. This is **not** a scraping run and must not bypass access controls.
 
+Follow-up: [`browser-api-capture-results.md`](./browser-api-capture-results.md)
+records the later search-input probes for vessel-name autocomplete,
+IMO/MMSI lookup, detail pages, and latest-position candidates. Treat
+that file as the current source for adapter tickets; this file is the
+initial broad scout.
+
 ## Method
 
 Use the `/Users/aktn/project/api-capture` Playwright reconnaissance workflow, not ad-hoc browser poking:
