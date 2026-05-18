@@ -217,7 +217,7 @@ Implementation requirements:
 
 ## 9. Capture Tooling Requirements
 
-`/Users/aktn/project/api-capture` is the local reference implementation for capture orchestration. The vessel project should borrow its architecture:
+`<api-capture-checkout>` is the local reference implementation for capture orchestration. The vessel project should borrow its architecture:
 
 - Playwright-controlled browser sessions.
 - XHR/fetch capture plus HAR backup.

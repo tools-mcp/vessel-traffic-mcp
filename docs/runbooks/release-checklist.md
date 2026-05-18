@@ -60,7 +60,7 @@ documentation examples). No real values.
       `token`, `session` keys with non-redacted values. The
       capture-import CLI is the only sanctioned way to produce these
       fixtures (`npm run capture:import`).
-- [ ] `/Users/aktn/project/api-capture` raw sessions, `.env`, cookies,
+- [ ] `<api-capture-checkout>` raw sessions, `.env`, cookies,
       and logs are **not** present in this tree. The api-capture path
       is a reference for architecture only — see
       `docs/runbooks/api-capture-reference-only.md` (F5.AC5) for the

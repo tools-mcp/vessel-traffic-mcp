@@ -1,6 +1,6 @@
 # api-capture reference-only policy (F5.AC5)
 
-The sibling project at `/Users/aktn/project/api-capture` is the
+The sibling project at `<api-capture-checkout>` is the
 architecture reference for browser-based API capture (Playwright
 control, XHR/fetch hooks, HAR backup, replay validation, traffic IR,
 schema summaries, redaction worker, supervisor pacing). It is **not** a
@@ -17,9 +17,9 @@ not be imported into this project or committed.
 `api-capture` contributes to `vessel-traffic-mcp` through **design and
 documentation only**. Permitted use:
 
-- Read `/Users/aktn/project/api-capture/README.md`,
-  `/Users/aktn/project/api-capture/ARCHITECTURE.md`, and
-  `/Users/aktn/project/api-capture/docs/LOCAL_AGENT_HARNESS.md` for
+- Read `<api-capture-checkout>/README.md`,
+  `<api-capture-checkout>/ARCHITECTURE.md`, and
+  `<api-capture-checkout>/docs/LOCAL_AGENT_HARNESS.md` for
   architecture patterns (site profiles, capture worker, replay
   validator, traffic IR, redaction worker, supervisor pacing).
 - Re-implement equivalent modules under `src/capture/` in this project.
@@ -101,7 +101,7 @@ control is load-bearing:
 
 1. **Hard rules.** `AGENTS.md` "Implementation Preferences" and
    `CONTRIBUTING.md` "Project Hard Rules" both state that
-   `/Users/aktn/project/api-capture` is referenced for architecture
+   `<api-capture-checkout>` is referenced for architecture
    patterns only and that its raw sessions, `.env`, cookies, and logs
    must not be imported or committed.
 2. **PRD scope.** `docs/PRD.md` §6.6 states "The implementation must
@@ -114,7 +114,7 @@ control is load-bearing:
    runbook so a slip cannot land via `git add .`. The release checklist
    §3 verifies the rule set is intact on every release.
 5. **Release checklist.** `docs/runbooks/release-checklist.md` §3
-   includes an explicit "`/Users/aktn/project/api-capture` raw
+   includes an explicit "`<api-capture-checkout>` raw
    sessions, `.env`, cookies, and logs are **not** present in this
    tree" line item.
 6. **Security policy.** `SECURITY.md` requires reporters not to paste
@@ -136,7 +136,7 @@ Before merging any change that touches `src/capture/`,
 - [ ] The PR does **not** add a path that contains `api-capture` raw
       session data, `.env*`, cookies, logs, generated `openapi.json`,
       or any artifact in §2.
-- [ ] Any new doc reference to `/Users/aktn/project/api-capture`
+- [ ] Any new doc reference to `<api-capture-checkout>`
       describes architecture patterns only and does not instruct the
       reader to copy or import operator output.
 - [ ] Any new test fixture under `fixtures/captures/` was produced by
@@ -153,13 +153,13 @@ Before merging any change that touches `src/capture/`,
 ## 6. Operator checklist (machine-time)
 
 Operators running this project on the same workstation that hosts
-`/Users/aktn/project/api-capture` must keep the two trees disjoint:
+`<api-capture-checkout>` must keep the two trees disjoint:
 
 - [ ] Do not `cp`, `rsync`, `ln`, or `git checkout` from
-      `/Users/aktn/project/api-capture` into the `vessel-traffic-mcp`
+      `<api-capture-checkout>` into the `vessel-traffic-mcp`
       working tree.
 - [ ] Do not point `vessel-capture-import --in` at any file under
-      `/Users/aktn/project/api-capture/**`. The importer only accepts
+      `<api-capture-checkout>/**`. The importer only accepts
       operator-authorized HAR/JSON for **maritime** providers.
 - [ ] Do not source an `api-capture` `.env` into a shell that will run
       `vessel-traffic-mcp` — that would expose unrelated credentials to

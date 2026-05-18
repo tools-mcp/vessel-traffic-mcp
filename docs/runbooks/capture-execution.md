@@ -310,7 +310,7 @@ Enforcement (no single control is load-bearing):
   synthesis. This runbook implements the operator-facing usage of the
   modules cataloged there.
 - `docs/runbooks/api-capture-reference-only.md` — `F5.AC5` contract
-  for the `/Users/aktn/project/api-capture` reference boundary
+  for the `<api-capture-checkout>` reference boundary
   (forbidden artifact list, reviewer/operator checklists).
 - `docs/runbooks/operator.md` — `F6.AC3` operator runbook (BYOK,
   rate limits, live-test toggles, client setup).

@@ -10,10 +10,10 @@ scout and may contain decisions superseded by later browser captures.
 
 ## Method
 
-Use the `/Users/aktn/project/api-capture` Playwright reconnaissance workflow, not ad-hoc browser poking:
+Use the `<api-capture-checkout>` Playwright reconnaissance workflow, not ad-hoc browser poking:
 
 ```bash
-cd /Users/aktn/project/api-capture
+cd <api-capture-checkout>
 .venv/bin/python scripts/site_recon.py <target-url> --max-pages 2 --wait-ms 2500
 ```
 
@@ -33,11 +33,11 @@ Rules for this scout:
 ### MyShipTracking
 
 - Site: `https://www.myshiptracking.com/`
-- api-capture session: `/Users/aktn/project/api-capture/sessions/recon_20260517T141040_5fc81d`
+- api-capture session: `<api-capture-checkout>/sessions/recon_20260517T141040_5fc81d`
 - Generated files:
-  - `/Users/aktn/project/api-capture/config/sites/myshiptracking.com.yaml`
-  - `/Users/aktn/project/api-capture/config/hints/myshiptracking.com_autogen.md`
-  - `/Users/aktn/project/api-capture/config/plans/myshiptracking.com_plan.yaml`
+  - `<api-capture-checkout>/config/sites/myshiptracking.com.yaml`
+  - `<api-capture-checkout>/config/hints/myshiptracking.com_autogen.md`
+  - `<api-capture-checkout>/config/plans/myshiptracking.com_plan.yaml`
 - Access result: public map and vessel list pages loaded without login.
 - Endpoint inventory count: 7 signatures.
 - Candidate public map endpoint:
@@ -65,11 +65,11 @@ Rules for this scout:
 ### ShipXplorer
 
 - Site: `https://www.shipxplorer.com/`
-- api-capture session: `/Users/aktn/project/api-capture/sessions/recon_20260517T141056_5283c4`
+- api-capture session: `<api-capture-checkout>/sessions/recon_20260517T141056_5283c4`
 - Generated files:
-  - `/Users/aktn/project/api-capture/config/sites/shipxplorer.com.yaml`
-  - `/Users/aktn/project/api-capture/config/hints/shipxplorer.com_autogen.md`
-  - `/Users/aktn/project/api-capture/config/plans/shipxplorer.com_plan.yaml`
+  - `<api-capture-checkout>/config/sites/shipxplorer.com.yaml`
+  - `<api-capture-checkout>/config/hints/shipxplorer.com_autogen.md`
+  - `<api-capture-checkout>/config/plans/shipxplorer.com_plan.yaml`
 - Access result: public map loaded without login; subscription/login surfaces exist and must be excluded.
 - Endpoint inventory count: 7 signatures from bounded site recon.
 - Candidate public endpoint shapes:
@@ -87,7 +87,7 @@ Rules for this scout:
 ### ShipFinder
 
 - Site: `https://www.shipfinder.com/`
-- api-capture session: `/Users/aktn/project/api-capture/sessions/recon_20260517T141130_9211e4`
+- api-capture session: `<api-capture-checkout>/sessions/recon_20260517T141130_9211e4`
 - Access result: public site loaded without login.
 - Endpoint inventory count: 18 signatures.
 - Candidate vessel endpoints now promoted into the explicit `shipfinder`
@@ -117,7 +117,7 @@ Rules for this scout:
 ### BoatNerd AIS
 
 - Site: `https://ais.boatnerd.com/`
-- api-capture session: `/Users/aktn/project/api-capture/sessions/recon_20260517T141209_618ed3`
+- api-capture session: `<api-capture-checkout>/sessions/recon_20260517T141209_618ed3`
 - Access result: public map loaded without login.
 - Endpoint inventory count: 3 signatures.
 - Candidate public vessel endpoint:
@@ -133,7 +133,7 @@ Rules for this scout:
 ### SeaRates vessel tracking
 
 - Site: `https://www.searates.com/vessel-tracking/`
-- api-capture session: `/Users/aktn/project/api-capture/sessions/recon_20260517T141144_bdf341`
+- api-capture session: `<api-capture-checkout>/sessions/recon_20260517T141144_bdf341`
 - Access result: page returned 200, but recon observed Cloudflare challenge-platform traffic.
 - Endpoint inventory count: 7 signatures.
 - Notable request shapes:

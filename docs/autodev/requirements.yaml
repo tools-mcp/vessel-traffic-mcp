@@ -10,9 +10,9 @@ features:
       - docs/TDD.md
       - docs/provider-catalog.md
       - AGENTS.md
-      - /Users/aktn/project/api-capture/README.md
-      - /Users/aktn/project/api-capture/ARCHITECTURE.md
-      - /Users/aktn/project/api-capture/docs/LOCAL_AGENT_HARNESS.md
+      - <api-capture-checkout>/README.md
+      - <api-capture-checkout>/ARCHITECTURE.md
+      - <api-capture-checkout>/docs/LOCAL_AGENT_HARNESS.md
     acceptance_criteria:
       - id: AC1
         description: Initialize the TypeScript Node package, docs, gitignore, and verification scripts.
@@ -207,7 +207,7 @@ features:
         status: implemented
         verification: npm test
       - id: AC4
-        description: Add a maritime capture harness design based on /Users/aktn/project/api-capture patterns, including site profiles, Playwright capture, HAR backup, replay validation, traffic IR, supervisor pacing, and redaction worker.
+        description: Add a maritime capture harness design based on <api-capture-checkout> patterns, including site profiles, Playwright capture, HAR backup, replay validation, traffic IR, supervisor pacing, and redaction worker.
         status: implemented
         verification: docs-review
       - id: AC5
@@ -223,9 +223,9 @@ features:
       - docs/PRD.md
       - docs/TDD.md
       - docs/provider-catalog.md
-      - /Users/aktn/project/api-capture/README.md
-      - /Users/aktn/project/api-capture/ARCHITECTURE.md
-      - /Users/aktn/project/api-capture/docs/LOCAL_AGENT_HARNESS.md
+      - <api-capture-checkout>/README.md
+      - <api-capture-checkout>/ARCHITECTURE.md
+      - <api-capture-checkout>/docs/LOCAL_AGENT_HARNESS.md
     acceptance_criteria:
       - id: AC1
         description: Add safe maritime site-profile examples and capture queue metadata for provider-catalog entries such as MarineTraffic, VesselFinder, MyShipTracking, FleetMon, and other web-only candidates, with allowed origins, forbidden actions, session-loss indicators, pacing, and terms-review status.

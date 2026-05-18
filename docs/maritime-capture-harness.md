@@ -1,7 +1,7 @@
 # Maritime capture harness design (F5.AC4)
 
 This document is the architecture-level synthesis for the maritime
-capture harness. It maps the seven `/Users/aktn/project/api-capture`
+capture harness. It maps the seven `<api-capture-checkout>`
 patterns required by `F5.AC4` (site profiles, Playwright capture, HAR
 backup, replay validation, traffic IR, supervisor pacing, redaction
 worker) onto the modules that already exist in this repository, so a
@@ -15,9 +15,9 @@ boundary either; that contract is owned by `F5.AC5` and lives in
 
 ## 1. Sources and scope
 
-- Reference (read-only architecture): `/Users/aktn/project/api-capture/README.md`,
-  `/Users/aktn/project/api-capture/ARCHITECTURE.md`,
-  `/Users/aktn/project/api-capture/docs/LOCAL_AGENT_HARNESS.md`.
+- Reference (read-only architecture): `<api-capture-checkout>/README.md`,
+  `<api-capture-checkout>/ARCHITECTURE.md`,
+  `<api-capture-checkout>/docs/LOCAL_AGENT_HARNESS.md`.
 - Project authority docs: `docs/PRD.md` §6.6 and §7.1, `docs/TDD.md`
   §9, `AGENTS.md` "Implementation Preferences".
 - Implementation surface: `src/capture/` plus the runbooks under

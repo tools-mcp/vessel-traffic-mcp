@@ -7,7 +7,7 @@
     "Every profile defaults to termsReviewStatus=\"needs-terms-review\" so the gateRunner refuses live drivers until a human reviews provider terms.",
     "allowedOrigins are canonical scheme://host pairs that match the public marketing/landing/api docs page; raw login or account-management endpoints are not listed.",
     "forbiddenActions list generic destructive or session-altering URL fragments that must never be reached during capture.",
-    "sessionLossIndicators are conservative defaults (login redirects, 401/403, WWW-Authenticate challenge, session_expired error markers) lifted from /Users/aktn/project/api-capture/docs/LOCAL_AGENT_HARNESS.md."
+    "sessionLossIndicators are conservative defaults (login redirects, 401/403, WWW-Authenticate challenge, session_expired error markers) lifted from <api-capture-checkout>/docs/LOCAL_AGENT_HARNESS.md."
   ],
   "profiles": [
     {

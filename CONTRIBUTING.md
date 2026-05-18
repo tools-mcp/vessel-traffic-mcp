@@ -32,7 +32,7 @@ that violate them will be closed.
   must not call paid or live providers. Live-provider tests must be
   opt-in through `VESSEL_MCP_LIVE_TEST_*` env vars and skipped by
   default.
-- `/Users/aktn/project/api-capture` is referenced for architecture
+- `<api-capture-checkout>` is referenced for architecture
   patterns only. Do not import or commit its raw sessions, `.env`
   files, cookies, logs, or credentials. The full reference-only
   contract — including the forbidden artifact list and reviewer

@@ -10,6 +10,96 @@ sources through a normalized set of tools.
 Open source under the [MIT license](./LICENSE). Pre-1.0; APIs and tool
 surfaces may change.
 
+## Language summaries
+
+### English
+
+`vessel-traffic-mcp` is a read-only MCP server for vessel search,
+latest position lookup, AIS-style metadata, carrier schedules, vessel
+schedules, and delay heuristics. It is designed for MCP clients such
+as ChatGPT, Claude, Claude Code, Codex, and MCP Inspector.
+
+Every live or public-provider response must expose the original data
+source through `source.provider` and a user-facing URL through
+`source.landingUrl`. The project is intended to route users back to
+the source service, not to hide or rebrand the source.
+
+Quick setup:
+
+```bash
+git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
+cd vessel-traffic-mcp
+npm install
+npm run build
+```
+
+### 한국어
+
+`vessel-traffic-mcp`는 선박명, MMSI, IMO, 호출부호 기반 검색,
+최신 위치 조회, AIS 형태의 메타데이터, 선사 스케줄, 선박별 스케줄,
+지연 판단 정보를 제공하는 읽기 전용 MCP 서버입니다. ChatGPT,
+Claude, Claude Code, Codex, MCP Inspector 같은 MCP 클라이언트에서
+사용할 수 있도록 설계했습니다.
+
+실시간 또는 공개 provider 응답은 반드시 원 출처를
+`source.provider`에, 사용자가 열 수 있는 출처 URL을
+`source.landingUrl`에 포함해야 합니다. 이 프로젝트의 목적은 원
+서비스 유입과 출처 노출을 제공하는 것이며, 출처를 숨기거나
+재브랜딩하는 것이 아닙니다.
+
+빠른 설정:
+
+```bash
+git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
+cd vessel-traffic-mcp
+npm install
+npm run build
+```
+
+### 日本語
+
+`vessel-traffic-mcp` は、船名、MMSI、IMO、コールサインによる検索、
+最新位置、AIS 形式のメタデータ、船会社スケジュール、船舶別
+スケジュール、遅延判定を提供する読み取り専用の MCP サーバーです。
+ChatGPT、Claude、Claude Code、Codex、MCP Inspector などの MCP
+クライアントで利用できるように設計されています。
+
+ライブまたは公開 provider の応答では、元データの提供元を
+`source.provider` に、ユーザーが開ける参照 URL を
+`source.landingUrl` に必ず含めます。このプロジェクトは元サービスへ
+ユーザーを誘導し、出典を明示することを目的としており、出典を隠す
+ためのものではありません。
+
+クイックセットアップ:
+
+```bash
+git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
+cd vessel-traffic-mcp
+npm install
+npm run build
+```
+
+### 中文
+
+`vessel-traffic-mcp` 是一个只读 MCP 服务器，用于按船名、MMSI、IMO
+和呼号搜索船舶，并查询最新位置、AIS 风格元数据、承运人航线计划、
+船舶计划和延误判断。它面向 ChatGPT、Claude、Claude Code、Codex、
+MCP Inspector 等 MCP 客户端。
+
+所有实时或公开 provider 的响应都必须在 `source.provider` 中公开原始
+数据来源，并在 `source.landingUrl` 中提供用户可访问的来源 URL。本项目
+的目标是为原服务提供流量入口并明确标注出处，而不是隐藏或重新包装
+数据来源。
+
+快速设置:
+
+```bash
+git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
+cd vessel-traffic-mcp
+npm install
+npm run build
+```
+
 ## What it does
 
 - **Search** vessels by name, MMSI, IMO, or callsign.
@@ -361,10 +451,10 @@ Do not file a public GitHub issue for a suspected vulnerability. See
 
 ## Autodev
 
-This repository is designed to be driven by `/Users/aktn/project/codex-autodev` using:
+This repository is designed to be driven by `<codex-autodev-checkout>` using:
 
 ```bash
-cd /Users/aktn/project/codex-autodev
+cd <codex-autodev-checkout>
 node bin/codex-autodev.js plan --config configs/vessel-traffic-mcp.json --max-tasks 3 --with-reasoning
 node bin/codex-autodev.js run --config configs/vessel-traffic-mcp.json --max-tasks 1
 ```

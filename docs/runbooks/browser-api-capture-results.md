@@ -2,44 +2,44 @@
 
 Purpose: record the browser-captured API shapes needed to resolve a vessel by
 name, IMO, or MMSI and then fetch vessel identity and position data. This is a
-sanitized operator note. Raw HAR files stay in `/Users/aktn/project/api-capture`
+sanitized operator note. Raw HAR files stay in `<api-capture-checkout>`
 and must not be copied into this repository.
 
 ## Capture runs
 
-All captures used the sibling `/Users/aktn/project/api-capture` browser
+All captures used the sibling `<api-capture-checkout>` browser
 workflow with public, no-login pages only.
 
 - Broad recon sessions:
-  - `/Users/aktn/project/api-capture/sessions/recon_20260517T151815_84dac6`
+  - `<api-capture-checkout>/sessions/recon_20260517T151815_84dac6`
     BoatNerd AIS
-  - `/Users/aktn/project/api-capture/sessions/recon_20260517T151827_106cc4`
+  - `<api-capture-checkout>/sessions/recon_20260517T151827_106cc4`
     MyShipTracking
-  - `/Users/aktn/project/api-capture/sessions/recon_20260517T151858_8d7511`
+  - `<api-capture-checkout>/sessions/recon_20260517T151858_8d7511`
     ShipFinder
-  - `/Users/aktn/project/api-capture/sessions/recon_20260517T151921_8ebe21`
+  - `<api-capture-checkout>/sessions/recon_20260517T151921_8ebe21`
     ShipXplorer
-  - `/Users/aktn/project/api-capture/sessions/recon_20260517T151949_797f2c`
+  - `<api-capture-checkout>/sessions/recon_20260517T151949_797f2c`
     MarineVesselTraffic / AIS Friends
-  - `/Users/aktn/project/api-capture/sessions/recon_20260517T152223_7b62ad`
+  - `<api-capture-checkout>/sessions/recon_20260517T152223_7b62ad`
     VesselFinder
-  - `/Users/aktn/project/api-capture/sessions/recon_20260517T152304_847658`
+  - `<api-capture-checkout>/sessions/recon_20260517T152304_847658`
     MarineTraffic
-  - `/Users/aktn/project/api-capture/sessions/recon_20260517T152314_82c9a0`
+  - `<api-capture-checkout>/sessions/recon_20260517T152314_82c9a0`
     FleetMon
 - Search-input probe:
-  - `/Users/aktn/project/api-capture/sessions/vessel_search_probe_20260517T152608Z`
+  - `<api-capture-checkout>/sessions/vessel_search_probe_20260517T152608Z`
 - Targeted selector probe:
-  - `/Users/aktn/project/api-capture/sessions/vessel_targeted_search_probe_20260517T153219Z`
+  - `<api-capture-checkout>/sessions/vessel_targeted_search_probe_20260517T153219Z`
 - Multi-site browser API capture:
-  - `/Users/aktn/project/api-capture/sessions/vessel_targeted_api_capture_20260518T003128Z`
+  - `<api-capture-checkout>/sessions/vessel_targeted_api_capture_20260518T003128Z`
     ShipFinder, MyShipTracking, BoatNerd AIS, VesselFinder, ShipXplorer,
     SeaRates, VesselTracker, MarineVesselTraffic, MarineTraffic
 - SeaRates deep input/selection probes:
-  - `/Users/aktn/project/api-capture/sessions/searates_deep_select_20260518T0040Z`
-  - `/Users/aktn/project/api-capture/sessions/searates_select_submit2_20260518T0052Z`
+  - `<api-capture-checkout>/sessions/searates_deep_select_20260518T0040Z`
+  - `<api-capture-checkout>/sessions/searates_select_submit2_20260518T0052Z`
 - Deep multi-service follow-up:
-  - `/Users/aktn/project/api-capture/sessions/vessel_deep_api_capture_20260518T044147Z`
+  - `<api-capture-checkout>/sessions/vessel_deep_api_capture_20260518T044147Z`
     MyShipTracking, VesselFinder, SeaRates, AIS Friends, ShipXplorer,
     ShipFinder, VesselTracker, MarineTraffic
 

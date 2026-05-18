@@ -25,9 +25,9 @@ const REQUIRED_MODULE_CITATIONS = [
 ];
 
 const REQUIRED_REFERENCE_DOCS = [
-  '/Users/aktn/project/api-capture/README.md',
-  '/Users/aktn/project/api-capture/ARCHITECTURE.md',
-  '/Users/aktn/project/api-capture/docs/LOCAL_AGENT_HARNESS.md',
+  '<api-capture-checkout>/README.md',
+  '<api-capture-checkout>/ARCHITECTURE.md',
+  '<api-capture-checkout>/docs/LOCAL_AGENT_HARNESS.md',
 ];
 
 const REQUIRED_RUNBOOK_LINKS = [

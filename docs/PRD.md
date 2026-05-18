@@ -12,7 +12,7 @@
 
 The long-term goal is an integrated global vessel-location MCP, not a single-provider wrapper. The server should maintain a growing provider registry that covers free/open feeds, commercial APIs, regional government feeds, and authorized web-capture adapters. The system must prioritize authorized data access. Official APIs, open-data sources, and BYOK commercial API credentials are first-class. Browser-network capture is a controlled development workflow for services that present data in web UI but do not publish a suitable API, and only for operator-authorized sessions where terms allow that use.
 
-The capture workflow should reuse lessons and reusable components from the sibling project `/Users/aktn/project/api-capture`. That project already implements a local-first browser API capture harness with Playwright control, XHR/fetch/HAR recording, session artifacts, replay validation, traffic IR, OpenAPI generation, a supervisor loop, pacing, and redaction-aware reporting. `vessel-traffic-mcp` should adapt those patterns for maritime sites rather than reinventing capture orchestration from scratch.
+The capture workflow should reuse lessons and reusable components from the sibling project `<api-capture-checkout>`. That project already implements a local-first browser API capture harness with Playwright control, XHR/fetch/HAR recording, session artifacts, replay validation, traffic IR, OpenAPI generation, a supervisor loop, pacing, and redaction-aware reporting. `vessel-traffic-mcp` should adapt those patterns for maritime sites rather than reinventing capture orchestration from scratch.
 
 The default product model is bring-your-own-key (BYOK): each MCP user or organization connects API keys for vessel-data services they already subscribe to. Since most users will not buy paid AIS access before validating coverage, the initial runtime should also support free, open, trial, or community terrestrial AIS checks. Paid satellite/enterprise providers and authorized capture-assisted adapters are important expansion paths, but they should not block the basic "can this vessel be found with terrestrial AIS?" workflow.
 
@@ -184,7 +184,7 @@ The resolver must return `needsConfirmation: true` when candidates are close or 
 
 ### 6.6 Capture Harness Reuse From api-capture
 
-The sibling project `/Users/aktn/project/api-capture` is the reference implementation for browser-only API capture. Reuse or port these design ideas:
+The sibling project `<api-capture-checkout>` is the reference implementation for browser-only API capture. Reuse or port these design ideas:
 
 - Site profiles under `config/sites/*` for domain-specific login, scope, session-loss detection, pacing, and safety policy.
 - Playwright browser control with XHR/fetch network hooks and HAR backup.
@@ -219,7 +219,7 @@ Autonomous development should treat provider discovery as a first-class workstre
 3. Prioritize official APIs, open APIs, trial APIs, and BYOK commercial APIs before web capture.
 4. Keep the initial no-paid-key path focused on free/open/community terrestrial AIS so users can test coverage before buying a subscription.
 5. For web-only services, create a capture ticket only after documenting authorization assumptions, terms review status, allowed origins, forbidden actions, rate limits, and expected endpoints.
-6. Use `/Users/aktn/project/api-capture` as the reference for execution: site profiles, local browser control, XHR/fetch capture, HAR backup, replay validation, traffic IR, OpenAPI/schema generation, worker separation, supervisor pacing, and redaction.
+6. Use `<api-capture-checkout>` as the reference for execution: site profiles, local browser control, XHR/fetch capture, HAR backup, replay validation, traffic IR, OpenAPI/schema generation, worker separation, supervisor pacing, and redaction.
 7. Never run live capture in default CI or default autodev verification. Capture execution requires an operator-authorized browser session or explicit credentials.
 8. Store raw capture artifacts only in ignored private paths and promote only sanitized fixtures, endpoint fingerprints, and adapter tickets into git.
 
@@ -285,7 +285,7 @@ Add AISStream, AISHub, and BarentsWatch/OpenAIS support where credentials/terms 
 
 ### M4: Capture-Assisted Adapter Tooling
 
-Adapt the `/Users/aktn/project/api-capture` harness patterns for maritime sites. Add sanitized HAR/import tooling, traffic IR generation, replay validation, schema inference, redaction tests, and disabled-by-default capture fixtures.
+Adapt the `<api-capture-checkout>` harness patterns for maritime sites. Add sanitized HAR/import tooling, traffic IR generation, replay validation, schema inference, redaction tests, and disabled-by-default capture fixtures.
 
 ### M5: Client Setup
 
