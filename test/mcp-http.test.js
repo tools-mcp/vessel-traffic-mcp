@@ -63,14 +63,17 @@ test('Streamable HTTP endpoint exposes fixture-backed read-only MCP tools', asyn
       const toolNames = tools.tools.map((tool) => tool.name).sort();
 
       assert.deepEqual(toolNames, [
+        'carrier_schedule_search',
         'credential_profiles',
         'data_sources',
         'document_vessel_lookup',
         'port_calls',
         'provider_status',
+        'schedule_delay_predict',
         'vessel_area',
         'vessel_name_resolve',
         'vessel_position',
+        'vessel_schedule',
         'vessel_search',
         'vessel_track',
       ]);

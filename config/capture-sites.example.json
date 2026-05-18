@@ -155,6 +155,42 @@
     },
     {
       "version": 1,
+      "id": "tradlinx-schedule.web",
+      "displayName": "Tradelinx Schedule (web)",
+      "providerId": "tradlinx-schedule",
+      "termsReviewStatus": "needs-terms-review",
+      "baseUrl": "https://www.tradlinx.com/ko/schedule?tab=fcl",
+      "allowedOrigins": [
+        "https://www.tradlinx.com"
+      ],
+      "forbiddenActions": [
+        { "pattern": "/login", "description": "interactive login form submission" },
+        { "pattern": "/logout", "description": "session logout endpoint" },
+        { "pattern": "/signup", "description": "registration flow" },
+        { "pattern": "/register", "description": "registration flow" },
+        { "pattern": "/account", "description": "account-management surface" },
+        { "pattern": "/billing", "description": "billing surface" },
+        { "pattern": "/payment", "description": "payment/subscription management surface" }
+      ],
+      "sessionLossIndicators": [
+        { "kind": "url-redirect", "pattern": "/login", "description": "redirected to Tradelinx login page" },
+        { "kind": "status-code", "pattern": "401", "description": "unauthenticated response" },
+        { "kind": "status-code", "pattern": "403", "description": "forbidden / session lost" },
+        { "kind": "response-body", "pattern": "로그인", "description": "Korean login-required marker" },
+        { "kind": "response-body", "pattern": "captcha", "description": "CAPTCHA/challenge marker" }
+      ],
+      "pacing": {
+        "minStepIntervalMs": 5000,
+        "maxStepsPerRun": 12,
+        "maxConcurrent": 1
+      },
+      "notes": [
+        "Capture target is public FCL/LCL schedule lookup only; source URL must be retained in sanitized fixtures and MCP responses.",
+        "If Cloudflare/CAPTCHA/403 cannot be resolved by a normal browser session, skip capture and record the reason."
+      ]
+    },
+    {
+      "version": 1,
       "id": "vesselapi.web",
       "displayName": "VesselAPI (web)",
       "providerId": "vesselapi",

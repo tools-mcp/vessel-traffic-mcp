@@ -44,7 +44,7 @@ ticketing, and the credential-profile loader read the same source of truth.
 | Global provider coverage | "Coverage" column of every category table below | `entries[].coverage` (free-text) plus `entries[].tier` (`fixture` / `terrestrial-open` / `community` / `paid-commercial`) |
 | Auth mode | Implied by category placement (Official APIs, Free / Community APIs, Commercial BYOK APIs, Enterprise Providers, Web-Only Capture Candidates) and called out in entry notes | `entries[].auth.mode` plus `entries[].auth.required`, `entries[].auth.profileFields`, and `entries[].auth.envVars` |
 | Cost / quota model | Category section intro describes the cost class; per-provider quota/throttle quirks appear in entry notes | `entries[].cost.model` (`fixture` / `free` / `open-data` / `community` / `trial` / `freemium` / `credit-based` / `subscription` / `enterprise`) plus `entries[].cost.quotaNote` |
-| Supported capabilities | Implied by the per-row "Coverage" column ("positions", "tracks", "port calls", etc.) and the tool surface listed in `README.md` | `entries[].capabilities[]` (subset of `provider_status`, `data_sources`, `vessel_search`, `vessel_position`, `vessel_area`, `vessel_track`, `port_calls`) |
+| Supported capabilities | Implied by the per-row "Coverage" column ("positions", "tracks", "port calls", "carrier schedules", "vessel schedules", etc.) and the tool surface listed in `README.md` | `entries[].capabilities[]` (subset of `provider_status`, `data_sources`, `vessel_search`, `vessel_position`, `vessel_area`, `vessel_track`, `port_calls`, `carrier_schedule_search`, `vessel_schedule`) |
 | Implementation status | "Implementation status" row underneath each category table (see one-liners below) | `entries[].implementationStatus` (`fixture` / `not_started` / `planned` / `in_progress` / `implemented` / `capture_only` / `discovery_only`) |
 
 The structured JSON is the machine-readable contract for the five axes. Any
@@ -91,6 +91,9 @@ it. Source URLs point to first-party developer docs.
 | MarineTraffic `exportvesseltrack` | Vessel historical track endpoint family | https://servicedocs.marinetraffic.com/tag/Vessel-Historical-Track |
 | VesselFinder | Terrestrial AIS positions, voyage, and master data | https://api.vesselfinder.com/docs/vessels.html |
 | MyShipTracking | Terrestrial AIS, vessel position, zones, history, ports | https://api.myshiptracking.com/docs/vessel-current-position-api |
+| SeaRates Ship Schedules API | Carrier schedules by points, vessel, and port with SCAC filters; API key via `X-API-KEY` | https://docs.searates.com/reference/schedules/available-carriers |
+| Linescape Schedule API | Customer REST API for carriers, vessels, port pairs, voyages, sailings, and port calls | https://linescape-downloads.s3.amazonaws.com/schedule-api/latest/overview.html |
+| Routescanner Connect API | Multimodal voyage options by LOCODE/terminal/operator with lead time and emissions | https://docs.routescanner.com/operation/operation-getvoyages |
 | Spire Maritime | Global satellite and terrestrial AIS data products | https://spire.com/maritime/solutions/standard-ais/ |
 | ORBCOMM / CommTrace / exactEarth | Beyond-coastal satellite AIS | https://api.commtrace.com/ |
 | Global Fishing Watch | Token API for fishing activity and vessel identity | https://globalfishingwatch.org/our-apis/documentation |
@@ -143,6 +146,10 @@ credential slots so the standard `npm test` run never reaches a paid endpoint.
 | MyShipTracking | Trial/commercial API for terrestrial AIS position, zone, history, ports | https://api.myshiptracking.com/docs/vessel-current-position-api |
 | Spire Maritime | Commercial satellite/terrestrial AIS API; BYOK adapter candidate | https://spire.com/maritime/solutions/standard-ais/ |
 | ORBCOMM / CommTrace / exactEarth | Commercial satellite AIS API; BYOK adapter candidate | https://api.commtrace.com/ |
+| SeaRates Ship Schedules API | Ship schedules by points/vessel/port, carrier list, and usage endpoint | https://docs.searates.com/reference/schedules/available-carriers |
+| Linescape Schedule API | Schedule data-on-demand API for sailings, voyages, vessels, port pairs, and port calls | https://docs.linescape.com/docs/api-usage/ |
+| IQAX Big Schedules | Sailing schedules, vessel schedules, tracking context, alerts, and API integration candidates | https://product.iqax.com/en/products-bigs/ |
+| Routescanner Connect API | Voyage options between locations, operators, transfers, lead time, and CO2e | https://docs.routescanner.com/operation/operation-getvoyages |
 | VesselAPI | Commercial/trial maritime API; terrestrial AIS ship-tracking endpoints | https://vesselapi.com/ship-tracking-api |
 | Data Docked | Vessel location, historical location, port calls, details by name, route planner, weather | https://datadocked.com/ |
 | Poseidon AIS | Vessel details, area/radius search, historical positions | https://poseidonais.com/ |
@@ -164,6 +171,7 @@ explicit operator contract are permitted.
 | Pole Star Global | Enterprise compliance/tracking provider; likely contract/API review required | https://www.polestarglobal.com/ |
 | S&P Global Sea-web | Enterprise ship, ownership, casualty, and movement context candidate | https://www.spglobal.com/marketintelligence/en/solutions/products/sea-web |
 | Lloyd's List Intelligence | Enterprise maritime intelligence and vessel movement context candidate | https://www.lloydslistintelligence.com/ |
+| CargoSmart Sailing Schedule | Enterprise schedule-search surface with carrier, vessel, voyage, ETD/ETA, transit time, service, and facility details | https://www.cargosmart.com/onlinehelp/CustomerHelp/FlashHelp/CargoSmartHelp_All_Users/Sailing_Schedule/new_schedule_search.htm |
 
 Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (all enterprise providers are `discovery_only` pending operator contract; capture is `blocked` across this category).
 
@@ -182,6 +190,7 @@ Always prefer an official API once one becomes available.
 | MarineVesselTraffic / similar map sites | Web UI candidates. Discovery-only until terms and technical feasibility are documented. |
 | FleetMon web UI | Treat as BYOK or authorized capture candidate only after account-specific terms review (<https://www.fleetmon.com/>). |
 | AIS Friends web UI | Community/contributor candidate; capture only after validating registration, contribution requirements, API terms, and redistribution policy. |
+| Tradelinx Schedule web UI | Public Korean logistics schedule candidate for FCL/LCL/rail schedule lookup; capture only after terms review and preserve the source URL (`https://www.tradlinx.com/ko/schedule?tab=fcl`, `https://www.tradlinx.com/ko/schedule?tab=lcl`, `tradlinx-schedule`). |
 
 Implementation status: web-only candidates are not part of the default routing
 fallback chain. ShipFinder has an explicit runtime adapter candidate backed by

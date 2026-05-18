@@ -20,6 +20,10 @@ surfaces may change.
   and explicit `needsConfirmation` when ambiguous.
 - **Bounding-box and port-area** queries.
 - **Recent tracks and port-call** context when a provider supports it.
+- **Carrier schedule lookup** by origin/destination, carrier SCAC/name,
+  cargo type, direct-only flag, and date windows.
+- **Vessel schedule and delay heuristic** for scheduled carrier port
+  calls, ETA/ATA variance, and source-attributed delay status.
 - **Provider inspection**: coverage limits, quota status, and data
   caveats through the read-only `provider_status` and `data_sources`
   tools.
@@ -237,6 +241,22 @@ VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY = "<your local MarineTraffic API key>"
 Do not commit or paste the real key into repository files. For
 MarineTraffic calls, ask the agent to use provider `marinetraffic` and
 credential profile label `marinetraffic`.
+
+For schedule lookup, the registered read-only tools are:
+`carrier_schedule_search`, `vessel_schedule`, and
+`schedule_delay_predict`. The fixture provider supports deterministic
+checks such as:
+
+```text
+KRPUS에서 NLRTM으로 가는 선사 스케줄을 조회하고, 출처 URL도 같이 보여줘.
+EVER GIVEN 선박 스케줄을 조회하고 ETA 지연 여부를 계산해줘.
+```
+
+Current schedule-provider candidates are tracked in
+[`docs/provider-catalog.md`](./docs/provider-catalog.md): Tradelinx is
+queued as a terms-review-pending public web capture candidate, while
+SeaRates, Linescape, IQAX Big Schedules, Routescanner, and CargoSmart
+are cataloged for BYOK/API or enterprise review.
 
 ## Project layout
 

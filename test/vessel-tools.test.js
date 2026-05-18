@@ -12,11 +12,14 @@ import { extractDocumentSignals } from '../dist/tools/document-vessel-lookup.js'
 import { normalizeVesselName } from '../dist/tools/vessel-name-resolve.js';
 
 const F3_TOOL_NAMES = Object.freeze([
+  'carrier_schedule_search',
   'document_vessel_lookup',
   'port_calls',
+  'schedule_delay_predict',
   'vessel_area',
   'vessel_name_resolve',
   'vessel_position',
+  'vessel_schedule',
   'vessel_search',
   'vessel_track',
 ]);
@@ -53,7 +56,7 @@ async function assertRejected(client, params, pattern) {
   assert.match(errorText, pattern, `error text did not match expected pattern for ${params.name}`);
 }
 
-test('F3.AC1 registers all seven read-only vessel tools with empty required arrays', async () => {
+test('F3.AC1 registers all read-only vessel and schedule tools with empty required arrays', async () => {
   await withClient(async (client) => {
     const tools = await client.listTools();
     const names = tools.tools.map((t) => t.name).sort();
@@ -236,6 +239,85 @@ test('port_calls rejects malformed portUnlocode', async () => {
       },
       /Invalid arguments|UN\/LOCODE|portUnlocode/i,
     );
+  });
+});
+
+test('carrier_schedule_search returns fixture carrier schedules with source URL metadata', async () => {
+  await withClient(async (client) => {
+    const result = await client.callTool({
+      name: 'carrier_schedule_search',
+      arguments: {
+        originUnlocode: 'KRPUS',
+        destinationUnlocode: 'NLRTM',
+        carrierScac: 'EGLV',
+        fallbackPolicy: 'allow-fixture',
+      },
+    });
+    const payload = parseStructured(result);
+    assert.equal(payload.ok, true);
+    assert.equal(payload.data.total, 1);
+    assert.equal(payload.data.schedules[0].vessel.name, 'EVER GIVEN');
+    assert.equal(payload.data.schedules[0].origin.unlocode, 'KRPUS');
+    assert.equal(payload.data.schedules[0].destination.unlocode, 'NLRTM');
+    assert.equal(payload.source.provider, 'fixture');
+  });
+});
+
+test('carrier_schedule_search rejects missing route filters', async () => {
+  await withClient(async (client) => {
+    await assertRejected(
+      client,
+      { name: 'carrier_schedule_search', arguments: { carrierScac: 'EGLV', fallbackPolicy: 'allow-fixture' } },
+      /Invalid arguments|origin and destination/i,
+    );
+  });
+});
+
+test('vessel_schedule returns fixture scheduled port calls in chronological order', async () => {
+  await withClient(async (client) => {
+    const result = await client.callTool({
+      name: 'vessel_schedule',
+      arguments: { imo: '9839272', fallbackPolicy: 'allow-fixture' },
+    });
+    const payload = parseStructured(result);
+    assert.equal(payload.ok, true);
+    assert.equal(payload.data.total, 3);
+    assert.equal(payload.data.calls[0].port.unlocode, 'KRPUS');
+    assert.equal(payload.data.calls[2].port.unlocode, 'NLRTM');
+    for (let i = 1; i < payload.data.calls.length; i += 1) {
+      const prev = payload.data.calls[i - 1].estimatedAt ?? payload.data.calls[i - 1].plannedAt;
+      const current = payload.data.calls[i].estimatedAt ?? payload.data.calls[i].plannedAt;
+      assert.ok(Date.parse(current) >= Date.parse(prev), 'scheduled calls must be chronological');
+    }
+  });
+});
+
+test('vessel_schedule rejects empty filters', async () => {
+  await withClient(async (client) => {
+    await assertRejected(
+      client,
+      { name: 'vessel_schedule', arguments: { fallbackPolicy: 'allow-fixture' } },
+      /Invalid arguments|at least one of/i,
+    );
+  });
+});
+
+test('schedule_delay_predict derives delayed status without provider credentials', async () => {
+  await withClient(async (client) => {
+    const result = await client.callTool({
+      name: 'schedule_delay_predict',
+      arguments: {
+        plannedArrivalAt: '2026-07-03T06:00:00.000Z',
+        estimatedArrivalAt: '2026-07-04T12:00:00.000Z',
+        currentPositionObservedAt: '2026-07-03T00:00:00.000Z',
+        now: '2026-07-03T06:00:00.000Z',
+      },
+    });
+    const payload = parseStructured(result);
+    assert.equal(payload.ok, true);
+    assert.equal(payload.data.status, 'delayed');
+    assert.equal(payload.data.delayHours, 30);
+    assert.equal(payload.source.transport, 'derived');
   });
 });
 

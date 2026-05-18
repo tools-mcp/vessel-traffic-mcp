@@ -15,8 +15,11 @@
         "data_sources",
         "vessel_search",
         "vessel_position",
+        "vessel_area",
         "vessel_track",
-        "port_calls"
+        "port_calls",
+        "carrier_schedule_search",
+        "vessel_schedule"
       ],
       "auth": {
         "mode": "none",
@@ -443,6 +446,242 @@
       },
       "captureEligibility": "needs-terms-review",
       "notes": "Identity/context provider; not a universal live-position fallback."
+    },
+    {
+      "id": "tradlinx-schedule",
+      "displayName": "Tradelinx Schedule",
+      "accessClass": "open",
+      "tier": "community",
+      "priority": "P1",
+      "coverage": "Korea-oriented public FCL/LCL/rail schedule search and related logistics lookup pages; source URL attribution required.",
+      "capabilities": [
+        "carrier_schedule_search",
+        "vessel_schedule"
+      ],
+      "auth": {
+        "mode": "none",
+        "required": false,
+        "profileFields": [],
+        "envVars": [],
+        "notes": "Public web schedule pages; capture eligibility still requires terms review before live browser collection."
+      },
+      "cost": {
+        "model": "free",
+        "quotaNote": "Public web UI; no committed API quota. Use conservative pacing and attribution."
+      },
+      "sources": {
+        "landingUrl": "https://www.tradlinx.com/ko/schedule?tab=fcl",
+        "referenceUrl": "https://www.tradlinx.com/lingo/search"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_TRADLINX_SCHEDULE",
+        "requiredEnvVars": [],
+        "defaultDisabled": true,
+        "notes": "Browser capture and endpoint fingerprinting must stay disabled until operator terms review."
+      },
+      "captureEligibility": "needs-terms-review",
+      "notes": "Primary public-web capture candidate for Korean FCL/LCL schedule lookup. Any captured response must preserve Tradelinx source URL attribution."
+    },
+    {
+      "id": "searates-schedules",
+      "displayName": "SeaRates Ship Schedules API",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P1",
+      "coverage": "REST Ship Schedules API for schedules by points, vessel, and port, with carriers filtered by SCAC.",
+      "capabilities": [
+        "carrier_schedule_search",
+        "vessel_schedule"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_SEARATES_SCHEDULES__API_KEY"
+        ],
+        "notes": "SeaRates schedules API uses the X-API-KEY header."
+      },
+      "cost": {
+        "model": "subscription",
+        "quotaNote": "API key and usage quota are plan-dependent; see SeaRates schedules docs."
+      },
+      "sources": {
+        "apiDocsUrl": "https://docs.searates.com/reference/schedules/available-carriers",
+        "landingUrl": "https://docs.searates.com/reference/schedules/available-carriers",
+        "signupUrl": "https://docs.searates.com/reference/schedules/available-carriers"
+      },
+      "implementationStatus": "planned",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_SEARATES_SCHEDULES",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_SEARATES_SCHEDULES__API_KEY"
+        ],
+        "defaultDisabled": true,
+        "notes": "Default tests must not call the live schedules API."
+      },
+      "captureEligibility": "blocked",
+      "notes": "Prefer the official API over web capture."
+    },
+    {
+      "id": "linescape-schedule-api",
+      "displayName": "Linescape Schedule API",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P1",
+      "coverage": "REST schedule data API covering carriers, vessels, port pairs, sailings, voyages, and port calls for Linescape customers.",
+      "capabilities": [
+        "carrier_schedule_search",
+        "vessel_schedule",
+        "port_calls"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["subscription_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_LINESCAPE_SCHEDULE__SUBSCRIPTION_KEY"
+        ],
+        "notes": "Customer subscription required; confirm exact auth scheme before adapter implementation."
+      },
+      "cost": {
+        "model": "subscription",
+        "quotaNote": "Linescape API plan subscription; data-on-demand and feeds are plan-dependent."
+      },
+      "sources": {
+        "apiDocsUrl": "https://linescape-downloads.s3.amazonaws.com/schedule-api/latest/overview.html",
+        "landingUrl": "https://docs.linescape.com/docs/api-usage/",
+        "signupUrl": "https://www.linescape.com/solutions/"
+      },
+      "implementationStatus": "planned",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_LINESCAPE_SCHEDULE",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_LINESCAPE_SCHEDULE__SUBSCRIPTION_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "blocked",
+      "notes": "Official schedule API candidate; do not use web capture when customer API access is available."
+    },
+    {
+      "id": "iqax-bigschedules",
+      "displayName": "IQAX Big Schedules",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P2",
+      "coverage": "Container sailing schedules, vessel schedules, vessel tracking context, and schedule-change alerts across major carriers.",
+      "capabilities": [
+        "carrier_schedule_search",
+        "vessel_schedule"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["subscription_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_IQAX_BIGSCHEDULES__SUBSCRIPTION_KEY"
+        ],
+        "notes": "Subscription/API integration required; public page links to API specifications but access must be confirmed."
+      },
+      "cost": {
+        "model": "subscription",
+        "quotaNote": "Subscription-dependent coverage and lookahead window."
+      },
+      "sources": {
+        "landingUrl": "https://product.iqax.com/en/products-bigs/",
+        "referenceUrl": "https://product.iqax.com/en/products-bigs/"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_IQAX_BIGSCHEDULES",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_IQAX_BIGSCHEDULES__SUBSCRIPTION_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "blocked",
+      "notes": "API specifications are linked from the public product page; adapter work waits for authorized API documentation and credentials."
+    },
+    {
+      "id": "routescanner-connect",
+      "displayName": "Routescanner Connect API",
+      "accessClass": "byok-commercial",
+      "tier": "paid-commercial",
+      "priority": "P2",
+      "coverage": "Multimodal voyage options between locations with LOCODE, terminal, operator, lead-time, transfer, and CO2e fields.",
+      "capabilities": [
+        "carrier_schedule_search"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_ROUTESCANNER_CONNECT__API_KEY"
+        ],
+        "notes": "Endpoint access is granted explicitly by Routescanner."
+      },
+      "cost": {
+        "model": "subscription",
+        "quotaNote": "Credits/access granted by Routescanner; confirm quota before live adapter tests."
+      },
+      "sources": {
+        "apiDocsUrl": "https://docs.routescanner.com/operation/operation-getvoyages",
+        "landingUrl": "https://docs.routescanner.com/operation/operation-getvoyages",
+        "signupUrl": "https://docs.routescanner.com/operation/operation-getvoyages"
+      },
+      "implementationStatus": "planned",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_ROUTESCANNER_CONNECT",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_ROUTESCANNER_CONNECT__API_KEY"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "blocked",
+      "notes": "Useful for schedule alternatives and emissions; not a direct AIS source."
+    },
+    {
+      "id": "cargosmart-schedule",
+      "displayName": "CargoSmart Sailing Schedule",
+      "accessClass": "enterprise",
+      "tier": "paid-commercial",
+      "priority": "P3",
+      "coverage": "Enterprise sailing schedule search surface including carrier, vessel, voyage, ETD/ETA, transit time, service, and facility details.",
+      "capabilities": [
+        "carrier_schedule_search",
+        "vessel_schedule"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["username", "password"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_CARGOSMART_SCHEDULE__USERNAME",
+          "VESSEL_MCP_PROFILE_CARGOSMART_SCHEDULE__PASSWORD"
+        ],
+        "notes": "Enterprise account/login surface; do not automate without explicit contract authorization."
+      },
+      "cost": {
+        "model": "enterprise",
+        "quotaNote": "Enterprise subscription/account terms apply."
+      },
+      "sources": {
+        "landingUrl": "https://www.cargosmart.com/onlinehelp/CustomerHelp/FlashHelp/CargoSmartHelp_All_Users/Sailing_Schedule/new_schedule_search.htm"
+      },
+      "implementationStatus": "discovery_only",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_CARGOSMART_SCHEDULE",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_CARGOSMART_SCHEDULE__USERNAME",
+          "VESSEL_MCP_PROFILE_CARGOSMART_SCHEDULE__PASSWORD"
+        ],
+        "defaultDisabled": true
+      },
+      "captureEligibility": "blocked",
+      "notes": "Catalog-only enterprise candidate until the operator confirms account terms and approved integration path."
     },
     {
       "id": "spire-maritime",

@@ -34,14 +34,17 @@ test('MCP server registers fixture-backed provider_status, data_sources, credent
     const credentialProfilesTool = tools.tools.find((tool) => tool.name === 'credential_profiles');
 
     assert.deepEqual(toolNames, [
+      'carrier_schedule_search',
       'credential_profiles',
       'data_sources',
       'document_vessel_lookup',
       'port_calls',
       'provider_status',
+      'schedule_delay_predict',
       'vessel_area',
       'vessel_name_resolve',
       'vessel_position',
+      'vessel_schedule',
       'vessel_search',
       'vessel_track',
     ]);

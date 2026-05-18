@@ -20,10 +20,11 @@ rules, env-var contract, and read-only tool surface are identical.
 - **Read-only.** The registered tools — `provider_status`,
   `data_sources`, `credential_profiles`, `vessel_search`,
   `vessel_name_resolve`, `document_vessel_lookup`, `vessel_position`,
-  `vessel_area`, `vessel_track`, and `port_calls` — all declare
-  `readOnlyHint: true`. Codex must not be wired to a tool surface
-  that mutates provider accounts, fleets, billing settings, saved
-  searches, or user profiles.
+  `vessel_area`, `vessel_track`, `port_calls`,
+  `carrier_schedule_search`, `vessel_schedule`, and
+  `schedule_delay_predict` — all declare `readOnlyHint: true`. Codex
+  must not be wired to a tool surface that mutates provider accounts,
+  fleets, billing settings, saved searches, or user profiles.
 - **Default verification stays fixture-only.** `npm run lint`,
   `npm test`, and `npm run build` exercise the fixture provider; the
   Codex wiring documented here never implies a paid or live call by

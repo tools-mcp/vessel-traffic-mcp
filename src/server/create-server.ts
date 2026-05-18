@@ -8,12 +8,15 @@ import {
   dataSourcesOutputSchema,
   providerStatusOutputSchema,
 } from '../tools/contracts.js';
+import { carrierScheduleSearch, carrierScheduleSearchInputSchema } from '../tools/carrier-schedule-search.js';
 import { getCredentialProfiles } from '../tools/credential-profiles.js';
 import { getDataSources } from '../tools/data-sources.js';
 import { getProviderStatus } from '../tools/provider-status.js';
 import { documentVesselLookup, documentVesselLookupInputSchema } from '../tools/document-vessel-lookup.js';
 import { portCalls, portCallsInputSchema } from '../tools/port-calls.js';
+import { scheduleDelayPredict, scheduleDelayPredictInputSchema } from '../tools/schedule-delay-predict.js';
 import { vesselArea, vesselAreaInputSchema } from '../tools/vessel-area.js';
+import { vesselSchedule, vesselScheduleInputSchema } from '../tools/vessel-schedule.js';
 import { vesselNameResolve, vesselNameResolveInputSchema } from '../tools/vessel-name-resolve.js';
 import { vesselPosition, vesselPositionInputSchema } from '../tools/vessel-position.js';
 import { vesselSearch, vesselSearchInputSchema } from '../tools/vessel-search.js';
@@ -173,6 +176,42 @@ export function createVesselMcpServer(options: CreateVesselMcpServerOptions = {}
       annotations: readOnlyAnnotations,
     },
     async (args) => jsonToolResult(await portCalls(deps, args)),
+  );
+
+  server.registerTool(
+    'carrier_schedule_search',
+    {
+      title: 'Carrier Schedule Search',
+      description:
+        'Search carrier sailing schedules by origin/destination, carrier SCAC/name, cargo type, direct-only flag, and departure/arrival windows. Returns normalized schedules with upstream source metadata.',
+      inputSchema: carrierScheduleSearchInputSchema,
+      annotations: readOnlyAnnotations,
+    },
+    async (args) => jsonToolResult(await carrierScheduleSearch(deps, args)),
+  );
+
+  server.registerTool(
+    'vessel_schedule',
+    {
+      title: 'Vessel Schedule',
+      description:
+        'Return scheduled carrier port calls for a vessel by MMSI, IMO, vessel name, voyage number, or carrier SCAC with source metadata.',
+      inputSchema: vesselScheduleInputSchema,
+      annotations: readOnlyAnnotations,
+    },
+    async (args) => jsonToolResult(await vesselSchedule(deps, args)),
+  );
+
+  server.registerTool(
+    'schedule_delay_predict',
+    {
+      title: 'Schedule Delay Predict',
+      description:
+        'Compare planned carrier schedule timestamps with estimated/actual timestamps and return an on-time, at-risk, delayed, or unknown heuristic.',
+      inputSchema: scheduleDelayPredictInputSchema,
+      annotations: readOnlyAnnotations,
+    },
+    async (args) => jsonToolResult(await scheduleDelayPredict(args)),
   );
 
   return server;

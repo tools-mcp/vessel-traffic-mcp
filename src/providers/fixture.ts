@@ -1,9 +1,13 @@
 import type {
   BoundingBox,
   CacheTtlPolicy,
+  CarrierSchedule,
+  CarrierScheduleQuery,
+  CarrierScheduleResult,
   CredentialRequirement,
   DataSource,
   PortCall,
+  PortRef,
   PortCallsQuery,
   PortCallsResult,
   ProviderCapability,
@@ -12,12 +16,15 @@ import type {
   ProviderStatus,
   RateLimitPolicy,
   SourceMetadata,
+  ScheduledPortCall,
   VesselAreaQuery,
   VesselAreaResult,
   VesselDataProvider,
   VesselIdentity,
   VesselPosition,
   VesselPositionQuery,
+  VesselScheduleQuery,
+  VesselScheduleResult,
   VesselSearchQuery,
   VesselSearchResult,
   VesselTrack,
@@ -36,6 +43,8 @@ const capabilities: ProviderCapability[] = [
   'vessel_area',
   'vessel_track',
   'port_calls',
+  'carrier_schedule_search',
+  'vessel_schedule',
 ];
 
 function fixtureSource(): SourceMetadata {
@@ -56,6 +65,8 @@ interface FixtureVesselRecord {
 }
 
 const FIXTURE_CAVEAT = 'Static fixture data; not live AIS.';
+
+const FIXTURE_SCHEDULE_CAVEAT = 'Static fixture carrier schedule; not live carrier data.';
 
 function buildPosition(identity: VesselIdentity, point: VesselTrackPoint): VesselPosition {
   const observedAt = point.observedAt;
@@ -281,6 +292,98 @@ export const FIXTURE_VESSELS: ReadonlyArray<FixtureVesselRecord> = Object.freeze
   atlanticSpirit,
 ]);
 
+export const FIXTURE_CARRIER_SCHEDULES: ReadonlyArray<CarrierSchedule> = Object.freeze([
+  {
+    scheduleId: 'fixture-schedule-ever-given-krpus-nlrtm',
+    carrier: { name: 'Evergreen Marine', scac: 'EGLV' },
+    vessel: {
+      mmsi: '477806100',
+      imo: '9839272',
+      name: 'EVER GIVEN',
+    },
+    voyageNumber: 'EG526W',
+    serviceName: 'Fixture Asia-Europe Express',
+    origin: { name: 'Busan', unlocode: 'KRPUS', countryCode: 'KR', lat: 35.101, lon: 129.04 },
+    destination: { name: 'Rotterdam', unlocode: 'NLRTM', countryCode: 'NL', lat: 51.95, lon: 4.05 },
+    transshipmentPorts: [
+      { name: 'Singapore', unlocode: 'SGSIN', countryCode: 'SG', lat: 1.264, lon: 103.84 },
+    ],
+    departureAt: '2026-06-01T08:00:00.000Z',
+    arrivalAt: '2026-07-04T12:00:00.000Z',
+    transitDays: 33,
+    cutOffAt: '2026-05-30T12:00:00.000Z',
+    cargoType: 'GC',
+    direct: false,
+    retrievedAt: FIXTURE_RETRIEVED_AT,
+    source: fixtureSource(),
+    caveats: [FIXTURE_SCHEDULE_CAVEAT],
+  },
+  {
+    scheduleId: 'fixture-schedule-ever-given-krpus-uslax',
+    carrier: { name: 'Evergreen Marine', scac: 'EGLV' },
+    vessel: {
+      mmsi: '477806100',
+      imo: '9839272',
+      name: 'EVER GIVEN',
+    },
+    voyageNumber: 'EG527E',
+    serviceName: 'Fixture Transpacific Express',
+    origin: { name: 'Busan', unlocode: 'KRPUS', countryCode: 'KR', lat: 35.101, lon: 129.04 },
+    destination: { name: 'Los Angeles', unlocode: 'USLAX', countryCode: 'US', lat: 33.736, lon: -118.264 },
+    departureAt: '2026-07-12T09:00:00.000Z',
+    arrivalAt: '2026-07-25T18:00:00.000Z',
+    transitDays: 13,
+    cutOffAt: '2026-07-10T12:00:00.000Z',
+    cargoType: 'GC',
+    direct: true,
+    retrievedAt: FIXTURE_RETRIEVED_AT,
+    source: fixtureSource(),
+    caveats: [FIXTURE_SCHEDULE_CAVEAT],
+  },
+]);
+
+export const FIXTURE_SCHEDULED_PORT_CALLS: ReadonlyArray<ScheduledPortCall> = Object.freeze([
+  {
+    vessel: { mmsi: '477806100', imo: '9839272', name: 'EVER GIVEN' },
+    carrier: { name: 'Evergreen Marine', scac: 'EGLV' },
+    voyageNumber: 'EG526W',
+    serviceName: 'Fixture Asia-Europe Express',
+    port: { name: 'Busan', unlocode: 'KRPUS', countryCode: 'KR', lat: 35.101, lon: 129.04 },
+    event: 'departure',
+    plannedAt: '2026-06-01T08:00:00.000Z',
+    estimatedAt: '2026-06-01T09:30:00.000Z',
+    retrievedAt: FIXTURE_RETRIEVED_AT,
+    source: fixtureSource(),
+    caveats: [FIXTURE_SCHEDULE_CAVEAT],
+  },
+  {
+    vessel: { mmsi: '477806100', imo: '9839272', name: 'EVER GIVEN' },
+    carrier: { name: 'Evergreen Marine', scac: 'EGLV' },
+    voyageNumber: 'EG526W',
+    serviceName: 'Fixture Asia-Europe Express',
+    port: { name: 'Singapore', unlocode: 'SGSIN', countryCode: 'SG', lat: 1.264, lon: 103.84 },
+    event: 'transshipment',
+    plannedAt: '2026-06-08T04:00:00.000Z',
+    estimatedAt: '2026-06-08T08:00:00.000Z',
+    retrievedAt: FIXTURE_RETRIEVED_AT,
+    source: fixtureSource(),
+    caveats: [FIXTURE_SCHEDULE_CAVEAT],
+  },
+  {
+    vessel: { mmsi: '477806100', imo: '9839272', name: 'EVER GIVEN' },
+    carrier: { name: 'Evergreen Marine', scac: 'EGLV' },
+    voyageNumber: 'EG526W',
+    serviceName: 'Fixture Asia-Europe Express',
+    port: { name: 'Rotterdam', unlocode: 'NLRTM', countryCode: 'NL', lat: 51.95, lon: 4.05 },
+    event: 'arrival',
+    plannedAt: '2026-07-03T06:00:00.000Z',
+    estimatedAt: '2026-07-04T12:00:00.000Z',
+    retrievedAt: FIXTURE_RETRIEVED_AT,
+    source: fixtureSource(),
+    caveats: [FIXTURE_SCHEDULE_CAVEAT],
+  },
+]);
+
 function cloneIdentity(identity: VesselIdentity): VesselIdentity {
   return {
     ...identity,
@@ -302,10 +405,59 @@ function clonePortCall(call: PortCall): PortCall {
   };
 }
 
+function clonePortRef(port: PortRef): PortRef {
+  return { ...port };
+}
+
+function cloneCarrierSchedule(schedule: CarrierSchedule): CarrierSchedule {
+  return {
+    ...schedule,
+    carrier: schedule.carrier ? { ...schedule.carrier } : undefined,
+    vessel: schedule.vessel ? cloneIdentity(schedule.vessel) : undefined,
+    origin: clonePortRef(schedule.origin),
+    destination: clonePortRef(schedule.destination),
+    transshipmentPorts: schedule.transshipmentPorts?.map(clonePortRef),
+    source: { ...schedule.source },
+    caveats: schedule.caveats ? [...schedule.caveats] : undefined,
+  };
+}
+
+function cloneScheduledPortCall(call: ScheduledPortCall): ScheduledPortCall {
+  return {
+    ...call,
+    vessel: call.vessel ? cloneIdentity(call.vessel) : undefined,
+    carrier: call.carrier ? { ...call.carrier } : undefined,
+    port: clonePortRef(call.port),
+    source: { ...call.source },
+    caveats: call.caveats ? [...call.caveats] : undefined,
+  };
+}
+
 function matchesIdentity(record: FixtureVesselRecord, mmsi?: string, imo?: string): boolean {
   if (mmsi && record.identity.mmsi !== mmsi) return false;
   if (imo && record.identity.imo !== imo) return false;
   return Boolean(mmsi || imo);
+}
+
+function matchesPort(port: PortRef, unlocode?: string, name?: string): boolean {
+  if (unlocode && port.unlocode !== unlocode.toUpperCase()) return false;
+  if (name && !(port.name ?? '').toLowerCase().includes(name.trim().toLowerCase())) return false;
+  return Boolean(unlocode || name);
+}
+
+function inDateRange(value: string | undefined, start?: string, end?: string): boolean {
+  if (!value) return false;
+  const valueMs = Date.parse(value);
+  if (!Number.isFinite(valueMs)) return false;
+  if (start) {
+    const startMs = Date.parse(start);
+    if (Number.isFinite(startMs) && valueMs < startMs) return false;
+  }
+  if (end) {
+    const endMs = Date.parse(end);
+    if (Number.isFinite(endMs) && valueMs > endMs) return false;
+  }
+  return true;
 }
 
 function noData<T>(
@@ -607,6 +759,104 @@ export class FixtureProvider implements VesselDataProvider {
       retrievedAt: FIXTURE_RETRIEVED_AT,
       source: fixtureSource(),
       caveats: [FIXTURE_CAVEAT],
+    };
+  }
+
+  async carrierScheduleSearch(query: CarrierScheduleQuery): Promise<ProviderResult<CarrierScheduleResult>> {
+    const hasRoute = Boolean(
+      (query.originUnlocode || query.originName) && (query.destinationUnlocode || query.destinationName),
+    );
+    if (!hasRoute) {
+      return noData<CarrierScheduleResult>(
+        'unsupported_query',
+        'carrier_schedule_search requires origin and destination, by UN/LOCODE or name.',
+      );
+    }
+
+    const schedules = FIXTURE_CARRIER_SCHEDULES.filter((schedule) => {
+      if (!matchesPort(schedule.origin, query.originUnlocode, query.originName)) return false;
+      if (!matchesPort(schedule.destination, query.destinationUnlocode, query.destinationName)) return false;
+      if (query.carrierScac && schedule.carrier?.scac !== query.carrierScac.toUpperCase()) return false;
+      if (
+        query.carrierName &&
+        !(schedule.carrier?.name ?? '').toLowerCase().includes(query.carrierName.trim().toLowerCase())
+      ) {
+        return false;
+      }
+      if (query.cargoType && schedule.cargoType !== query.cargoType) return false;
+      if (query.directOnly !== undefined && schedule.direct !== query.directOnly) return false;
+      if (
+        (query.departureDateFrom || query.departureDateTo) &&
+        !inDateRange(schedule.departureAt, query.departureDateFrom, query.departureDateTo)
+      ) {
+        return false;
+      }
+      if (
+        (query.arrivalDateFrom || query.arrivalDateTo) &&
+        !inDateRange(schedule.arrivalAt, query.arrivalDateFrom, query.arrivalDateTo)
+      ) {
+        return false;
+      }
+      return true;
+    }).map(cloneCarrierSchedule);
+
+    if (schedules.length === 0) {
+      return noData<CarrierScheduleResult>(
+        'identifier_not_found',
+        'No fixture carrier schedules match the supplied route criteria.',
+      );
+    }
+    const limit = query.limit && query.limit > 0 ? query.limit : schedules.length;
+    return {
+      ok: true,
+      data: { schedules: schedules.slice(0, limit), total: schedules.length },
+      retrievedAt: FIXTURE_RETRIEVED_AT,
+      source: fixtureSource(),
+      caveats: [FIXTURE_SCHEDULE_CAVEAT],
+    };
+  }
+
+  async vesselSchedule(query: VesselScheduleQuery): Promise<ProviderResult<VesselScheduleResult>> {
+    const hasFilter = Boolean(query.mmsi || query.imo || query.vesselName || query.voyageNumber);
+    if (!hasFilter) {
+      return noData<VesselScheduleResult>(
+        'unsupported_query',
+        'vessel_schedule requires mmsi, imo, vesselName, or voyageNumber.',
+      );
+    }
+
+    const calls = FIXTURE_SCHEDULED_PORT_CALLS.filter((call) => {
+      if (query.mmsi && call.vessel?.mmsi !== query.mmsi) return false;
+      if (query.imo && call.vessel?.imo !== query.imo) return false;
+      if (
+        query.vesselName &&
+        !(call.vessel?.name ?? '').toLowerCase().includes(query.vesselName.trim().toLowerCase())
+      ) {
+        return false;
+      }
+      if (query.voyageNumber && call.voyageNumber !== query.voyageNumber) return false;
+      if (query.carrierScac && call.carrier?.scac !== query.carrierScac.toUpperCase()) return false;
+      if ((query.windowStart || query.windowEnd) && !inDateRange(call.estimatedAt ?? call.plannedAt ?? call.actualAt, query.windowStart, query.windowEnd)) {
+        return false;
+      }
+      return true;
+    })
+      .map(cloneScheduledPortCall)
+      .sort((a, b) => Date.parse(a.estimatedAt ?? a.plannedAt ?? a.actualAt ?? '') - Date.parse(b.estimatedAt ?? b.plannedAt ?? b.actualAt ?? ''));
+
+    if (calls.length === 0) {
+      return noData<VesselScheduleResult>(
+        'identifier_not_found',
+        'No fixture vessel schedule calls match the supplied criteria.',
+      );
+    }
+    const limit = query.limit && query.limit > 0 ? query.limit : calls.length;
+    return {
+      ok: true,
+      data: { calls: calls.slice(0, limit), total: calls.length },
+      retrievedAt: FIXTURE_RETRIEVED_AT,
+      source: fixtureSource(),
+      caveats: [FIXTURE_SCHEDULE_CAVEAT],
     };
   }
 }

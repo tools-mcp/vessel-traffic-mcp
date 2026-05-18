@@ -45,6 +45,15 @@
       "authorizedBy": null
     },
     {
+      "providerId": "tradlinx-schedule",
+      "siteProfileId": "tradlinx-schedule.web",
+      "status": "pending-terms-review",
+      "priority": "P1",
+      "rationale": "Primary public-web schedule candidate for Korean FCL/LCL lookup; capture requires terms review and must preserve source URL attribution.",
+      "captureAuthorizedAt": null,
+      "authorizedBy": null
+    },
+    {
       "providerId": "vesselapi",
       "siteProfileId": "vesselapi.web",
       "status": "pending-terms-review",

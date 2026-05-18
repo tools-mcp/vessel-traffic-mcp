@@ -19,7 +19,7 @@ file documents the client wiring only.
 - **Read-only.** MCP tools must not modify provider accounts, fleets,
   billing settings, saved searches, or user profiles. The registered
   tools — `provider_status`, `data_sources`, `credential_profiles`, and
-  the F3.AC1 vessel tools — all declare `readOnlyHint: true`.
+  the vessel/schedule query tools — all declare `readOnlyHint: true`.
 - **Default verification stays fixture-only.** `npm run lint`,
   `npm test`, and `npm run build` exercise the fixture provider; no
   client configuration in this runbook implies a paid or live call by
@@ -54,6 +54,7 @@ The current registered tool surface is fixture-backed and read-only:
 - `provider_status`, `data_sources`, `credential_profiles`
 - `vessel_search`, `vessel_name_resolve`, `document_vessel_lookup`,
   `vessel_position`, `vessel_area`, `vessel_track`, `port_calls`
+- `carrier_schedule_search`, `vessel_schedule`, `schedule_delay_predict`
 
 ## Claude Desktop (stdio)
 

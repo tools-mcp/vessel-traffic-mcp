@@ -6,11 +6,13 @@ export const providerCapabilityValues = [
   'vessel_area',
   'vessel_track',
   'port_calls',
+  'carrier_schedule_search',
+  'vessel_schedule',
 ] as const;
 
 export type ProviderCapability = (typeof providerCapabilityValues)[number];
 
-export const providerTransportValues = ['api', 'websocket', 'fixture', 'capture-fixture'] as const;
+export const providerTransportValues = ['api', 'websocket', 'fixture', 'capture-fixture', 'derived'] as const;
 
 export type ProviderTransport = (typeof providerTransportValues)[number];
 
@@ -80,6 +82,16 @@ export type NavigationStatus = (typeof navigationStatusValues)[number];
 export const portCallEventValues = ['arrival', 'departure', 'in_port', 'transit', 'unknown'] as const;
 
 export type PortCallEvent = (typeof portCallEventValues)[number];
+
+export const scheduledPortCallEventValues = [
+  'arrival',
+  'departure',
+  'port_call',
+  'transshipment',
+  'unknown',
+] as const;
+
+export type ScheduledPortCallEvent = (typeof scheduledPortCallEventValues)[number];
 
 export const noDataReasonValues = [
   'no_provider_for_capability',
@@ -238,6 +250,113 @@ export interface PortCallsResult {
   total: number;
 }
 
+export interface PortRef {
+  name?: string;
+  unlocode?: string;
+  countryCode?: string;
+  lat?: number;
+  lon?: number;
+  terminalName?: string;
+  terminalCode?: string;
+}
+
+export interface CarrierRef {
+  name?: string;
+  scac?: string;
+}
+
+export type CargoType = 'GC' | 'REEF' | 'LCL' | 'RORO';
+
+export interface CarrierScheduleQuery {
+  originUnlocode?: string;
+  destinationUnlocode?: string;
+  originName?: string;
+  destinationName?: string;
+  carrierScac?: string;
+  carrierName?: string;
+  cargoType?: CargoType;
+  departureDateFrom?: string;
+  departureDateTo?: string;
+  arrivalDateFrom?: string;
+  arrivalDateTo?: string;
+  directOnly?: boolean;
+  limit?: number;
+}
+
+export interface CarrierSchedule {
+  scheduleId?: string;
+  carrier?: CarrierRef;
+  vessel?: VesselIdentity;
+  voyageNumber?: string;
+  serviceName?: string;
+  origin: PortRef;
+  destination: PortRef;
+  transshipmentPorts?: PortRef[];
+  departureAt?: string;
+  arrivalAt?: string;
+  transitDays?: number;
+  cutOffAt?: string;
+  cargoType?: CargoType;
+  direct?: boolean;
+  source: SourceMetadata;
+  retrievedAt: string;
+  caveats?: string[];
+}
+
+export interface CarrierScheduleResult {
+  schedules: CarrierSchedule[];
+  total: number;
+}
+
+export interface VesselScheduleQuery {
+  mmsi?: string;
+  imo?: string;
+  vesselName?: string;
+  voyageNumber?: string;
+  carrierScac?: string;
+  windowStart?: string;
+  windowEnd?: string;
+  limit?: number;
+}
+
+export interface ScheduledPortCall {
+  vessel?: VesselIdentity;
+  carrier?: CarrierRef;
+  voyageNumber?: string;
+  serviceName?: string;
+  port: PortRef;
+  event: ScheduledPortCallEvent;
+  plannedAt?: string;
+  estimatedAt?: string;
+  actualAt?: string;
+  source: SourceMetadata;
+  retrievedAt: string;
+  caveats?: string[];
+}
+
+export interface VesselScheduleResult {
+  calls: ScheduledPortCall[];
+  total: number;
+}
+
+export interface ScheduleDelayPredictionQuery {
+  plannedArrivalAt: string;
+  estimatedArrivalAt?: string;
+  actualArrivalAt?: string;
+  plannedDepartureAt?: string;
+  actualDepartureAt?: string;
+  currentPositionObservedAt?: string;
+  now?: string;
+}
+
+export interface ScheduleDelayPredictionResult {
+  status: 'on_time' | 'at_risk' | 'delayed' | 'unknown';
+  delayHours?: number;
+  confidence: 'high' | 'medium' | 'low' | 'unknown';
+  basis: string[];
+  evaluatedAt: string;
+}
+
 export interface VesselDataProvider {
   id: string;
   capabilities(): ProviderCapability[];
@@ -252,6 +371,8 @@ export interface VesselDataProvider {
   area?(query: VesselAreaQuery): Promise<ProviderResult<VesselAreaResult>>;
   track?(query: VesselTrackQuery): Promise<ProviderResult<VesselTrack>>;
   portCalls?(query: PortCallsQuery): Promise<ProviderResult<PortCallsResult>>;
+  carrierScheduleSearch?(query: CarrierScheduleQuery): Promise<ProviderResult<CarrierScheduleResult>>;
+  vesselSchedule?(query: VesselScheduleQuery): Promise<ProviderResult<VesselScheduleResult>>;
 }
 
 export interface VesselIdentity {

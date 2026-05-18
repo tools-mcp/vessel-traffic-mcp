@@ -3,7 +3,9 @@ import { test } from 'node:test';
 
 import {
   FIXTURE_ADAPTER_VERSION,
+  FIXTURE_CARRIER_SCHEDULES,
   FIXTURE_RETRIEVED_AT,
+  FIXTURE_SCHEDULED_PORT_CALLS,
   FIXTURE_VESSELS,
   createFixtureProvider,
 } from '../dist/providers/fixture.js';
@@ -25,12 +27,22 @@ test('fixture seed data is non-empty and exposes each F2.AC3 vessel identity', (
     assert.ok(vessel.track.length >= 2, 'each fixture vessel must declare a multi-point track');
     assert.ok(vessel.portCalls.length >= 1, 'each fixture vessel must declare at least one port call');
   }
+  assert.ok(FIXTURE_CARRIER_SCHEDULES.length >= 1, 'fixture must include carrier schedules');
+  assert.ok(FIXTURE_SCHEDULED_PORT_CALLS.length >= 1, 'fixture must include scheduled port calls');
 });
 
 test('FixtureProvider advertises every query capability it implements', () => {
   const provider = createFixtureProvider();
   const advertised = provider.capabilities();
-  for (const capability of ['vessel_search', 'vessel_position', 'vessel_area', 'vessel_track', 'port_calls']) {
+  for (const capability of [
+    'vessel_search',
+    'vessel_position',
+    'vessel_area',
+    'vessel_track',
+    'port_calls',
+    'carrier_schedule_search',
+    'vessel_schedule',
+  ]) {
     assert.ok(advertised.includes(capability), `missing capability ${capability}`);
   }
   // capability -> method alignment: each query capability must be backed by a method.
@@ -39,6 +51,8 @@ test('FixtureProvider advertises every query capability it implements', () => {
   assert.equal(typeof provider.area, 'function');
   assert.equal(typeof provider.track, 'function');
   assert.equal(typeof provider.portCalls, 'function');
+  assert.equal(typeof provider.carrierScheduleSearch, 'function');
+  assert.equal(typeof provider.vesselSchedule, 'function');
 });
 
 test('search by name returns deterministic identity matches with source metadata', async () => {
@@ -230,6 +244,53 @@ test('portCalls for unknown vessel returns identifier_not_found', async () => {
   assert.equal(result.reason, 'identifier_not_found');
 });
 
+test('carrierScheduleSearch by UN/LOCODE returns deterministic schedule rows', async () => {
+  const provider = createFixtureProvider();
+  const first = await provider.carrierScheduleSearch({
+    originUnlocode: 'KRPUS',
+    destinationUnlocode: 'NLRTM',
+    carrierScac: 'EGLV',
+  });
+  const second = await provider.carrierScheduleSearch({
+    originUnlocode: 'KRPUS',
+    destinationUnlocode: 'NLRTM',
+    carrierScac: 'EGLV',
+  });
+  assert.ok(isDataResult(first));
+  assert.deepEqual(first, second);
+  assert.equal(first.data.total, 1);
+  assert.equal(first.data.schedules[0].vessel.name, 'EVER GIVEN');
+  assert.equal(first.data.schedules[0].source.provider, 'fixture');
+});
+
+test('carrierScheduleSearch without route returns unsupported_query', async () => {
+  const provider = createFixtureProvider();
+  const result = await provider.carrierScheduleSearch({ carrierScac: 'EGLV' });
+  assert.ok(isNoDataResult(result));
+  assert.equal(result.reason, 'unsupported_query');
+});
+
+test('vesselSchedule returns chronological scheduled calls for a vessel', async () => {
+  const provider = createFixtureProvider();
+  const result = await provider.vesselSchedule({ imo: '9839272' });
+  assert.ok(isDataResult(result));
+  assert.equal(result.data.total, 3);
+  assert.equal(result.data.calls[0].port.unlocode, 'KRPUS');
+  assert.equal(result.data.calls[2].event, 'arrival');
+  for (let i = 1; i < result.data.calls.length; i += 1) {
+    const prev = result.data.calls[i - 1].estimatedAt ?? result.data.calls[i - 1].plannedAt;
+    const current = result.data.calls[i].estimatedAt ?? result.data.calls[i].plannedAt;
+    assert.ok(Date.parse(current) >= Date.parse(prev), 'scheduled calls must be chronological');
+  }
+});
+
+test('vesselSchedule without filters returns unsupported_query', async () => {
+  const provider = createFixtureProvider();
+  const result = await provider.vesselSchedule({});
+  assert.ok(isNoDataResult(result));
+  assert.equal(result.reason, 'unsupported_query');
+});
+
 test('every fixture data result carries fixture source and retrievedAt parity', async () => {
   const provider = createFixtureProvider();
   const calls = [
@@ -238,6 +299,8 @@ test('every fixture data result carries fixture source and retrievedAt parity', 
     await provider.area({ boundingBox: { latMin: 0, latMax: 90, lonMin: -180, lonMax: 180 } }),
     await provider.track({ mmsi: '477806100' }),
     await provider.portCalls({ mmsi: '477806100' }),
+    await provider.carrierScheduleSearch({ originUnlocode: 'KRPUS', destinationUnlocode: 'NLRTM' }),
+    await provider.vesselSchedule({ imo: '9839272' }),
   ];
   for (const r of calls) {
     assert.ok(isDataResult(r), 'expected data result for permissive query');
@@ -255,6 +318,8 @@ test('fixture provider never leaks credential-shaped fields in any query respons
     await provider.area({ boundingBox: { latMin: 0, latMax: 90, lonMin: -180, lonMax: 180 } }),
     await provider.track({ mmsi: '477806100' }),
     await provider.portCalls({ mmsi: '477806100' }),
+    await provider.carrierScheduleSearch({ originUnlocode: 'KRPUS', destinationUnlocode: 'NLRTM' }),
+    await provider.vesselSchedule({ imo: '9839272' }),
   ];
   for (const r of results) {
     const serialized = JSON.stringify(r);
@@ -265,7 +330,15 @@ test('fixture provider never leaks credential-shaped fields in any query respons
 test('router selects fixture provider for every advertised query capability under allow-fixture', () => {
   const fixture = createFixtureProvider();
   const registry = createProviderRegistry([fixture]);
-  for (const capability of ['vessel_search', 'vessel_position', 'vessel_area', 'vessel_track', 'port_calls']) {
+  for (const capability of [
+    'vessel_search',
+    'vessel_position',
+    'vessel_area',
+    'vessel_track',
+    'port_calls',
+    'carrier_schedule_search',
+    'vessel_schedule',
+  ]) {
     const decision = routeProvider(registry, { capability, fallbackPolicy: 'allow-fixture' });
     assert.equal(decision.selected?.providerId, 'fixture', `fixture must be selected for ${capability}`);
     assert.equal(decision.selected?.tier, 'fixture');

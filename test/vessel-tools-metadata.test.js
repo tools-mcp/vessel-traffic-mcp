@@ -21,7 +21,7 @@ const catalogText = readFileSync(new URL('../docs/provider-catalog.md', import.m
 
 const SOURCE_FIELDS = ['provider', 'adapterVersion', 'transport'];
 const CONFIDENCE_VALUES = new Set(['high', 'medium', 'low', 'unknown']);
-const TRANSPORT_VALUES = new Set(['api', 'websocket', 'fixture', 'capture-fixture']);
+const TRANSPORT_VALUES = new Set(['api', 'websocket', 'fixture', 'capture-fixture', 'derived']);
 const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+\-]\d{2}:?\d{2})$/;
 
 function defineFakeProvider(overrides) {
@@ -299,6 +299,70 @@ test('F3.AC2 port_calls response carries per-call source, retrievedAt, observedA
         assertIso(call.observedAt, `port_calls.data.calls[${i}].observedAt`);
       }
     }
+  });
+});
+
+test('F3.AC2 carrier_schedule_search response carries source and per-schedule source metadata', async () => {
+  const registry = buildFixtureRegistry();
+  await withServer(registry, async (client) => {
+    const result = await client.callTool({
+      name: 'carrier_schedule_search',
+      arguments: {
+        originUnlocode: 'KRPUS',
+        destinationUnlocode: 'NLRTM',
+        fallbackPolicy: 'allow-fixture',
+      },
+    });
+    const payload = structured(result);
+    assert.equal(payload.ok, true);
+    assertIso(payload.retrievedAt, 'carrier_schedule_search.retrievedAt');
+    assertSourceShape(payload.source, 'carrier_schedule_search.source');
+    assert.ok(Array.isArray(payload.data.schedules));
+    assert.ok(payload.data.schedules.length > 0);
+    for (const [i, schedule] of payload.data.schedules.entries()) {
+      assertIso(schedule.retrievedAt, `carrier_schedule_search.data.schedules[${i}].retrievedAt`);
+      assertSourceShape(schedule.source, `carrier_schedule_search.data.schedules[${i}].source`);
+    }
+  });
+});
+
+test('F3.AC2 vessel_schedule response carries source and per-call schedule metadata', async () => {
+  const registry = buildFixtureRegistry();
+  await withServer(registry, async (client) => {
+    const result = await client.callTool({
+      name: 'vessel_schedule',
+      arguments: { imo: '9839272', fallbackPolicy: 'allow-fixture' },
+    });
+    const payload = structured(result);
+    assert.equal(payload.ok, true);
+    assertIso(payload.retrievedAt, 'vessel_schedule.retrievedAt');
+    assertSourceShape(payload.source, 'vessel_schedule.source');
+    assert.ok(Array.isArray(payload.data.calls));
+    assert.ok(payload.data.calls.length > 0);
+    for (const [i, call] of payload.data.calls.entries()) {
+      assertIso(call.retrievedAt, `vessel_schedule.data.calls[${i}].retrievedAt`);
+      assertSourceShape(call.source, `vessel_schedule.data.calls[${i}].source`);
+    }
+  });
+});
+
+test('schedule_delay_predict response carries derived source metadata', async () => {
+  const registry = buildFixtureRegistry();
+  await withServer(registry, async (client) => {
+    const result = await client.callTool({
+      name: 'schedule_delay_predict',
+      arguments: {
+        plannedArrivalAt: '2026-07-03T06:00:00.000Z',
+        estimatedArrivalAt: '2026-07-04T12:00:00.000Z',
+        now: '2026-07-03T06:00:00.000Z',
+      },
+    });
+    const payload = structured(result);
+    assert.equal(payload.ok, true);
+    assertIso(payload.retrievedAt, 'schedule_delay_predict.retrievedAt');
+    assertSourceShape(payload.source, 'schedule_delay_predict.source');
+    assert.equal(payload.source.transport, 'derived');
+    assertIso(payload.data.evaluatedAt, 'schedule_delay_predict.data.evaluatedAt');
   });
 });
 
