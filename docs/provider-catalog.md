@@ -95,7 +95,7 @@ it. Source URLs point to first-party developer docs.
 | ORBCOMM / CommTrace / exactEarth | Beyond-coastal satellite AIS | https://api.commtrace.com/ |
 | Global Fishing Watch | Token API for fishing activity and vessel identity | https://globalfishingwatch.org/our-apis/documentation |
 
-Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` for each provider above (MarineTraffic and VesselFinder are `implemented` via the shared BYOK template; other rows are `not_started` or `discovery_only`).
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` for each provider above (MarineTraffic `shipsearch`, `exportvessel`, `exportvesseltrack`, `portcalls`, and VesselFinder are `implemented` behind redacted BYOK profiles; other rows are `not_started` or `discovery_only`).
 
 ### Open-Data Sources
 
@@ -149,7 +149,7 @@ credential slots so the standard `npm test` run never reaches a paid endpoint.
 | ais.now | Commercial API/web platform candidate with REST API claims; validate docs, terms, and coverage before implementation | https://ais.now/ |
 | FleetMon / Kpler | Commercial maritime intelligence; treat as BYOK or authorized capture candidate only after account-specific terms review | https://www.fleetmon.com/ |
 
-Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (MarineTraffic and VesselFinder are `implemented` behind redacted BYOK profiles; the remaining commercial backlog entries are `not_started` or `discovery_only`).
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (MarineTraffic `shipsearch`, `exportvessel`, `exportvesseltrack`, `portcalls`, and VesselFinder are `implemented` behind redacted BYOK profiles; the remaining commercial backlog entries are `not_started` or `discovery_only`).
 
 ### Enterprise Providers
 

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
+import { loadCredentialProfiles } from '../dist/config/credentials.js';
 import { createProviderRegistry } from '../dist/providers/registry.js';
 import {
   MYSHIPTRACKING_ADAPTER_VERSION,
@@ -17,6 +18,7 @@ import {
   parseMyShipTrackingSearchBody,
 } from '../dist/providers/myshiptracking.js';
 import {
+  BYOK_PROVIDERS_ENV,
   PUBLIC_PROVIDERS_ENV,
   createRuntimeProviderRegistry,
 } from '../dist/providers/runtime-registry.js';
@@ -399,4 +401,27 @@ test('Runtime registry keeps fixture-only default and enables public adapters by
     'shipfinder',
     'fixture',
   ]);
+});
+
+test('Runtime registry enables MarineTraffic BYOK when the default credential profile is configured', () => {
+  const credentialStore = loadCredentialProfiles({
+    env: {
+      VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY: 'test-key-not-live',
+    },
+    cwd: '/nonexistent',
+    readFile: () => undefined,
+  });
+  const registry = createRuntimeProviderRegistry({}, credentialStore);
+  assert.deepEqual(registry.providers().map((provider) => provider.id), ['marinetraffic', 'fixture']);
+});
+
+test('Runtime registry can enable MarineTraffic BYOK explicitly when a credential store is supplied', () => {
+  const credentialStore = loadCredentialProfiles({
+    env: {},
+    cwd: '/nonexistent',
+    readFile: () => undefined,
+  });
+  const registry = createRuntimeProviderRegistry({ [BYOK_PROVIDERS_ENV]: 'marinetraffic' }, credentialStore);
+  assert.deepEqual(registry.providers().map((provider) => provider.id), ['marinetraffic', 'fixture']);
+  assert.equal(registry.byId('marinetraffic')?.metadata?.().tier, 'paid-commercial');
 });

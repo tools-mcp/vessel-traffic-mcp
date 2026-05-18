@@ -117,12 +117,21 @@ profile label and status are exposed.
 
 ```bash
 # Env-var form (preferred): VESSEL_MCP_PROFILE_<LABEL>__<FIELD>
-export VESSEL_MCP_PROFILE_MYTEAM__MARINETRAFFIC_API_KEY="<your-key>"
+export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
 
 # Or, for local development, use the gitignored overlay:
 #   config/credential-profiles.local.json
 # (this file is in .gitignore and must never be committed)
 ```
+
+MarineTraffic / Kpler official API support is BYOK-only. With a
+MarineTraffic key configured under the `marinetraffic` profile, the
+adapter can call the documented `shipsearch`, `exportvessel`,
+`exportvesseltrack`, and `portcalls` endpoints for search, latest
+position, recent tracks, and recent vessel port calls. Requests should
+route with `provider: "marinetraffic"`; if the configured profile label
+is not `marinetraffic`, also pass a `credentialProfile` object with
+`providerId: "marinetraffic"` and the configured profile label.
 
 See [`docs/runbooks/credential-profiles.md`](./docs/runbooks/credential-profiles.md)
 and [`docs/runbooks/operator.md`](./docs/runbooks/operator.md).
@@ -168,6 +177,66 @@ npm run start:map
 The UI performs `name/IMO/MMSI -> MMSI -> latest position` through the
 MyShipTracking adapter and displays the provider/source URL alongside
 the map marker.
+
+### Codex agent setup on another Mac
+
+If you ask a Codex agent on another Mac to set this up, give it this
+README section and have it perform these steps. The agent should not
+copy private files from another machine and must not commit
+`~/.codex/config.toml`.
+
+```bash
+cd ~/project
+git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
+cd vessel-traffic-mcp
+npm ci
+npm run build
+```
+
+Then the agent should add this MCP entry to that Mac's
+`~/.codex/config.toml`, replacing the path only if the checkout lives
+somewhere else:
+
+```toml
+[mcp_servers.vessel-traffic-mcp]
+command = "node"
+args = ["/absolute/path/to/vessel-traffic-mcp/dist/index.js"]
+
+[mcp_servers.vessel-traffic-mcp.env]
+VESSEL_MCP_TRANSPORT = "stdio"
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS = "myshiptracking"
+```
+
+Restart the Codex app after editing the config. In a fresh Codex
+session, test with:
+
+```text
+EVER GIVEN 현재 위치 조회해줘. 출처 URL도 같이 보여줘.
+```
+
+For the browser map UI:
+
+```bash
+cd /absolute/path/to/vessel-traffic-mcp
+npm run start:map
+```
+
+Open `http://127.0.0.1:8787` and search `EVER GIVEN` or MMSI
+`353136000`. The UI should display the map marker and a visible
+`출처 보기` link to the source service.
+
+Optional MarineTraffic official API setup for the same Codex entry:
+add these lines to the existing
+`[mcp_servers.vessel-traffic-mcp.env]` table:
+
+```toml
+VESSEL_MCP_ENABLE_BYOK_PROVIDERS = "marinetraffic"
+VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY = "<your local MarineTraffic API key>"
+```
+
+Do not commit or paste the real key into repository files. For
+MarineTraffic calls, ask the agent to use provider `marinetraffic` and
+credential profile label `marinetraffic`.
 
 ## Project layout
 

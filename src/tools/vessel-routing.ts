@@ -155,6 +155,14 @@ export function resolveProvider(args: ResolveProviderArgs): ResolveProviderSucce
     if (stored.provider && stored.provider !== credentialProfile.providerId) {
       credentialProfile = { providerId: stored.provider, label: credentialProfile.label };
     }
+  } else if (routing.provider) {
+    const stored = activeStore.get(routing.provider);
+    if (stored?.status === 'configured') {
+      credentialProfile = {
+        providerId: stored.provider ?? routing.provider,
+        label: stored.label,
+      };
+    }
   }
 
   const request: ProviderRouteRequest = {
@@ -198,4 +206,3 @@ export function resolveProvider(args: ResolveProviderArgs): ResolveProviderSucce
     considered: decision.considered,
   };
 }
-

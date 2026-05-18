@@ -93,8 +93,17 @@ that provider and account) go in the same `env` table:
 ```toml
 [mcp_servers.vessel-traffic-mcp.env]
 VESSEL_MCP_TRANSPORT = "stdio"
+VESSEL_MCP_ENABLE_BYOK_PROVIDERS = "marinetraffic"
 VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY = "<your key>"
 ```
+
+The MarineTraffic adapter is BYOK-only and implements the documented
+`shipsearch`, `exportvessel`, `exportvesseltrack`, and `portcalls`
+endpoints. Route calls with provider `marinetraffic` and credential
+profile label `marinetraffic` when you want the official API instead of
+the fixture or public MyShipTracking candidate. If the profile label is
+exactly `marinetraffic`, the router can infer it when provider
+`marinetraffic` is explicitly requested.
 
 Do not paste real keys into chat. Keep them in this local config file
 only; `~/.codex/config.toml` lives outside this repository and must

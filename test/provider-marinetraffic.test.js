@@ -170,6 +170,7 @@ test('MarineTraffic fetchVessel embeds the api_key as a path segment (exportvess
   assert.equal(result.records[0].mmsi, 366999999);
   assert.equal(result.records[0].name, 'TEST VESSEL');
   assert.equal(result.records[0].latitude, 37.7749);
+  assert.equal(result.records[0].sog, 1.23);
   assert.equal(result.records[0].observedAt, '2026-05-15T11:59:00');
   assert.equal(result.retrievedAt, '2026-05-15T12:00:00.000Z');
   assert.equal(result.source.provider, MARINETRAFFIC_PROVIDER_ID);
@@ -182,6 +183,7 @@ test('MarineTraffic fetchVessel embeds the api_key as a path segment (exportvess
     `unexpected request URL: ${url}`,
   );
   assert.ok(url.includes(encodeURIComponent(SECRET_API_KEY)), 'api_key must be the path segment');
+  assert.ok(url.includes('v=6'));
   assert.ok(url.includes('mmsi=366999999'));
   // The credential must never appear in headers — path-segment auth only.
   for (const [name, value] of Object.entries(init?.headers ?? {})) {
@@ -190,6 +192,169 @@ test('MarineTraffic fetchVessel embeds the api_key as a path segment (exportvess
       `header ${name} leaked credential`,
     );
   }
+});
+
+test('MarineTraffic latestPosition normalizes exportvessel into the MCP position contract', async () => {
+  const clock = fakeClock(Date.parse('2026-05-15T12:05:00Z'));
+  const { fetcher } = makeFakeFetcher(async () =>
+    jsonOkResponse([
+      {
+        MMSI: '366999999',
+        IMO: '9876543',
+        SHIPNAME: 'TEST VESSEL',
+        LAT: '37.774900',
+        LON: '-122.419400',
+        SPEED: '123',
+        COURSE: '90',
+        HEADING: '91',
+        STATUS: '0',
+        TIMESTAMP: '2026-05-15T12:00:00.000Z',
+      },
+    ]),
+  );
+  const provider = createMarineTrafficProvider({
+    credentialStore: storeWithMarineTrafficKey(),
+    fetcher,
+    clock,
+  });
+  const result = await provider.latestPosition({ mmsi: '366999999' });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.equal(result.data.identity.name, 'TEST VESSEL');
+  assert.equal(result.data.identity.mmsi, '366999999');
+  assert.equal(result.data.lat, 37.7749);
+  assert.equal(result.data.lon, -122.4194);
+  assert.equal(result.data.speedKnots, 12.3);
+  assert.equal(result.data.navigationStatus, 'under_way_using_engine');
+  assert.equal(result.data.freshnessSeconds, 300);
+  assert.equal(result.source.landingUrl, MARINETRAFFIC_LANDING_URL);
+});
+
+test('MarineTraffic search uses the official shipsearch endpoint and keeps MT_URL as source identity metadata', async () => {
+  const { fetcher, calls } = makeFakeFetcher(async () =>
+    jsonOkResponse([
+      {
+        SHIPNAME: 'EVER GIVEN',
+        MMSI: '353136000',
+        IMO: '9811000',
+        SHIP_ID: '7430000',
+        CALLSIGN: '3EYT2',
+        TYPE_NAME: 'Container Ship',
+        FLAG: 'PA',
+        MT_URL: 'https://www.marinetraffic.com/en/ais/details/ships/shipid:7430000',
+      },
+    ]),
+  );
+  const provider = createMarineTrafficProvider({
+    credentialStore: storeWithMarineTrafficKey(),
+    fetcher,
+  });
+  const result = await provider.search({ name: 'EVER GIVEN', limit: 1 });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.equal(result.data.total, 1);
+  assert.equal(result.data.matches[0].name, 'EVER GIVEN');
+  assert.equal(result.data.matches[0].providerIds.marinetrafficUrl, 'https://www.marinetraffic.com/en/ais/details/ships/shipid:7430000');
+  assert.equal(calls.length, 1);
+  assert.ok(calls[0].url.startsWith(`${MARINETRAFFIC_DEFAULT_API_BASE_URL}/shipsearch/`));
+  assert.ok(calls[0].url.includes(encodeURIComponent(SECRET_API_KEY)));
+  assert.ok(calls[0].url.includes('shipname=EVER+GIVEN'));
+});
+
+test('MarineTraffic track uses exportvesseltrack and returns ordered track points', async () => {
+  const clock = fakeClock(Date.parse('2026-05-15T12:00:00Z'));
+  const { fetcher, calls } = makeFakeFetcher(async () =>
+    jsonOkResponse([
+      {
+        MMSI: '353136000',
+        IMO: '9811000',
+        LAT: '37.0',
+        LON: '128.0',
+        SPEED: '100',
+        COURSE: '90',
+        HEADING: '91',
+        STATUS: '0',
+        TIMESTAMP: '2026-05-15T11:00:00.000Z',
+      },
+      {
+        MMSI: '353136000',
+        IMO: '9811000',
+        LAT: '37.5',
+        LON: '128.5',
+        SPEED: '110',
+        COURSE: '91',
+        HEADING: '92',
+        STATUS: '0',
+        TIMESTAMP: '2026-05-15T11:30:00.000Z',
+      },
+    ]),
+  );
+  const provider = createMarineTrafficProvider({
+    credentialStore: storeWithMarineTrafficKey(),
+    fetcher,
+    clock,
+  });
+  const result = await provider.track({
+    mmsi: '353136000',
+    windowStart: '2026-05-15T10:00:00.000Z',
+    windowEnd: '2026-05-15T12:00:00.000Z',
+  });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.equal(result.data.identity.mmsi, '353136000');
+  assert.equal(result.data.pointCount, 2);
+  assert.equal(result.data.points[0].speedKnots, 10);
+  assert.equal(result.data.points[1].observedAt, '2026-05-15T11:30:00.000Z');
+  assert.equal(calls.length, 1);
+  assert.ok(calls[0].url.startsWith(`${MARINETRAFFIC_DEFAULT_API_BASE_URL}/exportvesseltrack/`));
+  assert.ok(calls[0].url.includes('v=3'));
+  assert.ok(calls[0].url.includes('fromdate=2026-05-15T10%3A00%3A00.000Z'));
+  assert.ok(calls[0].url.includes('todate=2026-05-15T12%3A00%3A00.000Z'));
+});
+
+test('MarineTraffic portCalls uses portcalls and maps MOVE_TYPE 0/1 to arrival/departure', async () => {
+  const { fetcher, calls } = makeFakeFetcher(async () =>
+    jsonOkResponse([
+      {
+        SHIP_ID: '3351323',
+        IMO: '9811000',
+        MMSI: '353136000',
+        SHIPNAME: 'EVER GIVEN',
+        TIMESTAMP_UTC: '2026-05-15T10:15:00',
+        MOVE_TYPE: '0',
+        PORT_NAME: 'AMSTERDAM',
+        PORT_COUNTRY_CODE: 'NL',
+        PORT_UNLOCODE: 'NLAMS',
+      },
+      {
+        SHIP_ID: '3351323',
+        IMO: '9811000',
+        MMSI: '353136000',
+        SHIPNAME: 'EVER GIVEN',
+        TIMESTAMP_UTC: '2026-05-15T11:15:00',
+        MOVE_TYPE: '1',
+        PORT_NAME: 'AMSTERDAM',
+        PORT_COUNTRY_CODE: 'NL',
+        PORT_UNLOCODE: 'NLAMS',
+      },
+    ]),
+  );
+  const provider = createMarineTrafficProvider({
+    credentialStore: storeWithMarineTrafficKey(),
+    fetcher,
+  });
+  const result = await provider.portCalls({ mmsi: '353136000', portUnlocode: 'NLAMS', limit: 1 });
+  assert.equal(result.ok, true);
+  if (!result.ok) return;
+  assert.equal(result.data.total, 2);
+  assert.equal(result.data.calls.length, 1);
+  assert.equal(result.data.calls[0].event, 'arrival');
+  assert.equal(result.data.calls[0].arrivalAt, '2026-05-15T10:15:00.000Z');
+  assert.equal(result.data.calls[0].port.unlocode, 'NLAMS');
+  assert.equal(calls.length, 1);
+  assert.ok(calls[0].url.startsWith(`${MARINETRAFFIC_DEFAULT_API_BASE_URL}/portcalls/`));
+  assert.ok(calls[0].url.includes('v=6'));
+  assert.ok(calls[0].url.includes('timespan=2880'));
 });
 
 test('MarineTraffic endpointUrlFor returns a credential-free diagnostic URL', () => {

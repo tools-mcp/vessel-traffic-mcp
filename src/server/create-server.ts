@@ -48,8 +48,8 @@ export interface CreateVesselMcpServerOptions {
 }
 
 export function createVesselMcpServer(options: CreateVesselMcpServerOptions = {}): McpServer {
-  const registry = options.registry ?? createRuntimeProviderRegistry();
   const credentialStore = options.credentialStore ?? loadCredentialProfiles();
+  const registry = options.registry ?? createRuntimeProviderRegistry(process.env, credentialStore);
   const server = new McpServer({
     name: 'vessel-traffic-mcp',
     version: serverVersion,

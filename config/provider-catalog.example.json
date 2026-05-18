@@ -15,7 +15,6 @@
         "data_sources",
         "vessel_search",
         "vessel_position",
-        "vessel_area",
         "vessel_track",
         "port_calls"
       ],
@@ -87,7 +86,7 @@
         "notes": "Live tests require an operator-supplied BYOK profile."
       },
       "captureEligibility": "needs-terms-review",
-      "notes": "Web UI capture only with explicit operator authorization and terms review. Adapter is implemented via the shared paid-byok-rest template behind a redacted credential profile; default verification never calls the live API."
+      "notes": "Web UI capture only with explicit operator authorization and terms review. Adapter is implemented behind a redacted BYOK profile for shipsearch, exportvessel, exportvesseltrack, and portcalls; default verification never calls the live API."
     },
     {
       "id": "marinetraffic-exportvesseltrack",
@@ -117,16 +116,17 @@
         "landingUrl": "https://servicedocs.marinetraffic.com/",
         "signupUrl": "https://servicedocs.marinetraffic.com/"
       },
-      "implementationStatus": "not_started",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_MARINETRAFFIC_TRACK",
         "requiredEnvVars": [
           "VESSEL_MCP_PROFILE_MARINETRAFFIC_TRACK__API_KEY"
         ],
         "defaultDisabled": true,
-        "notes": "Document credential and endpoint shape only; no default live calls."
+        "notes": "Implemented through the marinetraffic provider; no default live calls."
       },
-      "captureEligibility": "blocked"
+      "captureEligibility": "blocked",
+      "notes": "Implemented through provider id marinetraffic; use credentialProfile label marinetraffic or another operator-supplied MarineTraffic BYOK profile."
     },
     {
       "id": "vesselfinder",

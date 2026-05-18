@@ -361,6 +361,35 @@ test('resolveProvider: opt-in routes via overlay and exposes resolvable secret o
   assertNoSecrets(JSON.stringify({ upgradeHints: result.upgradeHints, considered: result.considered }));
 });
 
+test('resolveProvider: preferred provider uses matching configured profile when no credentialProfile is supplied', () => {
+  const registry = paidRegistry();
+  const credentialStore = loadCredentialProfiles({
+    env: {
+      VESSEL_MCP_PROFILE_MARINETRAFFIC__PROVIDER: 'marinetraffic',
+      VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY: BASE_STORE_SECRET,
+    },
+    cwd: '/tmp/imaginary',
+    readFile: () => undefined,
+  });
+  const result = resolveProvider({
+    registry,
+    credentialStore,
+    capability: 'vessel_position',
+    routing: {
+      provider: 'marinetraffic',
+      fallbackPolicy: 'strict',
+    },
+    retrievedAtFallback: '2026-01-01T00:00:00.000Z',
+    env: {},
+  });
+
+  assert.equal(result.ok, true);
+  assert.equal(result.provider.id, 'marinetraffic');
+  assert.equal(result.credentialStore.resolveSecret('marinetraffic', 'api_key'), BASE_STORE_SECRET);
+  assertNoSecrets(result.upgradeHints);
+  assertNoSecrets(result.considered);
+});
+
 test('resolveProvider: opt-in but missing both label fields and resolved provider — fails with no_credential_profile', () => {
   const registry = paidRegistry();
   const result = resolveProvider({
