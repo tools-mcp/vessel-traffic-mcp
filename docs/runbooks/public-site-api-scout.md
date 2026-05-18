@@ -4,9 +4,9 @@ Purpose: discover only browser-visible, no-login vessel-position request shapes 
 
 Follow-up: [`browser-api-capture-results.md`](./browser-api-capture-results.md)
 records the later search-input probes for vessel-name autocomplete,
-IMO/MMSI lookup, detail pages, and latest-position candidates. Treat
-that file as the current source for adapter tickets; this file is the
-initial broad scout.
+IMO/MMSI lookup, detail pages, and latest-position candidates. Treat that file
+as the current source for adapter tickets; this file is the initial broad
+scout and may contain decisions superseded by later browser captures.
 
 ## Method
 
@@ -58,6 +58,9 @@ Rules for this scout:
 - Login/account signal:
   - `GET /login-box` is requested by the public page, but recon did not authenticate. Account/fleet features remain excluded.
 - Adapter candidate status: **strong no-login candidate**, pending terms/rate-limit review and sanitized fixture promotion.
+- Later result: selected `selid=353136000` map requests returned an
+  `EVER GIVEN` row with latitude, longitude, speed, and course-like fields.
+  See the follow-up runbook for the row decoder target.
 
 ### ShipXplorer
 
@@ -77,6 +80,9 @@ Rules for this scout:
 - Login/account signal:
   - `/login`, social auth, subscription pages, and locked detail features exist. Exclude paid/account features unless operator later uses an authorized subscription through a BYOK/official-provider path.
 - Adapter candidate status: **candidate**, but stricter terms/rate review needed because public/free vs paid feature boundary is visible.
+- Later result: `data.shipxplorer.com/live` returned public viewport AIS rows
+  and `data.shipxplorer.com/feed?feed=mostTracked&owner=` returned a public
+  feed. No no-login vessel search/detail JSON endpoint was captured.
 
 ### ShipFinder
 
@@ -104,6 +110,9 @@ Rules for this scout:
   Keep it out of default routing until terms/rate review and browser
   verification behavior are settled; direct non-browser `GetShip` calls can
   return abnormal-access responses.
+- Later result: a normal browser context returned full `GetShip` detail for
+  `EVER GIVEN`, but direct curl-style POSTs still returned the abnormal-access
+  body.
 
 ### BoatNerd AIS
 
@@ -131,13 +140,21 @@ Rules for this scout:
   - `GET/POST /auth/platform-token`
   - `POST /auth/platform-info`
   - `POST /cdn-cgi/challenge-platform/...`
-- Decision: **exclude from browser capture for now**. Do not bypass challenge/bot-defense. Revisit only via official API/docs or operator-approved normal access where terms allow.
+- Later result: browser input/selection captured
+  `GET /tracking-system/vessel?search=...` for identity lookup and
+  `GET /tracking-system/vessel?filters=...&ais=true&images=true&route=true&endpoint=get-vessel-data`
+  as the selected vessel data candidate. The selected detail request returned
+  `API_KEY_LIMIT_REACHED` after the free no-login daily quota was consumed.
+  Keep this out of default routing.
 
 ### VesselFinder
 
 - Site: `https://www.vesselfinder.com/`
-- Access result from current browser environment: `403 Forbidden`.
-- Decision: **exclude**. Do not bypass. Revisit only via official API/docs or authorized normal browser access if terms allow.
+- Initial access result from one browser environment: `403 Forbidden`.
+- Later result: a normal browser run loaded the detail page for IMO `9811000`
+  and captured no-login public endpoints including `/api/pub/ms`,
+  `/api/pub/pcext/v4/<mmsi>?d`, `/api/pub/ship/vu/<imo>/<year>`, and binary
+  map feeds. Use the current follow-up runbook for adapter planning.
 
 ### MarineTraffic
 
@@ -159,8 +176,11 @@ Rules for this scout:
    `GetShip`; default routing remains disabled pending terms/rate and
    browser-verification review.
 4. ShipXplorer — public map/feed shapes; strict boundary around subscription features.
-5. Official/open APIs — BarentsWatch/OpenAIS/AISStream/AISHub/etc. where terms and auth are explicit.
-6. Paid providers — MarineTraffic/VesselFinder/Spire/Datalastic/etc. only through BYOK credential profiles and official APIs, not public-page scraping.
+5. VesselFinder public detail supplement — parse no-login detail HTML only
+   after terms review; keep official BYOK as the production path.
+6. SeaRates identity-only spike — detail/route candidate is quota-limited.
+7. Official/open APIs — BarentsWatch/OpenAIS/AISStream/AISHub/etc. where terms and auth are explicit.
+8. Paid providers — MarineTraffic/VesselFinder/Spire/Datalastic/etc. only through BYOK credential profiles and official APIs, not public-page scraping.
 
 ## Adapter guardrails
 

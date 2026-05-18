@@ -31,6 +31,13 @@ workflow with public, no-login pages only.
   - `/Users/aktn/project/api-capture/sessions/vessel_search_probe_20260517T152608Z`
 - Targeted selector probe:
   - `/Users/aktn/project/api-capture/sessions/vessel_targeted_search_probe_20260517T153219Z`
+- Multi-site browser API capture:
+  - `/Users/aktn/project/api-capture/sessions/vessel_targeted_api_capture_20260518T003128Z`
+    ShipFinder, MyShipTracking, BoatNerd AIS, VesselFinder, ShipXplorer,
+    SeaRates, VesselTracker, MarineVesselTraffic, MarineTraffic
+- SeaRates deep input/selection probes:
+  - `/Users/aktn/project/api-capture/sessions/searates_deep_select_20260518T0040Z`
+  - `/Users/aktn/project/api-capture/sessions/searates_select_submit2_20260518T0052Z`
 
 Probe queries:
 
@@ -98,10 +105,13 @@ Observed `EVER GIVEN` sample used `mmsi=353136000` and returned
 fields: latitude/longitude divide by `1_000_000`, and course/heading divide by
 `100` when outside normal degree ranges.
 
-Current live check note (2026-05-18 Asia/Seoul): direct non-browser POSTs to
-`/ship/GetShip` can return `status=2` with an abnormal-access/browser-refresh
-message. The adapter treats those responses as `provider_unavailable` rather
-than attempting to bypass the browser verification flow.
+Current live check note (2026-05-18 Asia/Seoul): the normal browser context
+returned full `GetShip` detail for `mmsi=353136000`, including
+`lat=43413845`, `lon=4841788`, `sog=0`, `cog=21020`, `hdg=31100`,
+`dest=MARSEILLE,FR`, and `navistatus=5`. Direct non-browser POSTs from curl
+still returned `status=2` with an abnormal-access/browser-refresh message.
+The adapter treats those responses as `provider_unavailable` rather than
+attempting to bypass the browser verification flow.
 
 Related endpoint:
 
@@ -122,7 +132,7 @@ Search:
 GET https://ais.boatnerd.com/api/v1/vessels/search?q=<name|imo|mmsi>
 ```
 
-Observed response shape:
+Observed response shape from an earlier browser flow:
 
 ```json
 {
@@ -134,8 +144,10 @@ Observed response shape:
 }
 ```
 
-The test vessel `EVER GIVEN` is outside BoatNerd's regional coverage, so the
-search returned no rows. Keep this as a regional search endpoint.
+The later targeted direct fetch returned `401` with `Invalid or missing API
+key`, while the map endpoint below remained public. Treat `vessels/search` as
+unsettled and use it only if a normal browser UI flow proves it is accessible
+without private credentials.
 
 Map / position by area:
 
@@ -199,11 +211,23 @@ Observed query parameters:
 - `timecode`
 - `filters` JSON string
 
-Observed response: tab-delimited text rows with timestamp, vessel type/status,
-MMSI/name-like fields, latitude, longitude, speed/course-like fields, and
-freshness fields. The row schema must be decoded before adapter work. The
-next capture should select an autocomplete result and compare the resulting
-`selid` / `seltype` request against the unselected map request.
+Observed selected-vessel request:
+
+```text
+GET /requests/vesselsonmaptempTTT.php?type=json&minlat=-90&maxlat=90&minlon=-180&maxlon=180&zoom=3&selid=353136000&seltype=0&timecode=0&filters={}
+```
+
+Observed `EVER GIVEN` row prefix:
+
+```text
+1779064312 0 7 0 353136000 EVER GIVEN 43.41386 4.84177 0.1 311 4 1779054585
+```
+
+This confirms the map feed can return a selected MMSI position. The apparent
+column order is server timestamp, unknown flags/type/status, MMSI, name,
+latitude, longitude, speed, course or heading, status/source fields, and last
+report timestamp. The row schema still needs a dedicated decoder before adapter
+work.
 
 ### VesselFinder
 
@@ -237,6 +261,8 @@ Observed detail fields:
   dimensions
 - Position block: `ship_lat`, `ship_lon`, `ship_cog`, `ship_sog`, `lrpd`
   recency text
+
+Latest browser detail page for `9811000` loaded successfully without login.
 
 Related JSON endpoints:
 
@@ -288,6 +314,12 @@ Content-Type: application/json
 The normal browser session received `403` with a Cloudflare challenge page.
 Do not bypass it. Keep AIS Friends bounding-box data as the usable path.
 
+Direct AIS Friends check around the Marseille/Fos area returned public JSON
+rows, for example `MSC SORAYA` with `latitude`, `longitude`,
+`speed_over_ground`, `course_over_ground`, and `timestamp_of_position`. The
+same viewport did not include `EVER GIVEN`, so AIS Friends is best treated as
+an area feed rather than a name/IMO resolver.
+
 ### ShipXplorer
 
 Public map feeds were captured, but the no-login browser did not expose a
@@ -313,6 +345,75 @@ GET https://data.shipxplorer.com/feed?feed=mostTracked&owner=
 Adapter path: treat as a map-feed candidate only until a public search/detail
 flow is captured or official/API terms are confirmed.
 
+The no-login detail page
+`https://www.shipxplorer.com/data/vessels/EVER-GIVEN-IMO-9811000-MMSI-353136000`
+returned public HTML, but no detail JSON endpoint was captured. A global
+`/live` request with `lastReport=0` returned an empty aggregate, while normal
+viewport requests returned AIS rows.
+
+### SeaRates
+
+Public search is now captured, and the selected result reveals the route/detail
+endpoint shape. The free browser quota limited the detail response before
+position rows were returned.
+
+Search / identity:
+
+```text
+GET https://www.searates.com/tracking-system/vessel?search=<name|imo|mmsi>&images=true&partial_match=true&endpoint=
+```
+
+Observed `EVER GIVEN` response:
+
+```json
+{
+  "success": true,
+  "vessels": [
+    {
+      "imo": 9811000,
+      "name": "EVER GIVEN",
+      "mmsi": 353136000,
+      "call_sign": "H3RC",
+      "flag": "PA",
+      "year_built": 2018,
+      "type": "Container Ship",
+      "length": 399.94,
+      "width": 59
+    }
+  ]
+}
+```
+
+Selected vessel data / route candidate:
+
+```text
+GET https://www.searates.com/tracking-system/vessel?filters={"imo":9811000,"mmsi":353136000,"vessel_name":"EVER GIVEN"}&ais=true&images=true&route=true&endpoint=get-vessel-data
+```
+
+Observed no-login response after the free daily quota was consumed:
+
+```json
+{
+  "success": false,
+  "message": "API_KEY_LIMIT_REACHED",
+  "metadata": {
+    "daily": {
+      "unique_shipments": {
+        "used": 1,
+        "total": 1,
+        "remaining": 0
+      }
+    },
+    "is_free": true
+  },
+  "data": {}
+}
+```
+
+Adapter path: search can be used as an identity resolver only after terms and
+quota behavior are reviewed. The selected-vessel detail endpoint should not be
+used in default routing because the public no-login quota is extremely small.
+
 ## Blocked or incomplete
 
 ### MarineTraffic
@@ -326,26 +427,33 @@ No useful no-login API endpoints were captured. Treat as BYOK/contract-only.
 
 ### VesselTracker
 
-The page exposed login-required controls. Treat as login/contract-only.
+The public detail page
+`https://www.vesseltracker.com/en/Ships/Ever-Given-9811000.html` loads without
+login and contains identity plus coarse course/position fields:
 
-### SeaRates
+- Identity: `IMO 9811000`, `MMSI 353136000`, `Callsign H3RC`, `Flag Panama`
+- Course/status: `Navigational status: Moored`, `Course`, `Heading`,
+  `Location: Fos-sur-Mer`, `Area: France`, `Last seen`, `Source: T-AIS`
 
-The page exposed a visible vessel input, but typing `EVER GIVEN`, IMO, and
-MMSI did not trigger a vessel search API in the no-login browser probe. Only
-locales, map style/tile requests, and analytics were captured. Requires either
-manual UI investigation or official/API terms before adapter work.
+Exact coordinates and several master-data fields are locked behind login or
+Cockpit links. No usable no-login JSON API was captured, so do not implement a
+coordinate adapter from VesselTracker public pages.
 
 ## Implementation order
 
-1. ShipFinder adapter: name/IMO/MMSI search plus `GetShip` position lookup.
-2. BoatNerd adapter: regional search plus `bbox` area positions.
+1. MyShipTracking adapter spike: decode selected `vesselsonmaptempTTT.php`
+   rows for MMSI-based positions.
+2. ShipFinder adapter hardening: keep search enabled, but only use `GetShip`
+   where a normal browser/session flow is explicitly available.
 3. VesselFinder adapter supplement: parse detail HTML `#djson` for no-login
    position; keep official BYOK adapter as primary for production use.
-4. MyShipTracking adapter spike: decode `vesselsonmaptempTTT.php` rows and
-   capture the autocomplete-result selection request.
-5. AIS Friends area adapter: use `vessels/bounding-box` behind conservative
+4. AIS Friends area adapter: use `vessels/bounding-box` behind conservative
    pacing and terms review.
-6. ShipXplorer map-feed spike only after search/detail flow is captured.
+5. BoatNerd adapter: use `bbox` area positions; keep `vessels/search` on hold
+   until the missing-key behavior is resolved.
+6. SeaRates identity-only resolver spike; hold detail/route calls because the
+   no-login quota returned `API_KEY_LIMIT_REACHED`.
+7. ShipXplorer map-feed spike only after search/detail flow is captured.
 
 ## Guardrails
 
