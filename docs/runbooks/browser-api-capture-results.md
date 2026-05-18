@@ -38,12 +38,31 @@ workflow with public, no-login pages only.
 - SeaRates deep input/selection probes:
   - `/Users/aktn/project/api-capture/sessions/searates_deep_select_20260518T0040Z`
   - `/Users/aktn/project/api-capture/sessions/searates_select_submit2_20260518T0052Z`
+- Deep multi-service follow-up:
+  - `/Users/aktn/project/api-capture/sessions/vessel_deep_api_capture_20260518T044147Z`
+    MyShipTracking, VesselFinder, SeaRates, AIS Friends, ShipXplorer,
+    ShipFinder, VesselTracker, MarineTraffic
 
 Probe queries:
 
 - Vessel name: `EVER GIVEN`
 - IMO: `9811000`
 - MMSI: `353136000`
+
+## Attribution / source URL rule
+
+Adapters promoted from these captures must expose the original service name
+and a user-facing URL in every MCP result. The normalized `source` object must
+include:
+
+- `source.provider` — stable provider id, for example `myshiptracking`.
+- `source.landingUrl` — the public source-service URL to display or link in
+  clients.
+
+This project uses public adapters to route users back to the source service and
+to make provenance explicit. Raw browser endpoints may be documented for
+operator review, but client UIs should prefer the service landing/detail URL
+for attribution.
 
 ## Usable public candidates
 
@@ -167,8 +186,16 @@ Adapter path: use `vessels/search` for regional name/MMSI lookup and
 
 ### MyShipTracking
 
-Public search and public map feed were captured. The map feed uses a custom
-tab-delimited text format and needs a decoder.
+Public search and public map feed were captured. The adapter now decodes the
+custom tab-delimited map feed for both selected-MMSI latest position and
+bounding-box area lookups. Runtime use remains opt-in through
+`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking`.
+
+Source URL to expose in clients:
+
+```text
+https://www.myshiptracking.com/
+```
 
 Search / autocomplete:
 
@@ -226,8 +253,30 @@ Observed `EVER GIVEN` row prefix:
 This confirms the map feed can return a selected MMSI position. The apparent
 column order is server timestamp, unknown flags/type/status, MMSI, name,
 latitude, longitude, speed, course or heading, status/source fields, and last
-report timestamp. The row schema still needs a dedicated decoder before adapter
-work.
+report timestamp.
+
+Deep follow-up result (2026-05-18): selected `selid=353136000` returned
+`EVER GIVEN` at `43.41384, 4.84178`, speed `0`, course/heading-like field
+`311`, and last report timestamp `1779074025`. The Fos/Marseille bounding-box
+request:
+
+```text
+GET /requests/vesselsonmaptempTTT.php?type=json&minlat=43.0&maxlat=43.8&minlon=4.3&maxlon=5.3&zoom=9&selid=0&seltype=0&timecode=0&filters={}
+```
+
+returned multiple area rows, for example `BASILIC` with latitude, longitude,
+speed, course, and a later-row last-report timestamp. The parser now searches
+the row tail for a plausible Unix timestamp because selected-vessel and area
+rows place the last-report column at different offsets.
+
+Public detail page pattern also loaded:
+
+```text
+GET https://www.myshiptracking.com/vessels/ever-given-mmsi-353136000-imo-9811000
+```
+
+Use this kind of user-facing service URL for attribution where a stable detail
+URL is known; otherwise use the landing URL.
 
 ### VesselFinder
 
@@ -279,6 +328,21 @@ binary decoder:
 GET https://www.vesselfinder.com/api/pub/mp2?bbox=...&zoom=...&mmsi=...&mcbe=1
 ```
 
+Deep follow-up result (2026-05-18): the detail page still loaded publicly for
+`IMO 9811000`. Browser network also called:
+
+```text
+GET /api/pub/pcext/v4/353136000?d
+GET /api/pub/ship/vu/9811000/2025
+```
+
+`pcext/v4` returned five port-call rows, including a visible `Fos-sur-Mer`
+entry with country `France` and locode-like value `FRFOS001`; later rows were
+locked. `ship/vu/9811000/2025` returned aggregate voyage statistics such as
+distance, average/max speed, port counts, country list, and port list. A
+`ship/vu/9811000/2026` probe returned `400`, so year handling must be
+defensive.
+
 ### MarineVesselTraffic / AIS Friends
 
 The public page embeds AIS Friends map data.
@@ -320,6 +384,14 @@ rows, for example `MSC SORAYA` with `latitude`, `longitude`,
 same viewport did not include `EVER GIVEN`, so AIS Friends is best treated as
 an area feed rather than a name/IMO resolver.
 
+Deep follow-up result (2026-05-18): the normal browser page flow triggered
+`GET /vessels/bounding-box` successfully with JSON rows containing `imo`,
+`mmsi`, `name`, `name_ais`, `latitude`, `longitude`,
+`timestamp_of_position`, `course_over_ground`, `speed_over_ground`,
+`true_heading`, dimensions, type ids, and flag. A direct non-page fetch of the
+same endpoint returned Cloudflare `403`, so keep this as browser-flow evidence
+only until access and terms are reviewed.
+
 ### ShipXplorer
 
 Public map feeds were captured, but the no-login browser did not expose a
@@ -350,6 +422,11 @@ The no-login detail page
 returned public HTML, but no detail JSON endpoint was captured. A global
 `/live` request with `lastReport=0` returned an empty aggregate, while normal
 viewport requests returned AIS rows.
+
+Deep follow-up result (2026-05-18): the page-triggered `data.shipxplorer.com`
+calls returned JSON for `/feed?feed=mostTracked&owner=` and `/live` with a
+compact array-per-vessel shape. Manual direct fetches returned `500`, so this
+remains a browser-flow map/feed candidate, not a direct adapter candidate.
 
 ### SeaRates
 
@@ -414,6 +491,12 @@ Adapter path: search can be used as an identity resolver only after terms and
 quota behavior are reviewed. The selected-vessel detail endpoint should not be
 used in default routing because the public no-login quota is extremely small.
 
+Deep follow-up result (2026-05-18): the browser UI again captured
+`GET /tracking-system/vessel?search=...&images=true&partial_match=true&endpoint=`
+with a successful identity response and quota metadata (`is_free: true`,
+remaining `0`). Manual replay returned `400`, and selected detail remained
+quota-sensitive. Keep SeaRates as identity-only evidence for now.
+
 ## Blocked or incomplete
 
 ### MarineTraffic
@@ -442,7 +525,8 @@ coordinate adapter from VesselTracker public pages.
 ## Implementation order
 
 1. MyShipTracking adapter spike: decode selected `vesselsonmaptempTTT.php`
-   rows for MMSI-based positions.
+   rows for MMSI-based positions and bounding-box area positions. Implemented
+   as an opt-in public provider.
 2. ShipFinder adapter hardening: keep search enabled, but only use `GetShip`
    where a normal browser/session flow is explicitly available.
 3. VesselFinder adapter supplement: parse detail HTML `#djson` for no-login

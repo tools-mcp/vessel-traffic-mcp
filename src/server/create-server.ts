@@ -1,7 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 import { loadCredentialProfiles, type CredentialStore } from '../config/credentials.js';
-import { createProviderRegistry, type ProviderRegistry } from '../providers/registry.js';
+import type { ProviderRegistry } from '../providers/registry.js';
+import { createRuntimeProviderRegistry } from '../providers/runtime-registry.js';
 import {
   credentialProfilesOutputSchema,
   dataSourcesOutputSchema,
@@ -47,7 +48,7 @@ export interface CreateVesselMcpServerOptions {
 }
 
 export function createVesselMcpServer(options: CreateVesselMcpServerOptions = {}): McpServer {
-  const registry = options.registry ?? createProviderRegistry();
+  const registry = options.registry ?? createRuntimeProviderRegistry();
   const credentialStore = options.credentialStore ?? loadCredentialProfiles();
   const server = new McpServer({
     name: 'vessel-traffic-mcp',

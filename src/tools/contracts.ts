@@ -14,6 +14,7 @@ const sourceMetadataSchema = z.object({
   coverage: z.string().optional(),
   confidence: sourceConfidenceSchema.optional(),
   termsNote: z.string().optional(),
+  landingUrl: z.url().optional(),
 });
 
 const providerStatusSchema = z.object({

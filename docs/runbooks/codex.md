@@ -71,6 +71,22 @@ Restart the Codex CLI after editing `~/.codex/config.toml`. In a new
 session, the `vessel-traffic-mcp` server should appear in the tool
 listing with the read-only tools enumerated above.
 
+To opt in to the reviewed public MyShipTracking candidate for local
+ship-name/MMSI lookup and bounding-box map positions, add the public
+provider gate. This does not require credentials, and every result must
+still expose the source service and URL through `source.provider` and
+`source.landingUrl`.
+
+```toml
+[mcp_servers.vessel-traffic-mcp]
+command = "node"
+args = ["/absolute/path/to/vessel-traffic-mcp/dist/index.js"]
+
+[mcp_servers.vessel-traffic-mcp.env]
+VESSEL_MCP_TRANSPORT = "stdio"
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS = "myshiptracking"
+```
+
 BYOK profile env vars (only when you have explicit authorization for
 that provider and account) go in the same `env` table:
 

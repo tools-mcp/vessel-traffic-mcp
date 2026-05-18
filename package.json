@@ -61,6 +61,7 @@
     "test": "node --test test/*.test.js",
     "start": "node --enable-source-maps dist/index.js",
     "start:http": "VESSEL_MCP_TRANSPORT=http node --enable-source-maps dist/index.js",
+    "start:map": "npm run build && node --enable-source-maps tools/vessel-map-ui/server.mjs",
     "dev": "npm run build && node --enable-source-maps dist/index.js",
     "capture:import": "node --enable-source-maps dist/capture/cli.js",
     "capture:ir": "node --enable-source-maps dist/capture/ir-cli.js",

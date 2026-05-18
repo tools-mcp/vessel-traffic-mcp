@@ -176,7 +176,7 @@ Always prefer an official API once one becomes available.
 
 | Provider | Capture/API status |
 | --- | --- |
-| MyShipTracking web UI | Web UI plus official API; prefer the official API and capture only for authorized UI-only workflows not covered by the API. |
+| MyShipTracking web UI | Public browser endpoint candidate implemented as an opt-in adapter for autocomplete, selected-MMSI latest position, and bounding-box area rows. Prefer the official API for production contracts; public results must expose the MyShipTracking source URL. |
 | ShipFinder | Public browser API candidate. A disabled-by-default explicit adapter exists for the captured autocomplete and `GetShip` shapes; keep it out of default routing until terms/rate review and browser-verification behavior are settled. |
 | ShipXplorer | Web UI/API candidate. Validate whether a supported ship API exists and whether UI capture is allowed. |
 | MarineVesselTraffic / similar map sites | Web UI candidates. Discovery-only until terms and technical feasibility are documented. |

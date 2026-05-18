@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Vessel Map UI</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <section class="lookup-panel" aria-label="선박 조회">
+        <form id="search-form" class="search-row">
+          <label class="search-label" for="query">선박 조회</label>
+          <div class="search-control">
+            <input
+              id="query"
+              name="query"
+              type="search"
+              autocomplete="off"
+              spellcheck="false"
+              value="EVER GIVEN"
+              placeholder="선박명, IMO, MMSI"
+            />
+            <button type="submit" title="선박 조회">
+              <span aria-hidden="true">⌕</span>
+              <span>조회</span>
+            </button>
+          </div>
+        </form>
+
+        <div id="alert" class="alert" hidden></div>
+
+        <section class="status-grid" aria-label="현재 상태">
+          <article class="metric metric-wide">
+            <span class="metric-label">현재 상태</span>
+            <strong id="movement">조회 대기</strong>
+          </article>
+          <article class="metric">
+            <span class="metric-label">속도</span>
+            <strong id="speed">-</strong>
+          </article>
+          <article class="metric">
+            <span class="metric-label">침로</span>
+            <strong id="course">-</strong>
+          </article>
+          <article class="metric">
+            <span class="metric-label">수신</span>
+            <strong id="freshness">-</strong>
+          </article>
+        </section>
+
+        <section class="details" aria-label="선박 상세">
+          <div class="section-heading">
+            <h1 id="vessel-name">선박을 입력하세요</h1>
+            <a id="source-link" class="pill source-link" href="https://www.myshiptracking.com/" target="_blank" rel="noreferrer">
+              출처 보기
+            </a>
+          </div>
+          <div class="source-row">
+            <span>출처</span>
+            <strong id="provider-name">MyShipTracking</strong>
+          </div>
+          <dl>
+            <div>
+              <dt>MMSI</dt>
+              <dd id="mmsi">-</dd>
+            </div>
+            <div>
+              <dt>IMO</dt>
+              <dd id="imo">-</dd>
+            </div>
+            <div>
+              <dt>좌표</dt>
+              <dd id="coordinates">-</dd>
+            </div>
+            <div>
+              <dt>관측시각</dt>
+              <dd id="observed">-</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="candidates" aria-label="검색 결과">
+          <div class="section-heading">
+            <h2>검색 결과</h2>
+            <span id="candidate-count" class="count">0</span>
+          </div>
+          <ol id="candidate-list"></ol>
+        </section>
+      </section>
+
+      <section class="map-panel" aria-label="지도">
+        <div id="map"></div>
+      </section>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="/app.js" type="module"></script>
+  </body>
+</html>

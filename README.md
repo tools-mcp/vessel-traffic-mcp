@@ -24,6 +24,11 @@ surfaces may change.
   caveats through the read-only `provider_status` and `data_sources`
   tools.
 
+Every non-fixture result must expose the original service in
+`source.provider` and a user-facing source URL in `source.landingUrl`.
+Public-page adapters are intended to send users back to the source
+service, not to hide or rebrand the data origin.
+
 The server speaks **stdio** for local Claude Desktop/Claude Code use
 and **Streamable HTTP** at `/mcp` (with a public `/health`) for remote
 ChatGPT/Claude connector use.
@@ -137,6 +142,32 @@ autocomplete and vessel-detail API shapes for explicit use via
 public browser endpoints can challenge or throttle non-browser calls, and the
 adapter reports those cases as no-data provider states instead of bypassing
 verification.
+
+### Public opt-in candidate: MyShipTracking
+
+`src/providers/myshiptracking.ts` implements the browser-captured
+MyShipTracking autocomplete, selected-MMSI latest position, and
+bounding-box map feed shapes. It remains opt-in for runtime use:
+
+```bash
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking npm start
+```
+
+The MCP responses include `source.provider = "myshiptracking"` and
+`source.landingUrl = "https://www.myshiptracking.com/"` so clients can
+display the source service and route users back to it.
+
+### Local vessel map UI
+
+For a local visual check with ship-name input and a map:
+
+```bash
+npm run start:map
+```
+
+The UI performs `name/IMO/MMSI -> MMSI -> latest position` through the
+MyShipTracking adapter and displays the provider/source URL alongside
+the map marker.
 
 ## Project layout
 

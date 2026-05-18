@@ -7,7 +7,8 @@ import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
 
 import type { HttpRuntimeConfig } from '../../config/runtime.js';
-import { createProviderRegistry, type ProviderRegistry } from '../../providers/registry.js';
+import type { ProviderRegistry } from '../../providers/registry.js';
+import { createRuntimeProviderRegistry } from '../../providers/runtime-registry.js';
 import type { ProviderStatus } from '../../providers/types.js';
 import { createJsonLogger, type JsonLogger } from '../../util/logger.js';
 import { redactForLog } from '../../util/redact.js';
@@ -134,6 +135,7 @@ export function createMcpHttpHandler(options: StartHttpServerOptions): McpHttpHa
             await handleMcpRequest(request, {
               sessions,
               maxBodyBytes,
+              registry: options.registry,
             }),
           );
         }
@@ -227,7 +229,7 @@ export async function startHttpServer(options: StartHttpServerOptions): Promise<
     transport: 'streamable-http',
   });
 
-  const diagnosticsRegistry = options.registry ?? createProviderRegistry();
+  const diagnosticsRegistry = options.registry ?? createRuntimeProviderRegistry();
   const diagnosticsEntry = await buildProviderStatusDiagnosticsEntry(diagnosticsRegistry);
   logHttpEvent(logger, diagnosticsEntry);
 
@@ -267,6 +269,7 @@ async function handleMcpRequest(
   options: {
     sessions: Map<string, McpHttpSession>;
     maxBodyBytes: number;
+    registry?: ProviderRegistry;
   },
 ): Promise<Response> {
   if (request.method !== 'POST' && request.method !== 'GET' && request.method !== 'DELETE') {
@@ -305,7 +308,7 @@ async function handleMcpRequest(
     return jsonRpcErrorResponse(400, -32000, 'Bad Request: No valid session ID provided.');
   }
 
-  const server = createVesselMcpServer();
+  const server = createVesselMcpServer({ registry: options.registry });
   const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: () => randomUUID(),
     enableJsonResponse: true,
