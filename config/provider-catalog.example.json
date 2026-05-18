@@ -463,7 +463,7 @@
         "required": false,
         "profileFields": [],
         "envVars": [],
-        "notes": "Public web schedule pages; capture eligibility still requires terms review before live browser collection."
+        "notes": "Public web schedule pages; browser capture on 2026-05-18 found no-login FCL/LCL and detail endpoints, but adapter use still requires terms/rate review."
       },
       "cost": {
         "model": "free",
@@ -473,15 +473,15 @@
         "landingUrl": "https://www.tradlinx.com/ko/schedule?tab=fcl",
         "referenceUrl": "https://www.tradlinx.com/lingo/search"
       },
-      "implementationStatus": "discovery_only",
+      "implementationStatus": "capture_only",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_TRADLINX_SCHEDULE",
         "requiredEnvVars": [],
         "defaultDisabled": true,
-        "notes": "Browser capture and endpoint fingerprinting must stay disabled until operator terms review."
+        "notes": "Default tests must not call live Tradelinx endpoints; captured endpoint shapes are documented for operator review only."
       },
       "captureEligibility": "needs-terms-review",
-      "notes": "Primary public-web capture candidate for Korean FCL/LCL schedule lookup. Any captured response must preserve Tradelinx source URL attribution."
+      "notes": "Browser capture on 2026-05-18 identified api.tradlinx.com fclschedule, lclschedule, fclschedule/{schId}, vesselSchedule/{carrier}/{vslId}, and soperContactLst/{carrier}. Any promoted adapter must preserve Tradelinx source URL attribution and treat contact fields conservatively."
     },
     {
       "id": "searates-schedules",

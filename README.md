@@ -253,10 +253,12 @@ EVER GIVEN 선박 스케줄을 조회하고 ETA 지연 여부를 계산해줘.
 ```
 
 Current schedule-provider candidates are tracked in
-[`docs/provider-catalog.md`](./docs/provider-catalog.md): Tradelinx is
-queued as a terms-review-pending public web capture candidate, while
-SeaRates, Linescape, IQAX Big Schedules, Routescanner, and CargoSmart
-are cataloged for BYOK/API or enterprise review.
+[`docs/provider-catalog.md`](./docs/provider-catalog.md): Tradelinx has
+sanitized browser-captured endpoint shapes documented in
+[`docs/runbooks/schedule-api-capture-results.md`](./docs/runbooks/schedule-api-capture-results.md)
+and remains capture-only until terms/rate review, while SeaRates,
+Linescape, IQAX Big Schedules, Routescanner, and CargoSmart are
+cataloged for BYOK/API or enterprise review.
 
 ## Project layout
 
@@ -305,6 +307,9 @@ docs/
 - [`docs/runbooks/browser-api-capture-results.md`](./docs/runbooks/browser-api-capture-results.md)
   — sanitized browser capture results for vessel-name autocomplete,
   IMO/MMSI lookup, detail pages, and latest-position API candidates.
+- [`docs/runbooks/schedule-api-capture-results.md`](./docs/runbooks/schedule-api-capture-results.md)
+  — sanitized browser capture results for Tradelinx FCL/LCL schedule,
+  FCL detail, and vessel schedule API candidates.
 - [`docs/discoverability.md`](./docs/discoverability.md) — F7.AC2
   package/repository/documentation discoverability metadata contract
   (npm keywords, GitHub Topics, search surfaces).

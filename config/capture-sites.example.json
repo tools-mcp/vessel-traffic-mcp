@@ -161,6 +161,8 @@
       "termsReviewStatus": "needs-terms-review",
       "baseUrl": "https://www.tradlinx.com/ko/schedule?tab=fcl",
       "allowedOrigins": [
+        "https://api.tradlinx.com",
+        "https://app.tradlinx.com",
         "https://www.tradlinx.com"
       ],
       "forbiddenActions": [
