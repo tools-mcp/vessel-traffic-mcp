@@ -42,6 +42,7 @@
   "files": [
     "dist",
     "README.md",
+    "llms.txt",
     "LICENSE",
     "SECURITY.md",
     "CONTRIBUTING.md",

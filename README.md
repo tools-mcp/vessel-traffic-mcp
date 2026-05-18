@@ -2,165 +2,43 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
 
-A read-only **Model Context Protocol (MCP) server** for vessel position
-and AIS-style maritime data — designed to connect ChatGPT, Claude,
-Claude Code, Codex, and other MCP clients to authorized vessel data
-sources through a normalized set of tools.
+Read-only **Model Context Protocol (MCP) server** for vessel identity,
+AIS-style vessel position data, carrier schedules, vessel schedules,
+and delay heuristics. It is designed for ChatGPT, Claude, Claude Code,
+Codex, MCP Inspector, and other MCP clients.
 
 Open source under the [MIT license](./LICENSE). Pre-1.0; APIs and tool
 surfaces may change.
 
-## Language summaries
+## Languages
 
-### English
+- [English](#english)
+- [한국어](#한국어)
+- [日本語](#日本語)
+- [中文](#中文)
+- [Shared Reference](#shared-reference)
 
-`vessel-traffic-mcp` is a read-only MCP server for vessel search,
-latest position lookup, AIS-style metadata, carrier schedules, vessel
-schedules, and delay heuristics. It is designed for MCP clients such
-as ChatGPT, Claude, Claude Code, Codex, and MCP Inspector.
+## English
 
-Every live or public-provider response must expose the original data
-source through `source.provider` and a user-facing URL through
-`source.landingUrl`. The project is intended to route users back to
-the source service, not to hide or rebrand the source.
+### Overview
 
-Quick setup:
+`vessel-traffic-mcp` connects MCP clients to authorized maritime data
+sources through one normalized, read-only tool surface.
 
-```bash
-git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
-cd vessel-traffic-mcp
-npm install
-npm run build
-```
+It supports vessel search by name, MMSI, IMO, and callsign; latest
+position lookup; bounding-box and port-area lookup; recent tracks;
+port calls; carrier schedules; vessel schedules; and schedule delay
+heuristics.
 
-### 한국어
+Every live or public-provider response must expose provenance:
+`source.provider` and `source.landingUrl`. The project is designed to
+route users back to the original service, not to hide or rebrand the
+data source.
 
-`vessel-traffic-mcp`는 선박명, MMSI, IMO, 호출부호 기반 검색,
-최신 위치 조회, AIS 형태의 메타데이터, 선사 스케줄, 선박별 스케줄,
-지연 판단 정보를 제공하는 읽기 전용 MCP 서버입니다. ChatGPT,
-Claude, Claude Code, Codex, MCP Inspector 같은 MCP 클라이언트에서
-사용할 수 있도록 설계했습니다.
-
-실시간 또는 공개 provider 응답은 반드시 원 출처를
-`source.provider`에, 사용자가 열 수 있는 출처 URL을
-`source.landingUrl`에 포함해야 합니다. 이 프로젝트의 목적은 원
-서비스 유입과 출처 노출을 제공하는 것이며, 출처를 숨기거나
-재브랜딩하는 것이 아닙니다.
-
-빠른 설정:
+### Quick Start
 
 ```bash
 git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
-cd vessel-traffic-mcp
-npm install
-npm run build
-```
-
-### 日本語
-
-`vessel-traffic-mcp` は、船名、MMSI、IMO、コールサインによる検索、
-最新位置、AIS 形式のメタデータ、船会社スケジュール、船舶別
-スケジュール、遅延判定を提供する読み取り専用の MCP サーバーです。
-ChatGPT、Claude、Claude Code、Codex、MCP Inspector などの MCP
-クライアントで利用できるように設計されています。
-
-ライブまたは公開 provider の応答では、元データの提供元を
-`source.provider` に、ユーザーが開ける参照 URL を
-`source.landingUrl` に必ず含めます。このプロジェクトは元サービスへ
-ユーザーを誘導し、出典を明示することを目的としており、出典を隠す
-ためのものではありません。
-
-クイックセットアップ:
-
-```bash
-git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
-cd vessel-traffic-mcp
-npm install
-npm run build
-```
-
-### 中文
-
-`vessel-traffic-mcp` 是一个只读 MCP 服务器，用于按船名、MMSI、IMO
-和呼号搜索船舶，并查询最新位置、AIS 风格元数据、承运人航线计划、
-船舶计划和延误判断。它面向 ChatGPT、Claude、Claude Code、Codex、
-MCP Inspector 等 MCP 客户端。
-
-所有实时或公开 provider 的响应都必须在 `source.provider` 中公开原始
-数据来源，并在 `source.landingUrl` 中提供用户可访问的来源 URL。本项目
-的目标是为原服务提供流量入口并明确标注出处，而不是隐藏或重新包装
-数据来源。
-
-快速设置:
-
-```bash
-git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
-cd vessel-traffic-mcp
-npm install
-npm run build
-```
-
-## What it does
-
-- **Search** vessels by name, MMSI, IMO, or callsign.
-- **Latest position** with `source`, `retrievedAt`, `observedAt`,
-  freshness, coverage, and confidence metadata on every response.
-- **Vessel-name resolution** from master B/L, house B/L, booking, and
-  arrival-notice text into ranked MMSI/IMO candidates with evidence
-  and explicit `needsConfirmation` when ambiguous.
-- **Bounding-box and port-area** queries.
-- **Recent tracks and port-call** context when a provider supports it.
-- **Carrier schedule lookup** by origin/destination, carrier SCAC/name,
-  cargo type, direct-only flag, and date windows.
-- **Vessel schedule and delay heuristic** for scheduled carrier port
-  calls, ETA/ATA variance, and source-attributed delay status.
-- **Provider inspection**: coverage limits, quota status, and data
-  caveats through the read-only `provider_status` and `data_sources`
-  tools.
-
-Every non-fixture result must expose the original service in
-`source.provider` and a user-facing source URL in `source.landingUrl`.
-Public-page adapters are intended to send users back to the source
-service, not to hide or rebrand the data origin.
-
-The server speaks **stdio** for local Claude Desktop/Claude Code use
-and **Streamable HTTP** at `/mcp` (with a public `/health`) for remote
-ChatGPT/Claude connector use.
-
-## Why it's open source
-
-Maritime data discovery is fragmented across free terrestrial AIS
-feeds, regional open-data portals, and paid satellite/commercial APIs.
-This project provides a vendor-neutral MCP shim so MCP clients can
-query "vessel AIS MCP", "ship tracking MCP", "MarineTraffic MCP",
-"Claude MCP", "ChatGPT MCP", and "Codex plugin" workflows through one
-normalized interface — without bundling any one vendor's account or
-data into the project.
-
-## Compliance Boundary
-
-This project does **not** aim to bypass commercial services. It
-supports:
-
-- Official APIs and open-data feeds.
-- User-provided API credentials and organization-level BYOK credential
-  profiles for paid providers.
-- Sanitized HAR/network samples from operator-owned, authorized
-  browser sessions, only where allowed by service terms.
-
-It must not store raw cookies, bearer tokens, API keys, or private
-HAR files in the repository. The full hard-rule list lives in
-[`AGENTS.md`](./AGENTS.md), and security expectations are in
-[`SECURITY.md`](./SECURITY.md).
-
-> **Not for navigation.** AIS data returned by configured providers
-> may be delayed, incomplete, or inaccurate. This project is not a
-> safety-critical navigation tool.
-
-## Quick start (fixture-only, no credentials needed)
-
-```bash
-git clone <this-repo>
 cd vessel-traffic-mcp
 npm install
 npm run lint
@@ -168,143 +46,415 @@ npm test
 npm run build
 ```
 
-The default verification gate uses the local fixture provider and
-sanitized fixtures only. It does not call paid or live providers, and
-it does not require API keys, accounts, or network access.
+The default verification gate uses sanitized fixtures only. It does
+not call paid or live providers and does not require API keys,
+accounts, or network access.
 
-### Stdio (local) — safe example
+### Local MCP Setup
+
+For local desktop and CLI clients, run the built server over stdio:
 
 ```bash
-# Start the stdio MCP server from the package binary.
 VESSEL_MCP_TRANSPORT=stdio npm start
 ```
 
-In Claude Desktop / Claude Code / MCP Inspector, point the client at
-the `vessel-traffic-mcp` binary. See
-[`docs/runbooks/stdio-fixture-server.md`](./docs/runbooks/stdio-fixture-server.md)
-for the full client configuration.
+Use the [shared MCP config snippets](#shared-mcp-config-snippets) for
+Codex CLI, Claude Desktop, or Claude Code. Full client setup lives in
+[`docs/runbooks/clients.md`](./docs/runbooks/clients.md), and Codex
+details live in [`docs/runbooks/codex.md`](./docs/runbooks/codex.md).
 
-### Streamable HTTP (remote) — safe example
+### Remote MCP Setup
+
+For remote MCP clients, run Streamable HTTP at `/mcp` with public
+`/health`:
 
 ```bash
-# Public /health, bearer-auth-gated /mcp.
 export VESSEL_MCP_TRANSPORT=http
 export VESSEL_MCP_HTTP_HOST=127.0.0.1
 export VESSEL_MCP_HTTP_PORT=8765
 export VESSEL_MCP_AUTH_TOKEN="<a-strong-random-token-you-generated>"
 npm run start:http
 
-# Health probe (no auth):
 curl -sf "http://127.0.0.1:8765/health"
-
-# MCP requests require Authorization: Bearer <token>.
-# Do not paste real tokens into chat; use a local env file.
 ```
 
-See [`docs/runbooks/streamable-http-server.md`](./docs/runbooks/streamable-http-server.md).
+MCP requests require `Authorization: Bearer <token>` when
+`VESSEL_MCP_AUTH_TOKEN` is set. See
+[`docs/runbooks/streamable-http-server.md`](./docs/runbooks/streamable-http-server.md)
+and [`docs/runbooks/deployment-https.md`](./docs/runbooks/deployment-https.md).
 
-### BYOK paid providers — safe example
+### Public Providers
 
-Paid providers are accessed through **redacted credential profiles**.
-Raw keys never appear in logs, errors, or MCP tool responses; only the
-profile label and status are exposed.
+Public browser-captured adapters are opt-in:
 
 ```bash
-# Env-var form (preferred): VESSEL_MCP_PROFILE_<LABEL>__<FIELD>
-export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
-
-# Or, for local development, use the gitignored overlay:
-#   config/credential-profiles.local.json
-# (this file is in .gitignore and must never be committed)
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 ```
 
-MarineTraffic / Kpler official API support is BYOK-only. With a
-MarineTraffic key configured under the `marinetraffic` profile, the
-adapter can call the documented `shipsearch`, `exportvessel`,
-`exportvesseltrack`, and `portcalls` endpoints for search, latest
-position, recent tracks, and recent vessel port calls. Requests should
-route with `provider: "marinetraffic"`; if the configured profile label
-is not `marinetraffic`, also pass a `credentialProfile` object with
-`providerId: "marinetraffic"` and the configured profile label.
+- `myshiptracking`: vessel autocomplete, latest position by MMSI, and
+  bounding-box map feed.
+- `tradlinx`: FCL/LCL carrier schedule lookup.
+- `shipfinder`: vessel autocomplete and vessel detail API shapes for
+  explicit provider routing.
 
-See [`docs/runbooks/credential-profiles.md`](./docs/runbooks/credential-profiles.md)
+Responses include source metadata and a user-facing source URL.
+
+### BYOK Providers
+
+Paid providers are Bring Your Own Key only. Raw keys never appear in
+logs, errors, or MCP tool responses.
+
+```bash
+export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
+```
+
+MarineTraffic / Kpler official API support is BYOK-only and can route
+`shipsearch`, `exportvessel`, `exportvesseltrack`, and `portcalls`
+when the `marinetraffic` credential profile is configured. See
+[`docs/runbooks/credential-profiles.md`](./docs/runbooks/credential-profiles.md)
 and [`docs/runbooks/operator.md`](./docs/runbooks/operator.md).
 
-### Live-provider tests are opt-in
+### Agent Prompt
 
-Live calls are gated behind `VESSEL_MCP_LIVE_TEST_*` flags and are
-**skipped by default**. They are never wired into `npm test`,
-`npm run lint`, or `npm run build`. See the operator runbook for the
-full list of toggles.
+Use this prompt when asking another coding agent to install the MCP:
 
-### Public capture candidate: ShipFinder
+```text
+Install and configure https://github.com/tools-mcp/vessel-traffic-mcp
+as a local stdio MCP server on this machine.
 
-`src/providers/shipfinder.ts` implements the browser-captured ShipFinder
-autocomplete and vessel-detail API shapes for explicit use via
-`provider: "shipfinder"`. The default server registry remains fixture-only;
-public browser endpoints can challenge or throttle non-browser calls, and the
-adapter reports those cases as no-data provider states instead of bypassing
-verification.
+Read README.md and llms.txt first. Clone the repository, run `npm ci`,
+run `npm run build`, then add the MCP server to the local MCP client
+using an absolute path to `dist/index.js`.
 
-### Public opt-in candidate: MyShipTracking
+Use `VESSEL_MCP_TRANSPORT=stdio` and enable public providers with
+`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx`.
 
-`src/providers/myshiptracking.ts` implements the browser-captured
-MyShipTracking autocomplete, selected-MMSI latest position, and
-bounding-box map feed shapes. It remains opt-in for runtime use:
+Do not commit local MCP client config files, env files, API keys,
+cookies, HAR files, browser sessions, or raw captures. Do not copy
+credentials from another machine.
 
-```bash
-VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking npm start
+After restarting the MCP client, verify with:
+1. Ask for EVER GIVEN current position and include the source URL.
+2. Ask for a KRPUS to NLRTM carrier schedule and include the source URL.
 ```
 
-The MCP responses include `source.provider = "myshiptracking"` and
-`source.landingUrl = "https://www.myshiptracking.com/"` so clients can
-display the source service and route users back to it.
+## 한국어
 
-### Public opt-in candidate: Carrier schedules
+### 개요
 
-`src/providers/tradlinx.ts` implements the browser-captured FCL/LCL
-route schedule endpoints for explicit runtime use:
+`vessel-traffic-mcp`는 MCP 클라이언트가 허가된 해운/선박 데이터
+소스를 읽기 전용 도구로 조회할 수 있게 해주는 서버입니다.
 
-```bash
-VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=tradlinx npm start
-```
+선박명, MMSI, IMO, 호출부호 기반 검색, 최신 위치 조회, 영역 조회,
+항만 호출, 선사 스케줄, 선박별 스케줄, 스케줄 지연 판단을 제공합니다.
 
-Use `carrier_schedule_search` with origin/destination UN/LOCODEs such
-as `KRPUS` and `NLRTM`, or known names such as `부산` and `로테르담`.
-The adapter returns a user-facing schedule URL in `source.landingUrl`.
-Client UIs may show that URL as the source without adding a vendor
-display label.
+실시간 또는 공개 provider 응답은 반드시 `source.provider`와
+`source.landingUrl`을 포함해야 합니다. 이 프로젝트의 목적은 원
+서비스 유입과 출처 노출을 제공하는 것이며, 출처를 숨기거나
+재브랜딩하는 것이 아닙니다.
 
-### Local vessel map UI
-
-For a local visual check with ship-name input and a map:
+### 빠른 시작
 
 ```bash
-npm run start:map
-```
-
-The UI performs `name/IMO/MMSI -> MMSI -> latest position` through the
-MyShipTracking adapter and displays the provider/source URL alongside
-the map marker.
-
-### Codex agent setup on another Mac
-
-If you ask a Codex agent on another Mac to set this up, give it this
-README section and have it perform these steps. The agent should not
-copy private files from another machine and must not commit
-`~/.codex/config.toml`.
-
-```bash
-cd ~/project
 git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
 cd vessel-traffic-mcp
-npm ci
+npm install
+npm run lint
+npm test
 npm run build
 ```
 
-Then the agent should add this MCP entry to that Mac's
-`~/.codex/config.toml`, replacing the path only if the checkout lives
-somewhere else:
+기본 검증은 sanitize된 fixture만 사용합니다. 유료 provider나 live
+provider를 호출하지 않으며 API 키, 계정, 네트워크 접근이 필요하지
+않습니다.
+
+### 로컬 MCP 설정
+
+로컬 데스크톱/CLI 클라이언트에서는 stdio transport를 사용합니다.
+
+```bash
+VESSEL_MCP_TRANSPORT=stdio npm start
+```
+
+Codex CLI, Claude Desktop, Claude Code 설정은
+[공통 MCP 설정 예시](#shared-mcp-config-snippets)를 사용하면 됩니다.
+전체 클라이언트 설정은 [`docs/runbooks/clients.md`](./docs/runbooks/clients.md),
+Codex 전용 설정은 [`docs/runbooks/codex.md`](./docs/runbooks/codex.md)에
+정리되어 있습니다.
+
+### 원격 MCP 설정
+
+원격 MCP 클라이언트는 Streamable HTTP `/mcp` 엔드포인트를 사용합니다.
+`/health`는 공개 health check입니다.
+
+```bash
+export VESSEL_MCP_TRANSPORT=http
+export VESSEL_MCP_HTTP_HOST=127.0.0.1
+export VESSEL_MCP_HTTP_PORT=8765
+export VESSEL_MCP_AUTH_TOKEN="<a-strong-random-token-you-generated>"
+npm run start:http
+```
+
+`VESSEL_MCP_AUTH_TOKEN`을 설정한 경우 MCP 요청에는
+`Authorization: Bearer <token>`이 필요합니다. 배포 문서는
+[`docs/runbooks/deployment-https.md`](./docs/runbooks/deployment-https.md)를
+참고하세요.
+
+### 공개 Provider
+
+브라우저 캡처 기반 공개 adapter는 명시적으로 켜야 합니다.
+
+```bash
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
+```
+
+- `myshiptracking`: 선박 자동완성, MMSI 기반 최신 위치, 지도 영역 조회.
+- `tradlinx`: FCL/LCL 선사 스케줄 조회.
+- `shipfinder`: 명시적 provider 라우팅용 선박 자동완성 및 상세 API 형태.
+
+응답에는 항상 원 출처 provider와 사용자가 열 수 있는 출처 URL을
+포함합니다.
+
+### BYOK Provider
+
+유료 provider는 BYOK 방식으로만 사용합니다. 실제 키는 로그, 에러,
+MCP 응답에 노출되지 않습니다.
+
+```bash
+export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
+```
+
+자세한 내용은 [`docs/runbooks/credential-profiles.md`](./docs/runbooks/credential-profiles.md)와
+[`docs/runbooks/operator.md`](./docs/runbooks/operator.md)를 참고하세요.
+
+### 에이전트 설정 프롬프트
+
+다른 코딩 에이전트에게 이 MCP를 설치하게 할 때 사용할 프롬프트입니다.
+
+```text
+https://github.com/tools-mcp/vessel-traffic-mcp 를 이 머신의 로컬
+stdio MCP 서버로 설치하고 설정해줘.
+
+먼저 README.md와 llms.txt를 읽어라. repo를 clone하고 `npm ci`,
+`npm run build`를 실행한 뒤, 로컬 MCP 클라이언트 설정에
+`dist/index.js`의 절대경로를 등록해라.
+
+`VESSEL_MCP_TRANSPORT=stdio`를 사용하고,
+`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx`를 설정해라.
+
+로컬 MCP 클라이언트 설정 파일, env 파일, API 키, 쿠키, HAR 파일,
+브라우저 세션, raw capture는 커밋하지 마라. 다른 머신의 credential을
+복사하지 마라.
+
+MCP 클라이언트를 재시작한 뒤 다음으로 검증해라:
+1. EVER GIVEN 현재 위치를 조회하고 출처 URL을 함께 보여줘.
+2. KRPUS에서 NLRTM까지의 선사 스케줄을 조회하고 출처 URL을 함께 보여줘.
+```
+
+## 日本語
+
+### 概要
+
+`vessel-traffic-mcp` は、MCP クライアントから許可された海事データ
+ソースを読み取り専用で参照するためのサーバーです。
+
+船名、MMSI、IMO、コールサインによる検索、最新位置、エリア検索、
+寄港情報、船会社スケジュール、船舶別スケジュール、遅延判定を
+提供します。
+
+ライブまたは公開 provider の応答では、`source.provider` と
+`source.landingUrl` を必ず含めます。このプロジェクトは元サービスへ
+ユーザーを誘導し、出典を明示することを目的としています。
+
+### クイックスタート
+
+```bash
+git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
+cd vessel-traffic-mcp
+npm install
+npm run lint
+npm test
+npm run build
+```
+
+標準の検証は sanitize 済み fixture のみを使います。有料 provider や
+live provider は呼び出さず、API キー、アカウント、ネットワーク接続も
+不要です。
+
+### ローカル MCP 設定
+
+ローカルのデスクトップ/CLI クライアントでは stdio transport を使います。
+
+```bash
+VESSEL_MCP_TRANSPORT=stdio npm start
+```
+
+Codex CLI、Claude Desktop、Claude Code の設定には
+[共通 MCP 設定例](#shared-mcp-config-snippets)を使用してください。
+
+### リモート MCP 設定
+
+リモート MCP クライアントでは Streamable HTTP の `/mcp` を使います。
+`/health` は公開 health check です。
+
+```bash
+export VESSEL_MCP_TRANSPORT=http
+export VESSEL_MCP_HTTP_HOST=127.0.0.1
+export VESSEL_MCP_HTTP_PORT=8765
+export VESSEL_MCP_AUTH_TOKEN="<a-strong-random-token-you-generated>"
+npm run start:http
+```
+
+`VESSEL_MCP_AUTH_TOKEN` を設定した場合、MCP リクエストには
+`Authorization: Bearer <token>` が必要です。
+
+### 公開 Provider
+
+ブラウザキャプチャ由来の公開 adapter は明示的に有効化します。
+
+```bash
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
+```
+
+- `myshiptracking`: 船舶オートコンプリート、MMSI からの最新位置、
+  地図範囲検索。
+- `tradlinx`: FCL/LCL の船会社スケジュール検索。
+- `shipfinder`: 明示的 provider ルーティング用の船舶検索と詳細 API 形状。
+
+### BYOK Provider
+
+有料 provider は BYOK のみです。実際のキーはログ、エラー、MCP 応答に
+出しません。
+
+```bash
+export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
+```
+
+### エージェント設定プロンプト
+
+別のコーディングエージェントに MCP を設定させる場合のプロンプトです。
+
+```text
+https://github.com/tools-mcp/vessel-traffic-mcp を、このマシンの
+ローカル stdio MCP サーバーとしてインストールして設定してください。
+
+最初に README.md と llms.txt を読んでください。repo を clone し、
+`npm ci` と `npm run build` を実行し、`dist/index.js` の絶対パスを
+ローカル MCP クライアントに登録してください。
+
+`VESSEL_MCP_TRANSPORT=stdio` を使い、
+`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx` を設定してください。
+
+ローカル MCP クライアント設定、env ファイル、API キー、Cookie、HAR、
+ブラウザセッション、raw capture を commit しないでください。他の
+マシンから credential をコピーしないでください。
+
+再起動後、EVER GIVEN の現在位置と出典 URL、KRPUS から NLRTM への
+船会社スケジュールと出典 URL を確認してください。
+```
+
+## 中文
+
+### 概览
+
+`vessel-traffic-mcp` 是一个只读 MCP 服务器，让 MCP 客户端能够通过
+统一工具接口访问已授权的海事数据来源。
+
+它支持按船名、MMSI、IMO、呼号搜索船舶，查询最新位置、区域位置、
+港口靠泊、承运人航线计划、船舶计划和延误判断。
+
+所有实时或公开 provider 的响应都必须包含 `source.provider` 和
+`source.landingUrl`。本项目用于向原始服务导流并明确显示出处，而不是
+隐藏或重新包装数据来源。
+
+### 快速开始
+
+```bash
+git clone https://github.com/tools-mcp/vessel-traffic-mcp.git
+cd vessel-traffic-mcp
+npm install
+npm run lint
+npm test
+npm run build
+```
+
+默认验证只使用已清洗的 fixture，不调用付费或实时 provider，也不需要
+API key、账号或网络访问。
+
+### 本地 MCP 设置
+
+本地桌面和 CLI 客户端使用 stdio transport。
+
+```bash
+VESSEL_MCP_TRANSPORT=stdio npm start
+```
+
+Codex CLI、Claude Desktop、Claude Code 可使用
+[共享 MCP 配置片段](#shared-mcp-config-snippets)。
+
+### 远程 MCP 设置
+
+远程 MCP 客户端使用 Streamable HTTP `/mcp`，`/health` 是公开健康检查。
+
+```bash
+export VESSEL_MCP_TRANSPORT=http
+export VESSEL_MCP_HTTP_HOST=127.0.0.1
+export VESSEL_MCP_HTTP_PORT=8765
+export VESSEL_MCP_AUTH_TOKEN="<a-strong-random-token-you-generated>"
+npm run start:http
+```
+
+设置 `VESSEL_MCP_AUTH_TOKEN` 后，MCP 请求需要
+`Authorization: Bearer <token>`。
+
+### 公开 Provider
+
+浏览器捕获得到的公开 adapter 需要显式启用。
+
+```bash
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
+```
+
+- `myshiptracking`: 船舶自动完成、按 MMSI 查询最新位置、地图范围查询。
+- `tradlinx`: FCL/LCL 承运人航线计划查询。
+- `shipfinder`: 用于显式 provider 路由的船舶搜索和详情 API 形状。
+
+### BYOK Provider
+
+付费 provider 只能使用 BYOK。真实 key 不会出现在日志、错误或 MCP 响应中。
+
+```bash
+export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
+```
+
+### Agent 设置提示词
+
+让其他编码 agent 安装此 MCP 时可使用以下提示词。
+
+```text
+请将 https://github.com/tools-mcp/vessel-traffic-mcp 安装并配置为本机
+本地 stdio MCP 服务器。
+
+先阅读 README.md 和 llms.txt。clone 仓库，运行 `npm ci` 和
+`npm run build`，然后在本地 MCP 客户端中用 `dist/index.js` 的绝对路径
+注册服务器。
+
+使用 `VESSEL_MCP_TRANSPORT=stdio`，并设置
+`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx`。
+
+不要提交本地 MCP 客户端配置、env 文件、API key、cookie、HAR 文件、
+浏览器 session 或 raw capture。不要从其他机器复制 credentials。
+
+重启 MCP 客户端后验证：
+1. 查询 EVER GIVEN 当前船位，并显示来源 URL。
+2. 查询 KRPUS 到 NLRTM 的承运人航线计划，并显示来源 URL。
+```
+
+## Shared Reference
+
+### Shared MCP Config Snippets
+
+Codex CLI `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.vessel-traffic-mcp]
@@ -316,116 +466,128 @@ VESSEL_MCP_TRANSPORT = "stdio"
 VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS = "myshiptracking,tradlinx"
 ```
 
-Restart the Codex app after editing the config. In a fresh Codex
-session, test with:
+Claude Desktop / Claude Code config:
 
-```text
-EVER GIVEN 현재 위치 조회해줘. 출처 URL도 같이 보여줘.
+```json
+{
+  "mcpServers": {
+    "vessel-traffic-mcp": {
+      "command": "node",
+      "args": ["/absolute/path/to/vessel-traffic-mcp/dist/index.js"],
+      "env": {
+        "VESSEL_MCP_TRANSPORT": "stdio",
+        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx"
+      }
+    }
+  }
+}
 ```
 
-For the browser map UI:
+### Local Vessel Map UI
+
+For a local visual check with ship-name input and a map:
 
 ```bash
-cd /absolute/path/to/vessel-traffic-mcp
 npm run start:map
 ```
 
 Open `http://127.0.0.1:8787` and search `EVER GIVEN` or MMSI
-`353136000`. The UI should display the map marker and a visible
-`출처 보기` link to the source service.
+`353136000`. The UI displays a map marker and a visible source link.
 
-Optional MarineTraffic official API setup for the same Codex entry:
-add these lines to the existing
-`[mcp_servers.vessel-traffic-mcp.env]` table:
+### Schedule Tools
 
-```toml
-VESSEL_MCP_ENABLE_BYOK_PROVIDERS = "marinetraffic"
-VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY = "<your local MarineTraffic API key>"
-```
+Registered read-only schedule tools:
 
-Do not commit or paste the real key into repository files. For
-MarineTraffic calls, ask the agent to use provider `marinetraffic` and
-credential profile label `marinetraffic`.
+- `carrier_schedule_search`
+- `vessel_schedule`
+- `schedule_delay_predict`
 
-For schedule lookup, the registered read-only tools are:
-`carrier_schedule_search`, `vessel_schedule`, and
-`schedule_delay_predict`. The fixture provider supports deterministic
-checks such as:
+Fixture-backed checks:
 
 ```text
 KRPUS에서 NLRTM으로 가는 선사 스케줄을 조회하고, 출처 URL도 같이 보여줘.
 EVER GIVEN 선박 스케줄을 조회하고 ETA 지연 여부를 계산해줘.
 ```
 
-Current schedule-provider candidates are tracked in
-[`docs/provider-catalog.md`](./docs/provider-catalog.md): Tradelinx has
+Schedule-provider candidates are tracked in
+[`docs/provider-catalog.md`](./docs/provider-catalog.md). Tradelinx has
 an explicit opt-in `carrier_schedule_search` adapter backed by
 sanitized browser-captured endpoint shapes documented in
-[`docs/runbooks/schedule-api-capture-results.md`](./docs/runbooks/schedule-api-capture-results.md)
-while SeaRates, Linescape, IQAX Big Schedules, Routescanner, and
-CargoSmart are cataloged for BYOK/API or enterprise review.
+[`docs/runbooks/schedule-api-capture-results.md`](./docs/runbooks/schedule-api-capture-results.md).
 
-## Project layout
+### Capture And Safety Boundary
 
-```
+This project does not aim to bypass commercial services. It supports:
+
+- Official APIs and open-data feeds.
+- User-provided API credentials and organization-level BYOK credential
+  profiles for paid providers.
+- Sanitized HAR/network samples from operator-owned, authorized
+  browser sessions, only where allowed by service terms.
+
+It must not store raw cookies, bearer tokens, API keys, private HAR
+files, raw captures, or private browser sessions in the repository.
+The full hard-rule list lives in [`AGENTS.md`](./AGENTS.md), and
+security expectations are in [`SECURITY.md`](./SECURITY.md).
+
+Authorized capture tooling is documented in
+[`docs/runbooks/capture-execution.md`](./docs/runbooks/capture-execution.md).
+The sanitized import command is `npm run capture:import`, and traffic
+IR generation is `npm run capture:ir`.
+
+> Not for navigation. AIS data returned by configured providers may be
+> delayed, incomplete, or inaccurate. This project is not a
+> safety-critical navigation tool.
+
+### Project Layout
+
+```text
 src/
-  capture/      # sanitized capture fixture importer + traffic IR CLI
-  config/       # credential profile loader, provider catalog
-  providers/    # adapter interfaces, registry, router, rate limit, TTL cache
-  server/       # MCP transports (stdio, streamable HTTP), tool handlers
-  tools/        # tool definitions (read-only)
-  util/         # structured logging, redaction helpers
-test/           # node:test deterministic tests; fixture-backed
-docs/
-  PRD.md, TDD.md, provider-catalog.md
-  runbooks/     # operator, transports, BYOK, capture, release-checklist
+  capture/      sanitized capture fixture importer + traffic IR CLI
+  config/       credential profile loader, provider catalog
+  providers/    adapter interfaces, registry, router, rate limit, TTL cache
+  server/       MCP transports and tool handlers
+  tools/        read-only tool definitions
+  util/         structured logging and redaction helpers
+test/           node:test deterministic tests; fixture-backed
+docs/           PRD, TDD, provider catalog, and runbooks
 ```
 
-## Documentation
+### Documentation
 
+- [`llms.txt`](./llms.txt) — compact agent-facing project brief.
 - [`AGENTS.md`](./AGENTS.md) — project hard rules.
 - [`docs/PRD.md`](./docs/PRD.md) — product requirements.
 - [`docs/TDD.md`](./docs/TDD.md) — technical design.
 - [`docs/provider-catalog.md`](./docs/provider-catalog.md) — provider
   inventory and routing policy.
 - [`docs/runbooks/operator.md`](./docs/runbooks/operator.md) —
-  end-to-end operator runbook (credentials, rate limits, live-test
-  toggles, client setup).
+  end-to-end operator runbook.
 - [`docs/runbooks/clients.md`](./docs/runbooks/clients.md) — client
-  setup for Claude Desktop, Claude Code, ChatGPT remote MCP, and the
-  generic MCP Inspector.
-- [`docs/runbooks/codex.md`](./docs/runbooks/codex.md) — F7.AC3 Codex
-  CLI MCP wiring (`~/.codex/config.toml`), Streamable HTTP path, and
-  the current Codex plugin manifest / marketplace readiness state.
+  setup for Claude Desktop, Claude Code, ChatGPT remote MCP, and MCP
+  Inspector.
+- [`docs/runbooks/codex.md`](./docs/runbooks/codex.md) — Codex CLI MCP
+  wiring and Codex plugin metadata state.
+- [`docs/runbooks/credential-profiles.md`](./docs/runbooks/credential-profiles.md)
+  — BYOK profile handling.
 - [`docs/runbooks/deployment-https.md`](./docs/runbooks/deployment-https.md)
-  — Dockerfile and HTTPS reverse-proxy deployment notes for hosting
-  the Streamable HTTP MCP endpoint.
+  — HTTPS deployment for the Streamable HTTP MCP endpoint.
 - [`docs/runbooks/release-checklist.md`](./docs/runbooks/release-checklist.md)
-  — pre-release secret-safety checklist.
+  — pre-release safety checklist.
 - [`docs/runbooks/api-capture-reference-only.md`](./docs/runbooks/api-capture-reference-only.md)
-  — F5.AC5 contract: raw `api-capture` sessions, `.env`, cookies, and
-  logs are reference-only and must not be imported or committed.
-- [`docs/runbooks/capture-execution.md`](./docs/runbooks/capture-execution.md)
-  — F5A.AC3 operator runbook for performing an authorized maritime
-  capture, promoting a sanitized fixture, and why default autodev/CI
-  must never call live paid providers or capture private sessions.
+  — reference-only boundary for raw capture sessions.
 - [`docs/runbooks/browser-api-capture-results.md`](./docs/runbooks/browser-api-capture-results.md)
-  — sanitized browser capture results for vessel-name autocomplete,
-  IMO/MMSI lookup, detail pages, and latest-position API candidates.
+  — sanitized browser capture results for vessel APIs.
 - [`docs/runbooks/schedule-api-capture-results.md`](./docs/runbooks/schedule-api-capture-results.md)
-  — sanitized browser capture results for Tradelinx FCL/LCL schedule,
-  FCL detail, and vessel schedule API candidates.
-- [`docs/discoverability.md`](./docs/discoverability.md) — F7.AC2
-  package/repository/documentation discoverability metadata contract
-  (npm keywords, GitHub Topics, search surfaces).
+  — sanitized browser capture results for schedule APIs.
+- [`docs/discoverability.md`](./docs/discoverability.md) — package,
+  repository, and documentation discoverability contract.
 
-## Topics
+### Topics
 
-`vessel-traffic-mcp` is intended to be findable from any of these
-MCP and plugin search surfaces. The same set is reflected in the
-`package.json` keywords array and is suggested as GitHub Topics on
-the repository page. See [`docs/discoverability.md`](./docs/discoverability.md)
-for the full contract.
+`vessel-traffic-mcp` is intended to be findable from MCP and plugin
+search surfaces. The same set is reflected in `package.json` keywords
+and suggested GitHub topics.
 
 - vessel AIS MCP
 - ship tracking MCP
@@ -438,20 +600,21 @@ for the full contract.
 - BYOK paid-provider routing (MarineTraffic, VesselFinder, AISStream,
   AISHub, Spire, and other catalog entries)
 
-## Contributing
+### Contributing
 
-Contributions are welcome. Please read [`CONTRIBUTING.md`](./CONTRIBUTING.md)
-first — the project has non-negotiable safety rules around
-credentials, capture fixtures, and the read-only contract.
+Contributions are welcome. Please read
+[`CONTRIBUTING.md`](./CONTRIBUTING.md) first. The project has
+non-negotiable safety rules around credentials, capture fixtures, and
+the read-only contract.
 
-## Security
+### Security
 
 Do not file a public GitHub issue for a suspected vulnerability. See
 [`SECURITY.md`](./SECURITY.md) for the private reporting channel.
 
-## Autodev
+### Autodev
 
-This repository is designed to be driven by `<codex-autodev-checkout>` using:
+This repository can be driven by a local `<codex-autodev-checkout>`:
 
 ```bash
 cd <codex-autodev-checkout>
@@ -459,7 +622,7 @@ node bin/codex-autodev.js plan --config configs/vessel-traffic-mcp.json --max-ta
 node bin/codex-autodev.js run --config configs/vessel-traffic-mcp.json --max-tasks 1
 ```
 
-## License
+### License
 
 [MIT](./LICENSE) — see the license for the full text, including the
 no-warranty and not-for-navigation notices.
