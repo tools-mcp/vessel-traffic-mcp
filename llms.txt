@@ -23,6 +23,8 @@ the following:
 5. Set `VESSEL_MCP_TRANSPORT=stdio`.
 6. For public opt-in providers, set
    `VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx`.
+   Add `shipfinder` only when the user accepts browser-verification
+   no-data responses from that provider.
 7. Restart the MCP client.
 8. Verify by asking for `EVER GIVEN` current position with source URL,
    and for a carrier schedule from `KRPUS` to `NLRTM` with source URL.
@@ -77,6 +79,22 @@ the absolute path:
   expose provenance: `source.provider` and `source.landingUrl`.
 - This is not a safety-critical navigation tool.
 
+## Provider Status
+
+- Default runtime: `fixture`.
+- Public opt-in runtime providers:
+  `myshiptracking`, `shipfinder`, `tradlinx-schedule`.
+- Implemented credentialed runtime providers:
+  `marinetraffic`, `vesselfinder`, `aisstream`, `aishub`,
+  `barentswatch`.
+- Planned schedule providers:
+  `searates-schedules`, `linescape-schedule-api`,
+  `routescanner-connect`.
+- The remaining PRD providers are cataloged for discovery, enterprise
+  review, or future BYOK adapter work. Do not claim they are fully
+  implemented until `config/provider-catalog.example.json` marks them
+  `implemented` and runtime registry can enable them.
+
 ## Main Tools
 
 - `vessel_search`
@@ -106,4 +124,3 @@ the absolute path:
   vessel API capture notes.
 - `docs/runbooks/schedule-api-capture-results.md`: sanitized schedule
   API capture notes.
-

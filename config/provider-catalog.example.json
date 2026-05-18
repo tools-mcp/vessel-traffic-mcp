@@ -174,44 +174,74 @@
     {
       "id": "myshiptracking",
       "displayName": "MyShipTracking",
-      "accessClass": "free-trial",
-      "tier": "paid-commercial",
+      "accessClass": "open",
+      "tier": "terrestrial-open",
       "priority": "P1",
-      "coverage": "Terrestrial AIS positions, vessel data, zones, port arrivals, and historical tracks.",
+      "coverage": "Public browser endpoints for vessel autocomplete, selected-MMSI latest position, and bounding-box area rows.",
       "capabilities": [
         "vessel_search",
         "vessel_position",
-        "vessel_area",
-        "vessel_track",
-        "port_calls"
+        "vessel_area"
       ],
       "auth": {
-        "mode": "byok-profile",
-        "required": true,
-        "profileFields": ["api_key"],
-        "envVars": [
-          "VESSEL_MCP_PROFILE_MYSHIPTRACKING__API_KEY"
-        ],
-        "notes": "Trial keys available; production tiers use credit-based billing."
+        "mode": "none",
+        "required": false,
+        "profileFields": [],
+        "envVars": [],
+        "notes": "Browser capture found no API key in the public autocomplete and selected-MMSI map feed shapes. Runtime use is explicit opt-in through VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking."
       },
       "cost": {
-        "model": "trial",
-        "quotaNote": "Trial allowance plus paid tiers; see provider docs."
+        "model": "free",
+        "quotaNote": "Public web UI; no committed API quota. Use conservative pacing and source attribution."
       },
       "sources": {
-        "apiDocsUrl": "https://api.myshiptracking.com/docs/vessel-current-position-api",
-        "landingUrl": "https://api.myshiptracking.com/docs/vessel-current-position-api",
-        "signupUrl": "https://api.myshiptracking.com/docs/vessel-current-position-api"
+        "landingUrl": "https://www.myshiptracking.com/",
+        "referenceUrl": "https://api.myshiptracking.com/docs/vessel-current-position-api"
       },
-      "implementationStatus": "not_started",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_MYSHIPTRACKING",
-        "requiredEnvVars": [
-          "VESSEL_MCP_PROFILE_MYSHIPTRACKING__API_KEY"
-        ],
-        "defaultDisabled": true
+        "requiredEnvVars": [],
+        "defaultDisabled": true,
+        "notes": "Default tests use mocked browser endpoint responses. Live calls stay opt-in through explicit runtime configuration."
       },
-      "captureEligibility": "needs-terms-review"
+      "captureEligibility": "needs-terms-review",
+      "notes": "Browser-captured public adapter candidate implemented for vessel_search, vessel_position, and vessel_area. Prefer official API contracts for production use."
+    },
+    {
+      "id": "shipfinder",
+      "displayName": "ShipFinder",
+      "accessClass": "open",
+      "tier": "terrestrial-open",
+      "priority": "P2",
+      "coverage": "Public browser endpoints for vessel autocomplete and latest-position detail lookups.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position"
+      ],
+      "auth": {
+        "mode": "none",
+        "required": false,
+        "profileFields": [],
+        "envVars": [],
+        "notes": "Browser capture found no API key in the autocomplete and detail shapes. Runtime use is explicit opt-in through VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=shipfinder."
+      },
+      "cost": {
+        "model": "free",
+        "quotaNote": "Public web UI; no committed API quota. Use conservative pacing and source attribution."
+      },
+      "sources": {
+        "landingUrl": "https://www.shipfinder.com/"
+      },
+      "implementationStatus": "implemented",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_SHIPFINDER",
+        "requiredEnvVars": [],
+        "defaultDisabled": true,
+        "notes": "Default tests use mocked browser endpoint responses. Live calls stay opt-in through explicit runtime configuration."
+      },
+      "captureEligibility": "needs-terms-review",
+      "notes": "Detail endpoint may return browser-verification or abnormal-access responses; the adapter reports those cases as provider_unavailable instead of bypassing verification."
     },
     {
       "id": "aisstream",

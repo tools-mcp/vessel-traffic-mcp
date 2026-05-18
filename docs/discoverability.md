@@ -41,11 +41,10 @@ MCP ecosystem grows.
 | `author`     | Maintainer attribution; cross-checks against `SECURITY.md` private-reporting channel. |
 | `files`      | Explicit allowlist of artifacts that ship if the package is ever published. Keeps operator-sensitive directories (`captures/`, `state/`, `.env*`, raw fixtures) out by construction. |
 
-`"private": true` is intentionally **kept** today: the package must
-not be published to npm until the full F7 release is signed off and
-the F7 parent feature flips to `implemented` in
-`docs/autodev/requirements.yaml`. The metadata is shaped so that a
-later `"private": false` flip is the only step needed to publish —
+`"private": true` is intentionally **kept** today: the repository and
+F7 release assets are ready, but npm publication still requires an
+explicit package-publication sign-off. The metadata is shaped so that
+a later `"private": false` flip is the only step needed to publish —
 every other field already matches npm's publication requirements.
 
 ## GitHub Topics
@@ -111,8 +110,8 @@ Discoverability metadata is covered by deterministic tests in
    and never lists operator-sensitive paths.
 4. The metadata contains no credential-shaped strings.
 5. README links back here and surfaces the Topics section.
-6. F7.AC2 is `status: implemented` and the F7 parent feature stays
-   `not_implemented` until release sign-off (no silent rollups).
+6. F7.AC2 and the F7 parent feature are `status: implemented`, while
+   `package.json` stays `private: true` until npm publication sign-off.
 
 The test runs as part of the default `npm test` gate, so any change
 that drifts the metadata out of alignment with this contract fails CI

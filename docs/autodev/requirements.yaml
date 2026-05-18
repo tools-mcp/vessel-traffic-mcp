@@ -68,7 +68,7 @@ features:
   - id: F2B
     title: BYOK credential profiles for paid APIs
     phase: P0
-    status: not_implemented
+    status: implemented
     source_docs:
       - docs/PRD.md
       - docs/TDD.md
@@ -132,7 +132,7 @@ features:
   - id: F4
     title: Free, open, and commercial provider adapters
     phase: P1
-    status: not_implemented
+    status: implemented
     source_docs:
       - docs/PRD.md
       - docs/TDD.md
@@ -265,7 +265,7 @@ features:
   - id: F7
     title: Open source release and plugin discoverability
     phase: P2
-    status: not_implemented
+    status: implemented
     source_docs:
       - docs/PRD.md
       - docs/TDD.md

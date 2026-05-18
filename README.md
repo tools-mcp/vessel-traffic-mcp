@@ -85,32 +85,37 @@ and [`docs/runbooks/deployment-https.md`](./docs/runbooks/deployment-https.md).
 
 ### Public Providers
 
-Public browser-captured adapters are opt-in:
+Public browser-captured adapters are opt-in. These are not the whole
+provider roadmap; they are the no-key public web adapters currently
+implemented for explicit runtime use:
 
 ```bash
 VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 ```
 
-- `myshiptracking`: vessel autocomplete, latest position by MMSI, and
-  bounding-box map feed.
+- `myshiptracking`: vessel autocomplete, selected-MMSI latest position,
+  and bounding-box map feed.
 - `tradlinx`: FCL/LCL carrier schedule lookup.
 - `shipfinder`: vessel autocomplete and vessel detail API shapes for
-  explicit provider routing.
+  explicit provider routing. Enable with `shipfinder` only when you
+  accept that browser-verification responses may be reported as no-data.
 
 Responses include source metadata and a user-facing source URL.
 
 ### BYOK Providers
 
-Paid providers are Bring Your Own Key only. Raw keys never appear in
-logs, errors, or MCP tool responses.
+Paid and credentialed providers are Bring Your Own Key only. Raw keys
+never appear in logs, errors, or MCP tool responses.
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch"
 ```
 
-MarineTraffic / Kpler official API support is BYOK-only and can route
-`shipsearch`, `exportvessel`, `exportvesseltrack`, and `portcalls`
-when the `marinetraffic` credential profile is configured. See
+Implemented credentialed runtime providers are `marinetraffic`,
+`vesselfinder`, `aisstream`, `aishub`, and `barentswatch`. A provider
+is also auto-enabled when its default credential profile is configured.
+See
 [`docs/runbooks/credential-profiles.md`](./docs/runbooks/credential-profiles.md)
 and [`docs/runbooks/operator.md`](./docs/runbooks/operator.md).
 
@@ -208,7 +213,7 @@ npm run start:http
 VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 ```
 
-- `myshiptracking`: 선박 자동완성, MMSI 기반 최신 위치, 지도 영역 조회.
+- `myshiptracking`: 선박 자동완성, 선택 MMSI 기반 최신 위치, 지도 영역 조회.
 - `tradlinx`: FCL/LCL 선사 스케줄 조회.
 - `shipfinder`: 명시적 provider 라우팅용 선박 자동완성 및 상세 API 형태.
 
@@ -217,12 +222,17 @@ VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 
 ### BYOK Provider
 
-유료 provider는 BYOK 방식으로만 사용합니다. 실제 키는 로그, 에러,
-MCP 응답에 노출되지 않습니다.
+유료/credential 기반 provider는 BYOK 방식으로만 사용합니다. 실제 키는
+로그, 에러, MCP 응답에 노출되지 않습니다.
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch"
 ```
+
+현재 credential 기반으로 런타임 등록 가능한 provider는 `marinetraffic`,
+`vesselfinder`, `aisstream`, `aishub`, `barentswatch`입니다. 기본 credential
+profile이 설정된 provider는 자동으로 등록됩니다.
 
 자세한 내용은 [`docs/runbooks/credential-profiles.md`](./docs/runbooks/credential-profiles.md)와
 [`docs/runbooks/operator.md`](./docs/runbooks/operator.md)를 참고하세요.
@@ -316,19 +326,23 @@ npm run start:http
 VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 ```
 
-- `myshiptracking`: 船舶オートコンプリート、MMSI からの最新位置、
+- `myshiptracking`: 船舶オートコンプリート、選択 MMSI からの最新位置、
   地図範囲検索。
 - `tradlinx`: FCL/LCL の船会社スケジュール検索。
 - `shipfinder`: 明示的 provider ルーティング用の船舶検索と詳細 API 形状。
 
 ### BYOK Provider
 
-有料 provider は BYOK のみです。実際のキーはログ、エラー、MCP 応答に
-出しません。
+有料または credential が必要な provider は BYOK のみです。実際のキーは
+ログ、エラー、MCP 応答に出しません。
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch"
 ```
+
+現在 runtime で有効化できる credentialed provider は `marinetraffic`,
+`vesselfinder`, `aisstream`, `aishub`, `barentswatch` です。
 
 ### エージェント設定プロンプト
 
@@ -415,17 +429,22 @@ npm run start:http
 VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 ```
 
-- `myshiptracking`: 船舶自动完成、按 MMSI 查询最新位置、地图范围查询。
+- `myshiptracking`: 船舶自动完成、按选定 MMSI 查询最新位置、地图范围查询。
 - `tradlinx`: FCL/LCL 承运人航线计划查询。
 - `shipfinder`: 用于显式 provider 路由的船舶搜索和详情 API 形状。
 
 ### BYOK Provider
 
-付费 provider 只能使用 BYOK。真实 key 不会出现在日志、错误或 MCP 响应中。
+付费或需要 credential 的 provider 只能使用 BYOK。真实 key 不会出现在日志、
+错误或 MCP 响应中。
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch"
 ```
+
+当前可在 runtime 启用的 credentialed provider 是 `marinetraffic`,
+`vesselfinder`, `aisstream`, `aishub`, `barentswatch`。
 
 ### Agent 设置提示词
 
@@ -482,6 +501,25 @@ Claude Desktop / Claude Code config:
   }
 }
 ```
+
+### Provider Implementation Status
+
+The PRD is intentionally broader than the adapters enabled by default.
+Current status:
+
+| Group | Runtime status | Providers |
+| --- | --- | --- |
+| Default | enabled with no env | `fixture` |
+| Public opt-in | `VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS` | `myshiptracking`, `shipfinder`, `tradlinx-schedule` |
+| Credentialed implemented | `VESSEL_MCP_ENABLE_BYOK_PROVIDERS` or configured default profile | `marinetraffic`, `vesselfinder`, `aisstream`, `aishub`, `barentswatch` |
+| Planned schedule APIs | cataloged, not implemented | `searates-schedules`, `linescape-schedule-api`, `routescanner-connect` |
+| Not started commercial AIS | cataloged, not implemented | `spire-maritime`, `orbcomm-commtrace` |
+| Discovery or enterprise review | cataloged only | `openais`, `noaa-marinecadastre`, `globalfishingwatch`, `iqax-bigschedules`, `cargosmart-schedule`, `vesselapi`, `datadocked`, `poseidon-ais`, `ais-now`, `fleetmon`, `windward`, `polestar-global`, `spglobal-seaweb`, `lloyds-list-intelligence` |
+
+The structured source of truth is
+[`config/provider-catalog.example.json`](./config/provider-catalog.example.json)
+and the human-readable inventory is
+[`docs/provider-catalog.md`](./docs/provider-catalog.md).
 
 ### Local Vessel Map UI
 

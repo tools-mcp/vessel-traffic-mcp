@@ -86,7 +86,7 @@ test('F3 acceptance criteria descriptions still match the F3.AC1/AC2 PRD contrac
   assert.match(f3, /id: AC2[\s\S]{0,400}?landing URLs/i);
 });
 
-test('promoting F3 does not promote downstream parent feature statuses (F4, F7 remain not_implemented)', () => {
+test('PRD completion keeps downstream parent feature statuses implemented (F4, F7)', () => {
   const reqs = readRequirements();
 
   // F1 and F2 are implemented (asserted by their own feature-status tests) and excluded here.
@@ -96,6 +96,8 @@ test('promoting F3 does not promote downstream parent feature statuses (F4, F7 r
   // F5 is implemented (asserted by f5-feature-status.test.js) and excluded here.
   // F5A is implemented (asserted by f5a-feature-status.test.js) and excluded here.
   // F6 is implemented (asserted by f6-feature-status.test.js) and excluded here.
+  // F4 and F7 are now promoted by the PRD completion pass; keep this guard
+  // to prevent stale status rollbacks.
   const guards = [
     ['F4', 'F4A'],
     ['F7', null],
@@ -105,8 +107,8 @@ test('promoting F3 does not promote downstream parent feature statuses (F4, F7 r
     const block = featureBlock(reqs, id, next);
     assert.equal(
       featureHeaderStatus(block),
-      'not_implemented',
-      `${id} parent feature status must remain not_implemented — F3 promotion must not cascade beyond F3`,
+      'implemented',
+      `${id} parent feature status must remain implemented after PRD completion`,
     );
   }
 });

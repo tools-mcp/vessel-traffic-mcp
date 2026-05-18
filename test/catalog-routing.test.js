@@ -263,7 +263,15 @@ test('availableCredentialProviderIds omitted is treated as a no-key setup (defau
   });
   assert.deepEqual(omitted, explicit, 'omitted and empty-array forms must be equivalent');
   assert.equal(omitted.coverageHint, 'unknown', "coverageHint defaults to 'unknown' when omitted");
-  assert.equal(omitted.hasUsableTerrestrial, false, 'no creds + auth-gated terrestrial = no usable terrestrial');
+  assert.equal(
+    omitted.hasUsableTerrestrial,
+    true,
+    'no creds can use implemented no-auth terrestrial providers such as MyShipTracking',
+  );
+  assert.ok(
+    omitted.preferred.some((entry) => entry.providerId === 'myshiptracking'),
+    'implemented no-auth MyShipTracking should be preferred in a no-key plan',
+  );
 });
 
 test('paid signup reason switches to paid_history_required for vessel_track capability', () => {

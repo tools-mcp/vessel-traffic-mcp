@@ -216,9 +216,9 @@ test('F7.AC1 status in requirements.yaml is set to implemented', () => {
   assert.match(ac1Block, /verification: docs-review/, 'F7.AC1 verification must remain docs-review');
 });
 
-test('F7 parent feature remains not_implemented while sibling criteria are still pending', () => {
-  // Per the run brief: closing F7.AC1 must not silently flip the parent
-  // feature to implemented while F7.AC2 and F7.AC3 are still open.
+test('F7 parent feature is implemented after PRD completion', () => {
+  // F7.AC1, F7.AC2, and F7.AC3 are now implemented, so the parent feature is
+  // promoted during the PRD completion pass.
   const reqs = read(REQUIREMENTS_URL);
   const f7Index = reqs.indexOf('id: F7');
   assert.ok(f7Index > 0, 'requirements.yaml must contain feature F7');
@@ -227,7 +227,7 @@ test('F7 parent feature remains not_implemented while sibling criteria are still
   const f7Header = reqs.slice(f7Index, f7Index + 400);
   assert.match(
     f7Header,
-    /title: Open source release and plugin discoverability[\s\S]*?status: not_implemented/,
-    'F7 parent feature must remain not_implemented until all child criteria are done',
+    /title: Open source release and plugin discoverability[\s\S]*?status: implemented/,
+    'F7 parent feature must be implemented after all child criteria are done',
   );
 });

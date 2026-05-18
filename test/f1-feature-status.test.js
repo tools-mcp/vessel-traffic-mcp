@@ -65,7 +65,7 @@ test('F1 acceptance criteria descriptions still match the F1.AC1/AC2/AC3 PRD con
   assert.match(f1, /id: AC3[\s\S]{0,400}?MCP Inspector/);
 });
 
-test('promoting F1 does not promote downstream parent feature statuses (F2B, F4, F7 remain not_implemented)', () => {
+test('PRD completion keeps downstream parent feature statuses implemented (F2B, F4, F7)', () => {
   const reqs = readRequirements();
 
   // Each entry: [id, nextIdForSlice]. Order tracks the document so slicing stays correct.
@@ -82,7 +82,8 @@ test('promoting F1 does not promote downstream parent feature statuses (F2B, F4,
   // F5A is intentionally excluded — it is promoted to implemented by F5A.FOLLOWUP and asserted
   // by test/f5a-feature-status.test.js. Listing it here would conflict with that promotion.
   // F6 is intentionally excluded — it is promoted to implemented by F6.FOLLOWUP and asserted
-  // by test/f6-feature-status.test.js. Listing it here would conflict with that promotion.
+  // by test/f6-feature-status.test.js. F2B, F4, and F7 are now promoted by
+  // the PRD completion pass; keep this guard to prevent stale status rollbacks.
   const guards = [
     ['F2B', 'F3'],
     ['F4', 'F4A'],
@@ -93,8 +94,8 @@ test('promoting F1 does not promote downstream parent feature statuses (F2B, F4,
     const block = featureBlock(reqs, id, next);
     assert.equal(
       featureHeaderStatus(block),
-      'not_implemented',
-      `${id} parent feature status must remain not_implemented — F1 promotion must not cascade beyond F2`,
+      'implemented',
+      `${id} parent feature status must remain implemented after PRD completion`,
     );
   }
 });

@@ -94,17 +94,16 @@ test('F4A acceptance criteria descriptions still match the F4A.AC1/AC2/AC3/AC4 P
   assert.match(f4a, /id: AC4[\s\S]{0,500}?signup URLs/i);
 });
 
-test('promoting F4A does not promote other not_implemented parent features (F2B, F4, F7 remain not_implemented)', () => {
+test('PRD completion keeps related parent feature statuses implemented (F2B, F4, F7)', () => {
   const reqs = readRequirements();
 
   // F1, F2, F3, F3B are implemented (asserted by their own feature-status tests) and excluded here.
   // F4A is the promotion under test and excluded here.
-  // F2B remains not_implemented at the parent level even though its ACs are implemented; it is not
-  // yet promoted by its own followup. F4 also stays not_implemented (F4.AC5 / catalogue docs-review
-  // is implemented but the F4 parent has its own followup gate).
   // F5 is implemented (asserted by f5-feature-status.test.js) and excluded here.
   // F5A is implemented (asserted by f5a-feature-status.test.js) and excluded here.
   // F6 is implemented (asserted by f6-feature-status.test.js) and excluded here.
+  // F2B, F4, and F7 are now promoted by the PRD completion pass; keep this
+  // guard to prevent stale status rollbacks.
   const guards = [
     ['F2B', 'F3'],
     ['F4', 'F4A'],
@@ -115,8 +114,8 @@ test('promoting F4A does not promote other not_implemented parent features (F2B,
     const block = featureBlock(reqs, id, next);
     assert.equal(
       featureHeaderStatus(block),
-      'not_implemented',
-      `${id} parent feature status must remain not_implemented — F4A promotion must not cascade beyond F4A`,
+      'implemented',
+      `${id} parent feature status must remain implemented after PRD completion`,
     );
   }
 });
@@ -294,11 +293,11 @@ test('F4A.AC3 discovery validation prevents adapter/capture tasks from starting 
 
 test('F4A.AC4 no-key MCP routing prefers terrestrial AIS first and emits paid/satellite signup URLs otherwise', () => {
   // End-to-end invariant guarding the F4A promotion: planning a route over the
-  // shipped example catalog without any credential profile must (a) emit zero
-  // promoted terrestrial entries because the catalog's terrestrial entries
-  // require credentials, (b) emit paid signup candidates for upgrade, and
-  // (c) return the same plan terrestrial-first when a terrestrial credential
-  // is available.
+  // shipped example catalog without any credential profile must (a) promote
+  // implemented no-auth terrestrial entries first, (b) emit paid signup
+  // candidates for upgrade, and (c) keep credentialed terrestrial providers
+  // ahead of paid-commercial entries when a terrestrial credential is
+  // available.
   const catalog = loadProviderCatalog(CATALOG_PATH.pathname);
   const positionProviders = catalogEntriesByCapability(catalog, 'vessel_position');
   assert.ok(positionProviders.length >= 5, 'catalog must enumerate ≥5 vessel_position providers');
@@ -307,7 +306,11 @@ test('F4A.AC4 no-key MCP routing prefers terrestrial AIS first and emits paid/sa
     capability: 'vessel_position',
     availableCredentialProviderIds: [],
   });
-  assert.equal(noKey.hasUsableTerrestrial, false, 'no-key + auth-gated terrestrial must yield no usable terrestrial');
+  assert.equal(noKey.hasUsableTerrestrial, true, 'no-key setup should use implemented no-auth terrestrial providers');
+  assert.ok(
+    noKey.preferred.some((entry) => entry.providerId === 'myshiptracking'),
+    'myshiptracking should be preferred as an implemented no-auth terrestrial provider',
+  );
   const signupIds = new Set(noKey.signupCandidates.map((c) => c.providerId));
   assert.ok(signupIds.has('aisstream'), 'aisstream signup URL must be available when no key configured');
   assert.ok(signupIds.has('spire-maritime'), 'spire signup URL must be available for paid satellite upgrade');

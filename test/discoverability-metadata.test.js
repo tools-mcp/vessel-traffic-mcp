@@ -134,9 +134,9 @@ test('package.json description carries the discoverability phrases', () => {
 
 test('package.json remains private: true and pinned to MIT for now', () => {
   const pkg = JSON.parse(read(PACKAGE_URL));
-  // F7 parent is still not_implemented (AC3 pending). Until the full open
-  // source release is signed off, the package must stay private:true to
-  // prevent an accidental `npm publish`.
+  // The GitHub/open-source release assets are implemented, but npm package
+  // publication still needs an explicit sign-off. Keep private:true to prevent
+  // an accidental `npm publish`.
   assert.equal(pkg.private, true, 'package.json must keep "private": true until release sign-off');
   assert.equal(pkg.license, 'MIT', 'package.json must declare "license": "MIT"');
 });
@@ -279,19 +279,16 @@ test('F7.AC2 status in requirements.yaml is set to implemented', () => {
   assert.match(ac2Block, /verification: npm test/, 'F7.AC2 verification must remain npm test');
 });
 
-test('F7 parent feature remains not_implemented per the task brief', () => {
-  // The F7.AC3 task brief is explicit that the parent F7 feature stays
-  // not_implemented even after every child criterion lands. The parent
-  // only flips at release sign-off, not as a silent rollup. F7.AC3's own
-  // status is asserted by test/codex-setup.test.js, not here, so changes
-  // to that criterion's status do not require touching this file.
+test('F7 parent feature is implemented after PRD completion', () => {
+  // F7.AC1, F7.AC2, and F7.AC3 are now implemented, so the parent feature is
+  // promoted during the PRD completion pass.
   const reqs = read(REQUIREMENTS_URL);
   const f7Index = reqs.indexOf('id: F7');
   assert.ok(f7Index > 0, 'requirements.yaml must contain feature F7');
   const f7Header = reqs.slice(f7Index, f7Index + 400);
   assert.match(
     f7Header,
-    /title: Open source release and plugin discoverability[\s\S]*?status: not_implemented/,
-    'F7 parent feature must remain not_implemented per the task brief',
+    /title: Open source release and plugin discoverability[\s\S]*?status: implemented/,
+    'F7 parent feature must be implemented after all child criteria are done',
   );
 });
