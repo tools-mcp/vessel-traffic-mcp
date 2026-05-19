@@ -53,6 +53,15 @@ The package also declares the same value in `package.json` as
 `mcpName` so registry ownership verification can be tied to the
 published package.
 
+Current state as of 2026-05-19:
+
+- `mcp-publisher validate server.json` passes against the official
+  registry validator.
+- `vessel-traffic-mcp` is not yet present on npm.
+- This local machine is not authenticated to npm (`npm whoami` returns
+  `ENEEDAUTH`), so package publication needs an operator to run
+  `npm adduser` first.
+
 Publication blocker:
 
 - `package.json` intentionally keeps `"private": true` until the
