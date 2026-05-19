@@ -57,32 +57,48 @@ Current state as of 2026-05-19:
 
 - `mcp-publisher validate server.json` passes against the official
   registry validator.
-- `vessel-traffic-mcp` is not yet present on npm.
+- `@tools-mcp/vessel-traffic-mcp` is not yet present on npm.
 - This local machine is authenticated to npm as `seokmogu`.
-- The `tools-mcp` npm org/scope is not present for this npm account.
-  Publishing the unscoped `vessel-traffic-mcp` package will likely show
-  the current npm account as a public npm maintainer.
+- The `tools-mcp` npm org/scope is not present for this npm account
+  yet. Create the npm organization before publishing the scoped
+  package.
 
 Publication blocker:
 
-- `package.json` is npm-publication ready, but maintainers must
-  explicitly accept the public npm maintainer identity before running
+- `package.json` is scoped-package ready, but maintainers must create
+  or verify the npm `tools-mcp` organization before running
   `npm publish`.
 - Do not run registry publication until npm package publication is
-  approved and the `vessel-traffic-mcp` npm package is publicly
+  approved and the `@tools-mcp/vessel-traffic-mcp` npm package is publicly
   available.
 
-Manual publication sequence after npm maintainer-identity sign-off:
+Manual publication sequence after npm organization setup:
 
-```bash
-npm ci
-npm run lint
-npm test
-npm run build
-npm publish --access public
-tmp/bin/mcp-publisher login github
-tmp/bin/mcp-publisher publish server.json
-```
+1. In npm's web UI, create the `tools-mcp` organization and choose the
+   free public-package plan. npm's official flow is profile menu →
+   **Add an Organization**; the organization name becomes the package
+   scope.
+2. Verify local CLI membership:
+
+   ```bash
+   npm whoami
+   npm org ls tools-mcp
+   npm view @tools-mcp/vessel-traffic-mcp version --json
+   ```
+
+   The package lookup should return `E404` before first publish; the
+   org lookup must not return `Scope not found`.
+3. Publish and submit registry metadata:
+
+   ```bash
+   npm ci
+   npm run lint
+   npm test
+   npm run build
+   npm publish --access public
+   tmp/bin/mcp-publisher login github
+   tmp/bin/mcp-publisher publish server.json
+   ```
 
 If a remote hosted MCP endpoint is published instead of npm, update
 `server.json` with the official remote-server package shape and add

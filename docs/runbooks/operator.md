@@ -177,8 +177,9 @@ file under `~/.config/` or an OS keychain.
 
 ### Local stdio (Claude Desktop, Claude Code)
 
-`vessel-traffic-mcp` is published as the `vessel-traffic-mcp` package
-binary. After `npm ci && npm run build`, register the local build with
+`vessel-traffic-mcp` is published as the `@tools-mcp/vessel-traffic-mcp`
+package and exposes the `vessel-traffic-mcp` binary. After
+`npm ci && npm run build`, register the local build with
 your MCP client:
 
 - **Claude Desktop / Claude Code**: configure an MCP server entry that

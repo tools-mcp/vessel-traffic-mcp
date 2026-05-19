@@ -226,12 +226,12 @@ test('codex runbook plugin manifest scaffold parses as JSONC and carries the rel
       (parsed) =>
         parsed &&
         typeof parsed === 'object' &&
-        parsed.name === 'vessel-traffic-mcp' &&
+        parsed.name === '@tools-mcp/vessel-traffic-mcp' &&
         parsed.entrypoint,
     );
   assert.ok(
     manifest,
-    'codex runbook must include a jsonc sketch that parses with name="vessel-traffic-mcp" and an entrypoint',
+    'codex runbook must include a jsonc sketch that parses with name="@tools-mcp/vessel-traffic-mcp" and an entrypoint',
   );
 
   // Lock the security/contract invariants that release-checklist.md (F7.AC1)

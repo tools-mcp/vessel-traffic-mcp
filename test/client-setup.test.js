@@ -242,12 +242,12 @@ test('client setup runbook Claude plugin manifest scaffold parses as JSONC and c
       (parsed) =>
         parsed &&
         typeof parsed === 'object' &&
-        parsed.name === 'vessel-traffic-mcp' &&
+        parsed.name === '@tools-mcp/vessel-traffic-mcp' &&
         parsed.entrypoint,
     );
   assert.ok(
     manifest,
-    'clients runbook must include a jsonc sketch that parses with name="vessel-traffic-mcp" and an entrypoint',
+    'clients runbook must include a jsonc sketch that parses with name="@tools-mcp/vessel-traffic-mcp" and an entrypoint',
   );
 
   // Lock the security/contract invariants that release-checklist.md (F7.AC1)

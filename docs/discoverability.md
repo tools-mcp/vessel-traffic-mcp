@@ -44,11 +44,12 @@ MCP ecosystem grows.
 | `publishConfig` | Forces public npm access for the first package release. |
 | `prepublishOnly` | Runs deterministic verification before any `npm publish`. |
 
-The package metadata is npm-publication ready: it does not set
+The package metadata is npm-publication ready under the
+`@tools-mcp/vessel-traffic-mcp` npm organization scope: it does not set
 `"private": true`, declares `publishConfig.access=public`, and gates
 publication through `prepublishOnly`. Registry submission still waits
-until the package is actually published and the maintainer accepts the
-public npm maintainer identity that will appear on npmjs.com.
+until the npm `tools-mcp` organization exists and the scoped package is
+actually published.
 
 ## GitHub Topics
 

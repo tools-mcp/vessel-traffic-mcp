@@ -177,7 +177,7 @@ schema redesign once a stable contract exists:
   ```jsonc
   // codex-plugin.json — scaffold, not a published Codex schema.
   {
-    "name": "vessel-traffic-mcp",
+    "name": "@tools-mcp/vessel-traffic-mcp",
     "displayName": "Vessel Traffic MCP",
     "description": "Read-only MCP server for vessel position and AIS-style maritime data (BYOK).",
     "license": "MIT",
