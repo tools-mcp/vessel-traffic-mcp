@@ -132,12 +132,19 @@ test('package.json description carries the discoverability phrases', () => {
   assert.match(pkg.description, /vessel|ship/i, 'description must mention vessel or ship');
 });
 
-test('package.json remains private: true and pinned to MIT for now', () => {
+test('package.json is npm-publication ready and pinned to MIT', () => {
   const pkg = JSON.parse(read(PACKAGE_URL));
-  // The GitHub/open-source release assets are implemented, but npm package
-  // publication still needs an explicit sign-off. Keep private:true to prevent
-  // an accidental `npm publish`.
-  assert.equal(pkg.private, true, 'package.json must keep "private": true until release sign-off');
+  assert.equal(
+    pkg.private,
+    undefined,
+    'package.json must not set "private": true after publication sign-off',
+  );
+  assert.equal(pkg.publishConfig?.access, 'public', 'package.json must publish as a public npm package');
+  assert.match(
+    pkg.scripts?.prepublishOnly ?? '',
+    /npm run lint.*npm test.*npm run build/,
+    'prepublishOnly must run deterministic verification before npm publication',
+  );
   assert.equal(pkg.license, 'MIT', 'package.json must declare "license": "MIT"');
 });
 

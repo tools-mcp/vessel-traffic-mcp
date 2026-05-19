@@ -2,11 +2,13 @@
   "name": "vessel-traffic-mcp",
   "mcpName": "io.github.tools-mcp/vessel-traffic-mcp",
   "version": "0.1.0",
-  "private": true,
   "description": "Read-only Model Context Protocol (MCP) server for vessel AIS / ship tracking data — connects Claude, ChatGPT, Claude Code, and Codex plugin workflows to MarineTraffic, VesselFinder, AISStream, AISHub, and other authorized maritime data providers through a normalized BYOK interface.",
   "license": "MIT",
   "author": "vessel-traffic-mcp maintainers <smgu@futhing.com>",
   "type": "module",
+  "publishConfig": {
+    "access": "public"
+  },
   "keywords": [
     "mcp",
     "model-context-protocol",
@@ -67,6 +69,7 @@
     "start:http": "VESSEL_MCP_TRANSPORT=http node --enable-source-maps dist/index.js",
     "start:map": "npm run build && node --enable-source-maps tools/vessel-map-ui/server.mjs",
     "dev": "npm run build && node --enable-source-maps dist/index.js",
+    "prepublishOnly": "npm run lint && npm test && npm run build",
     "capture:import": "node --enable-source-maps dist/capture/cli.js",
     "capture:ir": "node --enable-source-maps dist/capture/ir-cli.js",
     "capture:run": "node --enable-source-maps dist/capture/runner-cli.js"

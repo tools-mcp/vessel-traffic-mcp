@@ -58,28 +58,30 @@ Current state as of 2026-05-19:
 - `mcp-publisher validate server.json` passes against the official
   registry validator.
 - `vessel-traffic-mcp` is not yet present on npm.
-- This local machine is not authenticated to npm (`npm whoami` returns
-  `ENEEDAUTH`), so package publication needs an operator to run
-  `npm adduser` first.
+- This local machine is authenticated to npm as `seokmogu`.
+- The `tools-mcp` npm org/scope is not present for this npm account.
+  Publishing the unscoped `vessel-traffic-mcp` package will likely show
+  the current npm account as a public npm maintainer.
 
 Publication blocker:
 
-- `package.json` intentionally keeps `"private": true` until the
-  maintainers explicitly approve npm publication.
+- `package.json` is npm-publication ready, but maintainers must
+  explicitly accept the public npm maintainer identity before running
+  `npm publish`.
 - Do not run registry publication until npm package publication is
   approved and the `vessel-traffic-mcp` npm package is publicly
   available.
 
-Manual publication sequence after npm sign-off:
+Manual publication sequence after npm maintainer-identity sign-off:
 
 ```bash
 npm ci
 npm run lint
 npm test
 npm run build
-npm version patch
 npm publish --access public
-npx -y @modelcontextprotocol/registry publish
+tmp/bin/mcp-publisher login github
+tmp/bin/mcp-publisher publish server.json
 ```
 
 If a remote hosted MCP endpoint is published instead of npm, update

@@ -18,7 +18,7 @@ surfaces may change.
 | Local MCP server | Ready from source | `git clone`, `npm ci`, `npm run build`, then register `dist/index.js` in your MCP client |
 | Local map UI | Ready from source | `npm run start:map`, then open `http://127.0.0.1:8787` |
 | MCP Registry | Metadata ready | `server.json` validates with `mcp-publisher validate server.json`; registry publish waits for public npm package publication |
-| npm | Not published yet | Package name is available, but this machine is not logged in to npm; run `npm adduser` before `npm publish --access public` |
+| npm | Publication-ready, not published yet | Package name is available and `npm whoami` works locally; publishing under the current npm account may expose that npm username as maintainer |
 | Glama / Smithery / PulseMCP | Submission ready | See [`docs/runbooks/public-sharing.md`](./docs/runbooks/public-sharing.md) for directory-specific steps |
 
 For the fastest current install path, use the GitHub source install in

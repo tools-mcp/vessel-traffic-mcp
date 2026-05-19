@@ -40,13 +40,15 @@ MCP ecosystem grows.
 | `homepage`   | Public landing URL (`#readme`) for project discovery. |
 | `bugs`       | GitHub Issues URL so operators can file reproducible reports without needing to know the maintainer email. |
 | `author`     | Maintainer attribution; cross-checks against `SECURITY.md` private-reporting channel. |
-| `files`      | Explicit allowlist of artifacts that ship if the package is ever published. Keeps operator-sensitive directories (`captures/`, `state/`, `.env*`, raw fixtures) out by construction. |
+| `files`      | Explicit allowlist of artifacts that ship with the package. Keeps operator-sensitive directories (`captures/`, `state/`, `.env*`, raw fixtures) out by construction. |
+| `publishConfig` | Forces public npm access for the first package release. |
+| `prepublishOnly` | Runs deterministic verification before any `npm publish`. |
 
-`"private": true` is intentionally **kept** today: the repository and
-F7 release assets are ready, but npm publication still requires an
-explicit package-publication sign-off. The metadata is shaped so that
-a later `"private": false` flip is the only step needed to publish —
-every other field already matches npm's publication requirements.
+The package metadata is npm-publication ready: it does not set
+`"private": true`, declares `publishConfig.access=public`, and gates
+publication through `prepublishOnly`. Registry submission still waits
+until the package is actually published and the maintainer accepts the
+public npm maintainer identity that will appear on npmjs.com.
 
 ## GitHub Topics
 
@@ -113,7 +115,8 @@ Discoverability metadata is covered by deterministic tests in
 4. The metadata contains no credential-shaped strings.
 5. README links back here and surfaces the Topics section.
 6. F7.AC2 and the F7 parent feature are `status: implemented`, while
-   `package.json` stays `private: true` until npm publication sign-off.
+   `package.json` remains npm-publication ready with public access and
+   a `prepublishOnly` verification gate.
 
 The test runs as part of the default `npm test` gate, so any change
 that drifts the metadata out of alignment with this contract fails CI
