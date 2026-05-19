@@ -28,13 +28,17 @@ test('runtime registry enables every implemented credentialed provider through B
     'aisstream',
     'aishub',
     'barentswatch',
+    'searates-schedules',
+    'routescanner-connect',
+    'vesselapi',
+    'datadocked',
     'fixture',
   ]);
 });
 
 test('runtime registry enables implemented credentialed providers by explicit id', () => {
   const registry = createRuntimeProviderRegistry(
-    { [BYOK_PROVIDERS_ENV]: 'vesselfinder aisstream aishub barentswatch' },
+    { [BYOK_PROVIDERS_ENV]: 'vesselfinder aisstream aishub barentswatch searates-schedules routescanner-connect vesselapi datadocked' },
     credentialStore(),
   );
 
@@ -43,6 +47,10 @@ test('runtime registry enables implemented credentialed providers by explicit id
     'aisstream',
     'aishub',
     'barentswatch',
+    'searates-schedules',
+    'routescanner-connect',
+    'vesselapi',
+    'datadocked',
     'fixture',
   ]);
 });
@@ -56,6 +64,10 @@ test('runtime registry auto-enables implemented credentialed providers with defa
       VESSEL_MCP_PROFILE_AISHUB__USERNAME: 'aishub-test-user',
       VESSEL_MCP_PROFILE_BARENTSWATCH__CLIENT_ID: 'barentswatch-client',
       VESSEL_MCP_PROFILE_BARENTSWATCH__CLIENT_SECRET: 'barentswatch-secret',
+      VESSEL_MCP_PROFILE_SEARATES_SCHEDULES__API_KEY: 'searates-test-key',
+      VESSEL_MCP_PROFILE_ROUTESCANNER_CONNECT__API_KEY: 'routescanner-test-key',
+      VESSEL_MCP_PROFILE_VESSELAPI__API_KEY: 'vesselapi-test-key',
+      VESSEL_MCP_PROFILE_DATADOCKED__API_KEY: 'datadocked-test-key',
     }),
   );
 
@@ -64,6 +76,10 @@ test('runtime registry auto-enables implemented credentialed providers with defa
     'aisstream',
     'aishub',
     'barentswatch',
+    'searates-schedules',
+    'routescanner-connect',
+    'vesselapi',
+    'datadocked',
     'fixture',
   ]);
 });

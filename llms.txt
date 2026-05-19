@@ -86,10 +86,10 @@ the absolute path:
   `myshiptracking`, `shipfinder`, `tradlinx-schedule`.
 - Implemented credentialed runtime providers:
   `marinetraffic`, `vesselfinder`, `aisstream`, `aishub`,
-  `barentswatch`.
+  `barentswatch`, `searates-schedules`, `routescanner-connect`,
+  `vesselapi`, `datadocked`.
 - Planned schedule providers:
-  `searates-schedules`, `linescape-schedule-api`,
-  `routescanner-connect`.
+  `linescape-schedule-api`.
 - The remaining PRD providers are cataloged for discovery, enterprise
   review, or future BYOK adapter work. Do not claim they are fully
   implemented until `config/provider-catalog.example.json` marks them
@@ -112,7 +112,12 @@ the absolute path:
 ## Important Docs
 
 - `README.md`: full setup, provider notes, and agent install prompt.
+- `server.json`: MCP Registry metadata for
+  `io.github.tools-mcp/vessel-traffic-mcp`.
 - `AGENTS.md`: non-negotiable repository rules.
+- `CODE_OF_CONDUCT.md`: collaboration expectations.
+- `docs/runbooks/public-sharing.md`: GitHub, MCP Registry, Smithery,
+  Glama, PulseMCP, and launch-post sharing checklist.
 - `docs/runbooks/clients.md`: Claude Desktop, Claude Code, ChatGPT
   remote MCP, and MCP Inspector setup.
 - `docs/runbooks/codex.md`: Codex CLI setup.

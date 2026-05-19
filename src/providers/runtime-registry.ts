@@ -2,13 +2,17 @@ import type { CredentialStore } from '../config/credentials.js';
 import { AISHUB_DEFAULT_LABEL, createAishubProvider } from './aishub.js';
 import { AISSTREAM_DEFAULT_LABEL, createAisStreamProvider } from './aisstream.js';
 import { BARENTSWATCH_DEFAULT_LABEL, createBarentsWatchProvider } from './barentswatch.js';
+import { createDataDockedProvider, DATADOCKED_DEFAULT_LABEL } from './datadocked.js';
 import { createFixtureProvider } from './fixture.js';
 import { createMarineTrafficProvider, MARINETRAFFIC_DEFAULT_LABEL } from './marinetraffic.js';
 import { createMyShipTrackingProvider } from './myshiptracking.js';
 import { createProviderRegistry, type ProviderRegistry } from './registry.js';
+import { createRoutescannerConnectProvider, ROUTESCANNER_DEFAULT_LABEL } from './routescanner.js';
+import { createSeaRatesScheduleProvider, SEARATES_DEFAULT_LABEL } from './searates.js';
 import { createShipFinderProvider } from './shipfinder.js';
 import { createTradlinxScheduleProvider } from './tradlinx.js';
 import type { VesselDataProvider } from './types.js';
+import { createVesselApiProvider, VESSELAPI_DEFAULT_LABEL } from './vesselapi.js';
 import { VESSELFINDER_DEFAULT_LABEL, createVesselFinderProvider } from './vesselfinder.js';
 
 export const PUBLIC_PROVIDERS_ENV = 'VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS';
@@ -28,6 +32,10 @@ const credentialedProviderFactories = {
   aisstream: createAisStreamProvider,
   aishub: createAishubProvider,
   barentswatch: createBarentsWatchProvider,
+  'searates-schedules': createSeaRatesScheduleProvider,
+  'routescanner-connect': createRoutescannerConnectProvider,
+  vesselapi: createVesselApiProvider,
+  datadocked: createDataDockedProvider,
 } as const;
 
 const credentialedProviderDefaultLabels = {
@@ -36,6 +44,10 @@ const credentialedProviderDefaultLabels = {
   aisstream: AISSTREAM_DEFAULT_LABEL,
   aishub: AISHUB_DEFAULT_LABEL,
   barentswatch: BARENTSWATCH_DEFAULT_LABEL,
+  'searates-schedules': SEARATES_DEFAULT_LABEL,
+  'routescanner-connect': ROUTESCANNER_DEFAULT_LABEL,
+  vesselapi: VESSELAPI_DEFAULT_LABEL,
+  datadocked: DATADOCKED_DEFAULT_LABEL,
 } as const;
 
 type CredentialedProviderId = keyof typeof credentialedProviderFactories;

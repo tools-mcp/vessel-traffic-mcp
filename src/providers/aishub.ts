@@ -5,12 +5,21 @@ import type {
   CacheTtlPolicy,
   CredentialRequirement,
   DataSource,
+  NoDataReason,
   ProviderCapability,
   ProviderMetadata,
+  ProviderResult,
   ProviderStatus,
   RateLimitPolicy,
   SourceMetadata,
+  VesselAreaQuery,
+  VesselAreaResult,
   VesselDataProvider,
+  VesselIdentity,
+  VesselPosition,
+  VesselPositionQuery,
+  VesselSearchQuery,
+  VesselSearchResult,
 } from './types.js';
 
 export const AISHUB_PROVIDER_ID = 'aishub';
@@ -268,6 +277,93 @@ function parseAishubBody(text: string): { records: AishubVesselRecord[]; rawErro
   return { records };
 }
 
+function normalizeDateTime(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? new Date(parsed).toISOString() : undefined;
+}
+
+function positiveInteger(value: string | number | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  const parsed = typeof value === 'number' ? value : Number(value.trim());
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+function identityFromRecord(record: AishubVesselRecord): VesselIdentity {
+  const identity: VesselIdentity = {
+    mmsi: record.mmsi !== undefined ? String(record.mmsi) : undefined,
+    imo: record.imo !== undefined ? String(record.imo) : undefined,
+    name: record.name,
+    callsign: record.callsign,
+    type: record.type !== undefined ? String(record.type) : undefined,
+  };
+  const providerIds: Record<string, string> = {};
+  if (identity.mmsi) providerIds.aishubMmsi = identity.mmsi;
+  if (identity.imo) providerIds.aishubImo = identity.imo;
+  if (Object.keys(providerIds).length > 0) identity.providerIds = providerIds;
+  return identity;
+}
+
+function positionFromRecord(record: AishubVesselRecord, retrievedAt: string, source: SourceMetadata): VesselPosition | undefined {
+  if (record.latitude === undefined || record.longitude === undefined) return undefined;
+  return {
+    identity: identityFromRecord(record),
+    lat: record.latitude,
+    lon: record.longitude,
+    speedKnots: record.sog,
+    courseDeg: record.cog,
+    headingDeg: record.heading,
+    destination: record.destination,
+    eta: normalizeDateTime(record.eta),
+    observedAt: normalizeDateTime(record.observedAt),
+    retrievedAt,
+    source,
+  };
+}
+
+function mapErrorReason(reason: AishubResultReason): NoDataReason {
+  switch (reason) {
+    case 'auth_missing':
+      return 'no_credential_profile';
+    case 'rate_limited':
+      return 'rate_limited';
+    case 'provider_error':
+    case 'network_error':
+    case 'invalid_response':
+      return 'provider_unavailable';
+    default: {
+      const _exhaustive: never = reason;
+      void _exhaustive;
+      return 'provider_unavailable';
+    }
+  }
+}
+
+function noData<T>(
+  reason: NoDataReason,
+  message: string,
+  retrievedAt: string,
+  source: SourceMetadata,
+): ProviderResult<T> {
+  return {
+    ok: false,
+    reason,
+    message,
+    retrievedAt,
+    source,
+    caveats: [...CAVEATS],
+  };
+}
+
+function noDataFromAishub<T>(result: Extract<AishubResult, { ok: false }>, fallback: string): ProviderResult<T> {
+  return noData<T>(
+    mapErrorReason(result.reason),
+    result.message ?? fallback,
+    result.retrievedAt ?? new Date().toISOString(),
+    result.source,
+  );
+}
+
 class AishubProviderImpl implements AishubProvider {
   readonly id = AISHUB_PROVIDER_ID;
   private readonly credentialStore: CredentialStore;
@@ -405,6 +501,80 @@ class AishubProviderImpl implements AishubProvider {
 
   async fetchVessels(options: AishubQueryOptions = {}): Promise<AishubResult> {
     return this.executeFetch(options);
+  }
+
+  async search(query: VesselSearchQuery): Promise<ProviderResult<VesselSearchResult>> {
+    const mmsi = positiveInteger(query.mmsi);
+    const imo = positiveInteger(query.imo);
+    if (!mmsi && !imo) {
+      return noData<VesselSearchResult>(
+        'unsupported_query',
+        'AISHub search requires mmsi or imo; name-only search is not supported by the member API.',
+        safeIsoTimestamp(this.clock),
+        aishubSource(),
+      );
+    }
+    const result = await this.fetchVessels({
+      mmsi: mmsi ? [mmsi] : undefined,
+      imo: imo ? [imo] : undefined,
+    });
+    if (!result.ok) return noDataFromAishub<VesselSearchResult>(result, 'AISHub search failed.');
+    const matches = result.records.map(identityFromRecord).slice(0, query.limit && query.limit > 0 ? query.limit : undefined);
+    if (matches.length === 0) {
+      return noData<VesselSearchResult>('identifier_not_found', 'AISHub returned no matching vessel records.', result.retrievedAt, result.source);
+    }
+    return {
+      ok: true,
+      data: { matches, total: result.records.length },
+      retrievedAt: result.retrievedAt,
+      source: result.source,
+      caveats: [...CAVEATS],
+    };
+  }
+
+  async latestPosition(query: VesselPositionQuery): Promise<ProviderResult<VesselPosition>> {
+    const mmsi = positiveInteger(query.mmsi);
+    const imo = positiveInteger(query.imo);
+    if (!mmsi && !imo) {
+      return noData<VesselPosition>('unsupported_query', 'AISHub position requires mmsi or imo.', safeIsoTimestamp(this.clock), aishubSource());
+    }
+    const result = await this.fetchVessels({
+      mmsi: mmsi ? [mmsi] : undefined,
+      imo: imo ? [imo] : undefined,
+    });
+    if (!result.ok) return noDataFromAishub<VesselPosition>(result, 'AISHub position lookup failed.');
+    const position = result.records
+      .map((record) => positionFromRecord(record, result.retrievedAt, result.source))
+      .find((entry): entry is VesselPosition => Boolean(entry));
+    if (!position) {
+      return noData<VesselPosition>('no_recent_position', 'AISHub returned no valid position for the vessel.', result.retrievedAt, result.source);
+    }
+    return {
+      ok: true,
+      data: position,
+      retrievedAt: result.retrievedAt,
+      source: result.source,
+      caveats: [...CAVEATS],
+    };
+  }
+
+  async area(query: VesselAreaQuery): Promise<ProviderResult<VesselAreaResult>> {
+    const result = await this.fetchVessels({ boundingBox: query.boundingBox });
+    if (!result.ok) return noDataFromAishub<VesselAreaResult>(result, 'AISHub area lookup failed.');
+    const positions = result.records
+      .map((record) => positionFromRecord(record, result.retrievedAt, result.source))
+      .filter((entry): entry is VesselPosition => Boolean(entry))
+      .slice(0, query.limit && query.limit > 0 ? query.limit : undefined);
+    if (positions.length === 0) {
+      return noData<VesselAreaResult>('no_coverage', 'AISHub area lookup returned no positions.', result.retrievedAt, result.source);
+    }
+    return {
+      ok: true,
+      data: { positions, total: result.records.length },
+      retrievedAt: result.retrievedAt,
+      source: result.source,
+      caveats: [...CAVEATS],
+    };
   }
 
   private async executeFetch(options: AishubQueryOptions): Promise<AishubResult> {

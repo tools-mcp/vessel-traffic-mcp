@@ -221,6 +221,55 @@ test('AISHub fetchVessels sends username param and parses JSON envelope into nor
   assert.equal(requestedUrl.searchParams.get('output'), 'json');
 });
 
+test('AISHub latestPosition and area expose normalized MCP tool shapes', async () => {
+  const clock = fakeClock(Date.parse('2026-05-15T12:00:00Z'));
+  const responses = [
+    [
+      { ERROR: false, RECORDS: 1 },
+      [
+        {
+          MMSI: 211123450,
+          IMO: 9876543,
+          NAME: 'TEST VESSEL ONE',
+          LATITUDE: 53.5,
+          LONGITUDE: 9.9,
+          SOG: 11.4,
+          COG: 270.5,
+          TIME: '2026-05-15 11:59:00 GMT',
+        },
+      ],
+    ],
+    [
+      { ERROR: false, RECORDS: 1 },
+      [
+        {
+          MMSI: 211123451,
+          NAME: 'AREA VESSEL',
+          LATITUDE: 54.5,
+          LONGITUDE: 10.9,
+          TIME: '2026-05-15 12:00:00 GMT',
+        },
+      ],
+    ],
+  ];
+  const { fetcher } = makeFakeFetcher(async (_url, _init, index) => jsonOkResponse(responses[index]));
+  const provider = createAishubProvider({ credentialStore: storeWithUsername(), fetcher, clock });
+
+  const position = await provider.latestPosition({ mmsi: '211123450' });
+  assert.equal(position.ok, true);
+  if (position.ok) {
+    assert.equal(position.data.identity.name, 'TEST VESSEL ONE');
+    assert.equal(position.data.lat, 53.5);
+  }
+
+  clock.advance(60_000);
+  const area = await provider.area({
+    boundingBox: { latMin: 54, latMax: 55, lonMin: 10, lonMax: 11 },
+  });
+  assert.equal(area.ok, true);
+  if (area.ok) assert.equal(area.data.positions[0].identity.name, 'AREA VESSEL');
+});
+
 test('AISHub fetchVessels enforces one-request-per-minute throttle deterministically', async () => {
   const store = storeWithUsername();
   const clock = fakeClock(Date.parse('2026-05-15T00:00:00Z'));

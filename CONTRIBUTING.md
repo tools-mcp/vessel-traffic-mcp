@@ -60,7 +60,8 @@ fixtures; it does not need network access, API keys, or accounts.
 1. **Open an issue first** for non-trivial changes (new provider,
    normalized-type changes, security-sensitive surfaces). This gives
    maintainers a chance to flag scope/compliance concerns before you
-   write code.
+   write code. Use the issue forms for bugs, provider requests,
+   documentation issues, and authorized capture reviews.
 2. **Branch from `main`.** Keep branches focused; one acceptance
    criterion per PR is a good default.
 3. **Add or update tests.** New behavior needs deterministic tests
@@ -156,3 +157,7 @@ captures slip into a tag.
 
 By contributing, you agree that your contributions are licensed under
 the project's MIT license (`LICENSE`).
+
+## Code of Conduct
+
+Project collaboration follows `CODE_OF_CONDUCT.md`.

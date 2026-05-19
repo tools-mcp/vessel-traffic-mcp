@@ -35,6 +35,7 @@ MCP ecosystem grows.
 | ------------ | ----------------------------------------------------------------------------- |
 | `keywords`   | npm/registry search hits for `vessel-ais-mcp`, `ship-tracking-mcp`, `marinetraffic-mcp`, `claude-mcp`, `chatgpt-mcp`, `codex-plugin`, plus generic `mcp`, `ais`, `vessel`, and `marinetraffic`. |
 | `description`| Short one-liner that surfaces in npm/GitHub search snippets — mentions MCP, AIS, vessel/ship, Claude/ChatGPT/Codex, and BYOK. |
+| `mcpName`    | Official MCP Registry namespace: `io.github.tools-mcp/vessel-traffic-mcp`. |
 | `repository` | Git+HTTPS URL pointing at the canonical GitHub repo so registries can link back. |
 | `homepage`   | Public landing URL (`#readme`) for project discovery. |
 | `bugs`       | GitHub Issues URL so operators can file reproducible reports without needing to know the maintainer email. |
@@ -106,7 +107,8 @@ Discoverability metadata is covered by deterministic tests in
 2. `repository`, `homepage`, `bugs`, and `author` are non-empty and
    point at the canonical GitHub URL.
 3. `files` allowlists only safe artifacts (`dist`, `README.md`,
-   `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `AGENTS.md`, `docs`)
+  `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `AGENTS.md`,
+  `server.json`, `docs`)
    and never lists operator-sensitive paths.
 4. The metadata contains no credential-shaped strings.
 5. README links back here and surfaces the Topics section.
@@ -116,3 +118,18 @@ Discoverability metadata is covered by deterministic tests in
 The test runs as part of the default `npm test` gate, so any change
 that drifts the metadata out of alignment with this contract fails CI
 before release.
+
+## Directory Metadata
+
+The repository also ships these directory-facing files:
+
+- `server.json` — official MCP Registry metadata using the
+  `io.github.tools-mcp/vessel-traffic-mcp` name.
+- `glama.json` — Glama directory maintainer metadata using the
+  `tools-mcp` organization identity.
+- `.github/ISSUE_TEMPLATE/*` and `.github/PULL_REQUEST_TEMPLATE.md`
+  — collaboration entry points for public contributors.
+
+The operational checklist for publishing to GitHub, the MCP Registry,
+Smithery, Glama, PulseMCP, and other MCP directories lives in
+`docs/runbooks/public-sharing.md`.

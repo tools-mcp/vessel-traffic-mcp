@@ -198,19 +198,24 @@ and not exposed by any MCP tool. Repeated calls without the
 ## Paid BYOK REST adapters (F4.AC4)
 
 Paid commercial providers (MarineTraffic, VesselFinder, Spire,
-ORBCOMM/CommTrace, VesselAPI, Data Docked, Poseidon AIS, …) share a
-single adapter template at `src/providers/paid-byok-rest.ts`. Concrete
-adapters wire that template up with provider-specific URL, auth style,
-and response shape.
+ORBCOMM/CommTrace, VesselAPI, Data Docked, Poseidon AIS, …) must use a
+redacted BYOK credential profile. Simple REST providers can share the
+template at `src/providers/paid-byok-rest.ts`; richer providers may use
+custom modules as long as they keep the same credential, throttle, and
+redaction guarantees.
 
-Two adapters ship implemented behind credential profiles:
+Implemented adapters ship behind credential profiles:
 
 | Provider | Module | Credential profile field | Env var slot | Auth style |
 | --- | --- | --- | --- | --- |
 | MarineTraffic | `src/providers/marinetraffic.ts` | `api_key` | `VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY` | Path segment in `/api/{product}/{version}/{api_key}` |
 | VesselFinder  | `src/providers/vesselfinder.ts`  | `api_key` | `VESSEL_MCP_PROFILE_VESSELFINDER__API_KEY`  | Query parameter `?userkey=…` |
+| SeaRates Ship Schedules | `src/providers/searates.ts` | `api_key` | `VESSEL_MCP_PROFILE_SEARATES_SCHEDULES__API_KEY` | Header `X-API-KEY` |
+| Routescanner Connect | `src/providers/routescanner.ts` | `api_key` | `VESSEL_MCP_PROFILE_ROUTESCANNER_CONNECT__API_KEY` | Header `x-api-key` |
+| VesselAPI | `src/providers/vesselapi.ts` | `api_key` | `VESSEL_MCP_PROFILE_VESSELAPI__API_KEY` | Header `Authorization: Bearer …` |
+| Data Docked | `src/providers/datadocked.ts` | `api_key` | `VESSEL_MCP_PROFILE_DATADOCKED__API_KEY` | Header `x-api-key` |
 
-Both adapters:
+These adapters:
 
 - Resolve the secret on demand from `CredentialStore.resolveSecret(label, "api_key")`;
   the secret never appears in the MCP `credential_profiles` payload.
@@ -229,12 +234,13 @@ The default `npm test` run never reaches a paid provider. Live calls
 require both the credential profile and the corresponding
 `VESSEL_MCP_LIVE_TEST_*` flag (declared `defaultDisabled: true` in
 `config/provider-catalog.example.json`). The catalog's
-`implementationStatus` for these two providers is now `implemented`.
+`implementationStatus` for the rows above is now `implemented`.
 
-Adapter authors adding new paid REST providers should reuse the
-`createPaidByokProvider(template, options)` factory rather than copying
-the surrounding auth/throttle/error code, so secret-handling guarantees
-stay centralized.
+Adapter authors adding simple paid REST providers should reuse the
+`createPaidByokProvider(template, options)` factory where possible
+rather than copying the surrounding auth/throttle/error code. Custom
+provider modules must still keep all secrets out of URLs, logs, errors,
+and MCP tool payloads.
 
 ### Verifying
 

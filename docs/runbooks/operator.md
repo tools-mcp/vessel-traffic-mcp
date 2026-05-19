@@ -105,6 +105,10 @@ contract; the operator-facing summary is:
   | `aisstream` | `api_key` | `VESSEL_MCP_PROFILE_AISSTREAM__API_KEY` |
   | `aishub` | `username` | `VESSEL_MCP_PROFILE_AISHUB__USERNAME` |
   | `barentswatch` | `client_id`, `client_secret` | `VESSEL_MCP_PROFILE_BARENTSWATCH__CLIENT_ID`, `VESSEL_MCP_PROFILE_BARENTSWATCH__CLIENT_SECRET` |
+  | `searates-schedules` | `api_key` | `VESSEL_MCP_PROFILE_SEARATES_SCHEDULES__API_KEY` |
+  | `routescanner-connect` | `api_key` | `VESSEL_MCP_PROFILE_ROUTESCANNER_CONNECT__API_KEY` |
+  | `vesselapi` | `api_key` | `VESSEL_MCP_PROFILE_VESSELAPI__API_KEY` |
+  | `datadocked` | `api_key` | `VESSEL_MCP_PROFILE_DATADOCKED__API_KEY` |
   | `globalfishingwatch` | `bearer_token` | `VESSEL_MCP_PROFILE_GLOBALFISHINGWATCH__BEARER_TOKEN` |
   | `spire-maritime` | `api_key` | `VESSEL_MCP_PROFILE_SPIRE__API_KEY` |
 

@@ -98,7 +98,7 @@ it. Source URLs point to first-party developer docs.
 | ORBCOMM / CommTrace / exactEarth | Beyond-coastal satellite AIS | https://api.commtrace.com/ |
 | Global Fishing Watch | Token API for fishing activity and vessel identity | https://globalfishingwatch.org/our-apis/documentation |
 
-Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` for each provider above (MarineTraffic `shipsearch`, `exportvessel`, `exportvesseltrack`, `portcalls`, and VesselFinder are `implemented` behind redacted BYOK profiles; other rows are `not_started` or `discovery_only`).
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` for each provider above (MarineTraffic `shipsearch`, `exportvessel`, `exportvesseltrack`, `portcalls`, VesselFinder, SeaRates Ship Schedules, Routescanner Connect, VesselAPI, and Data Docked are `implemented` behind redacted BYOK profiles; Linescape remains `planned`; other rows are `not_started` or `discovery_only`).
 
 ### Open-Data Sources
 
@@ -150,13 +150,13 @@ credential slots so the standard `npm test` run never reaches a paid endpoint.
 | Linescape Schedule API | Schedule data-on-demand API for sailings, voyages, vessels, port pairs, and port calls | https://docs.linescape.com/docs/api-usage/ |
 | IQAX Big Schedules | Sailing schedules, vessel schedules, tracking context, alerts, and API integration candidates | https://product.iqax.com/en/products-bigs/ |
 | Routescanner Connect API | Voyage options between locations, operators, transfers, lead time, and CO2e | https://docs.routescanner.com/operation/operation-getvoyages |
-| VesselAPI | Commercial/trial maritime API; terrestrial AIS ship-tracking endpoints | https://vesselapi.com/ship-tracking-api |
-| Data Docked | Vessel location, historical location, port calls, details by name, route planner, weather | https://datadocked.com/ |
+| VesselAPI | Commercial/trial maritime API; terrestrial AIS ship-tracking, area, historical positions, and port events; product overview at https://vesselapi.com/ship-tracking-api | https://vesselapi.com/docs/vessels |
+| Data Docked | Vessel location, historical location, port calls, details by name, route planner, weather; product site at https://datadocked.com/ | https://docs.datadocked.com/api-reference/introduction |
 | Poseidon AIS | Vessel details, area/radius search, historical positions | https://poseidonais.com/ |
 | ais.now | Commercial API/web platform candidate with REST API claims; validate docs, terms, and coverage before implementation | https://ais.now/ |
 | FleetMon / Kpler | Commercial maritime intelligence; treat as BYOK or authorized capture candidate only after account-specific terms review | https://www.fleetmon.com/ |
 
-Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (MarineTraffic `shipsearch`, `exportvessel`, `exportvesseltrack`, `portcalls`, and VesselFinder are `implemented` behind redacted BYOK profiles; the remaining commercial backlog entries are `not_started` or `discovery_only`).
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (MarineTraffic `shipsearch`, `exportvessel`, `exportvesseltrack`, `portcalls`, VesselFinder, SeaRates Ship Schedules, Routescanner Connect, VesselAPI, and Data Docked are `implemented` behind redacted BYOK profiles; Linescape remains `planned`; the remaining commercial backlog entries are `not_started` or `discovery_only`).
 
 ### Enterprise Providers
 

@@ -5,12 +5,20 @@ import type {
   CacheTtlPolicy,
   CredentialRequirement,
   DataSource,
+  NavigationStatus,
+  NoDataReason,
   ProviderCapability,
   ProviderMetadata,
+  ProviderResult,
   ProviderStatus,
   RateLimitPolicy,
   SourceMetadata,
+  VesselAreaQuery,
+  VesselAreaResult,
   VesselDataProvider,
+  VesselIdentity,
+  VesselPosition,
+  VesselPositionQuery,
 } from './types.js';
 
 export const BARENTSWATCH_PROVIDER_ID = 'barentswatch';
@@ -289,6 +297,130 @@ function parseRecordsFromBody(text: string): BarentsWatchVesselRecord[] {
   return records;
 }
 
+function normalizeDateTime(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  const parsed = Date.parse(value);
+  return Number.isFinite(parsed) ? new Date(parsed).toISOString() : undefined;
+}
+
+function positiveInteger(value: string | number | undefined): number | undefined {
+  if (value === undefined) return undefined;
+  const parsed = typeof value === 'number' ? value : Number(value.trim());
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : undefined;
+}
+
+function navigationStatus(value: number | undefined): NavigationStatus | undefined {
+  if (value === undefined) return undefined;
+  switch (value) {
+    case 0:
+      return 'under_way_using_engine';
+    case 1:
+      return 'at_anchor';
+    case 2:
+      return 'not_under_command';
+    case 3:
+      return 'restricted_maneuverability';
+    case 4:
+      return 'constrained_by_draught';
+    case 5:
+      return 'moored';
+    case 6:
+      return 'aground';
+    case 7:
+      return 'engaged_in_fishing';
+    case 8:
+      return 'under_way_sailing';
+    case 14:
+      return 'ais_sart_active';
+    case 15:
+      return 'undefined';
+    default:
+      return value >= 9 && value <= 13 ? 'reserved' : undefined;
+  }
+}
+
+function identityFromRecord(record: BarentsWatchVesselRecord): VesselIdentity {
+  const identity: VesselIdentity = {
+    mmsi: record.mmsi !== undefined ? String(record.mmsi) : undefined,
+    imo: record.imo !== undefined ? String(record.imo) : undefined,
+    name: record.name,
+    callsign: record.callsign,
+    type: record.type !== undefined ? String(record.type) : undefined,
+  };
+  const providerIds: Record<string, string> = {};
+  if (identity.mmsi) providerIds.barentswatchMmsi = identity.mmsi;
+  if (identity.imo) providerIds.barentswatchImo = identity.imo;
+  if (Object.keys(providerIds).length > 0) identity.providerIds = providerIds;
+  return identity;
+}
+
+function positionFromRecord(record: BarentsWatchVesselRecord, retrievedAt: string, source: SourceMetadata): VesselPosition | undefined {
+  if (record.latitude === undefined || record.longitude === undefined) return undefined;
+  return {
+    identity: identityFromRecord(record),
+    lat: record.latitude,
+    lon: record.longitude,
+    speedKnots: record.sog,
+    courseDeg: record.cog,
+    headingDeg: record.heading,
+    navigationStatus: navigationStatus(record.navstat),
+    destination: record.destination,
+    eta: normalizeDateTime(record.eta),
+    observedAt: normalizeDateTime(record.observedAt),
+    retrievedAt,
+    source,
+  };
+}
+
+function mapErrorReason(reason: BarentsWatchResultReason): NoDataReason {
+  switch (reason) {
+    case 'auth_missing':
+    case 'auth_failed':
+      return 'no_credential_profile';
+    case 'rate_limited':
+      return 'rate_limited';
+    case 'unsupported_query':
+      return 'unsupported_query';
+    case 'provider_error':
+    case 'network_error':
+    case 'invalid_response':
+      return 'provider_unavailable';
+    default: {
+      const _exhaustive: never = reason;
+      void _exhaustive;
+      return 'provider_unavailable';
+    }
+  }
+}
+
+function noData<T>(
+  reason: NoDataReason,
+  message: string,
+  retrievedAt: string,
+  source: SourceMetadata,
+): ProviderResult<T> {
+  return {
+    ok: false,
+    reason,
+    message,
+    retrievedAt,
+    source,
+    caveats: [...CAVEATS],
+  };
+}
+
+function noDataFromBarentsWatch<T>(
+  result: Extract<BarentsWatchResult, { ok: false }>,
+  fallback: string,
+): ProviderResult<T> {
+  return noData<T>(
+    mapErrorReason(result.reason),
+    result.message ?? fallback,
+    result.retrievedAt ?? new Date().toISOString(),
+    result.source,
+  );
+}
+
 interface TokenCacheEntry {
   readonly accessToken: string;
   readonly expiresAtMs: number;
@@ -461,6 +593,52 @@ class BarentsWatchProviderImpl implements BarentsWatchProvider {
 
   async fetchVessels(options: BarentsWatchQueryOptions = {}): Promise<BarentsWatchResult> {
     return this.executeFetch(options);
+  }
+
+  async latestPosition(query: VesselPositionQuery): Promise<ProviderResult<VesselPosition>> {
+    const mmsi = positiveInteger(query.mmsi);
+    if (!mmsi) {
+      return noData<VesselPosition>(
+        'unsupported_query',
+        'BarentsWatch position lookup requires mmsi; IMO lookup is not supported by the regional endpoint.',
+        safeIsoTimestamp(this.clock),
+        barentswatchSource(),
+      );
+    }
+    const result = await this.fetchVessels({ mmsi: [mmsi] });
+    if (!result.ok) return noDataFromBarentsWatch<VesselPosition>(result, 'BarentsWatch position lookup failed.');
+    const position = result.records
+      .map((record) => positionFromRecord(record, result.retrievedAt, result.source))
+      .find((entry): entry is VesselPosition => Boolean(entry));
+    if (!position) {
+      return noData<VesselPosition>('no_recent_position', 'BarentsWatch returned no valid position for the vessel.', result.retrievedAt, result.source);
+    }
+    return {
+      ok: true,
+      data: position,
+      retrievedAt: result.retrievedAt,
+      source: result.source,
+      caveats: [...CAVEATS],
+    };
+  }
+
+  async area(query: VesselAreaQuery): Promise<ProviderResult<VesselAreaResult>> {
+    const result = await this.fetchVessels({ boundingBox: query.boundingBox });
+    if (!result.ok) return noDataFromBarentsWatch<VesselAreaResult>(result, 'BarentsWatch area lookup failed.');
+    const positions = result.records
+      .map((record) => positionFromRecord(record, result.retrievedAt, result.source))
+      .filter((entry): entry is VesselPosition => Boolean(entry))
+      .slice(0, query.limit && query.limit > 0 ? query.limit : undefined);
+    if (positions.length === 0) {
+      return noData<VesselAreaResult>('no_coverage', 'BarentsWatch area lookup returned no positions.', result.retrievedAt, result.source);
+    }
+    return {
+      ok: true,
+      data: { positions, total: result.records.length },
+      retrievedAt: result.retrievedAt,
+      source: result.source,
+      caveats: [...CAVEATS],
+    };
   }
 
   private async executeFetch(options: BarentsWatchQueryOptions): Promise<BarentsWatchResult> {

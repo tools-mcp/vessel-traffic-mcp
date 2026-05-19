@@ -141,7 +141,9 @@
       "capabilities": [
         "vessel_search",
         "vessel_position",
-        "vessel_track"
+        "vessel_area",
+        "vessel_track",
+        "port_calls"
       ],
       "auth": {
         "mode": "byok-profile",
@@ -541,7 +543,7 @@
         "landingUrl": "https://docs.searates.com/reference/schedules/available-carriers",
         "signupUrl": "https://docs.searates.com/reference/schedules/available-carriers"
       },
-      "implementationStatus": "planned",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_SEARATES_SCHEDULES",
         "requiredEnvVars": [
@@ -551,7 +553,7 @@
         "notes": "Default tests must not call the live schedules API."
       },
       "captureEligibility": "blocked",
-      "notes": "Prefer the official API over web capture."
+      "notes": "Official BYOK adapter implemented for route schedules by points and vessel schedules by IMO. Prefer the official API over web capture."
     },
     {
       "id": "linescape-schedule-api",
@@ -661,7 +663,7 @@
         "landingUrl": "https://docs.routescanner.com/operation/operation-getvoyages",
         "signupUrl": "https://docs.routescanner.com/operation/operation-getvoyages"
       },
-      "implementationStatus": "planned",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_ROUTESCANNER_CONNECT",
         "requiredEnvVars": [
@@ -670,7 +672,7 @@
         "defaultDisabled": true
       },
       "captureEligibility": "blocked",
-      "notes": "Useful for schedule alternatives and emissions; not a direct AIS source."
+      "notes": "Official BYOK adapter implemented for LOCODE-based voyage options mapped into carrier_schedule_search. Useful for schedule alternatives and emissions; not a direct AIS source."
     },
     {
       "id": "cargosmart-schedule",
@@ -812,14 +814,15 @@
       },
       "cost": {
         "model": "trial",
-        "quotaNote": "Trial and paid tiers; confirm credit/quota structure before adapter work."
+        "quotaNote": "Trial and paid tiers; live calls may consume plan quota or satellite credit packs."
       },
       "sources": {
-        "apiDocsUrl": "https://vesselapi.com/ship-tracking-api",
-        "landingUrl": "https://vesselapi.com/ship-tracking-api",
-        "signupUrl": "https://vesselapi.com/ship-tracking-api"
+        "apiDocsUrl": "https://vesselapi.com/docs/vessels",
+        "landingUrl": "https://vesselapi.com/docs/vessels",
+        "signupUrl": "https://dashboard.vesselapi.com",
+        "referenceUrl": "https://vesselapi.com/ship-tracking-api"
       },
-      "implementationStatus": "discovery_only",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_VESSELAPI",
         "requiredEnvVars": [
@@ -827,7 +830,8 @@
         ],
         "defaultDisabled": true
       },
-      "captureEligibility": "needs-terms-review"
+      "captureEligibility": "needs-terms-review",
+      "notes": "Official BYOK adapter implemented for search, latest position, bounding-box area, short-term historical positions, and port events. Default verification never calls the live API."
     },
     {
       "id": "datadocked",
@@ -839,6 +843,7 @@
       "capabilities": [
         "vessel_search",
         "vessel_position",
+        "vessel_area",
         "vessel_track",
         "port_calls"
       ],
@@ -855,11 +860,12 @@
         "quotaNote": "Subscription pricing; validate plan tiers and call volume."
       },
       "sources": {
-        "apiDocsUrl": "https://datadocked.com/",
-        "landingUrl": "https://datadocked.com/",
-        "signupUrl": "https://datadocked.com/"
+        "apiDocsUrl": "https://docs.datadocked.com/api-reference/introduction",
+        "landingUrl": "https://docs.datadocked.com/api-reference/introduction",
+        "signupUrl": "https://datadocked.com/",
+        "referenceUrl": "https://datadocked.com/"
       },
-      "implementationStatus": "discovery_only",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_DATADOCKED",
         "requiredEnvVars": [
@@ -867,7 +873,8 @@
         ],
         "defaultDisabled": true
       },
-      "captureEligibility": "needs-terms-review"
+      "captureEligibility": "needs-terms-review",
+      "notes": "Official BYOK adapter implemented for vessel search, latest location, area search, historical positions, and port calls. Default verification never calls the live API."
     },
     {
       "id": "poseidon-ais",

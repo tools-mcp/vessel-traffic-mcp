@@ -109,12 +109,14 @@ never appear in logs, errors, or MCP tool responses.
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
-export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked"
 ```
 
 Implemented credentialed runtime providers are `marinetraffic`,
-`vesselfinder`, `aisstream`, `aishub`, and `barentswatch`. A provider
-is also auto-enabled when its default credential profile is configured.
+`vesselfinder`, `aisstream`, `aishub`, `barentswatch`,
+`searates-schedules`, `routescanner-connect`, `vesselapi`, and
+`datadocked`. A provider is also
+auto-enabled when its default credential profile is configured.
 See
 [`docs/runbooks/credential-profiles.md`](./docs/runbooks/credential-profiles.md)
 and [`docs/runbooks/operator.md`](./docs/runbooks/operator.md).
@@ -227,12 +229,13 @@ VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
-export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked"
 ```
 
 현재 credential 기반으로 런타임 등록 가능한 provider는 `marinetraffic`,
-`vesselfinder`, `aisstream`, `aishub`, `barentswatch`입니다. 기본 credential
-profile이 설정된 provider는 자동으로 등록됩니다.
+`vesselfinder`, `aisstream`, `aishub`, `barentswatch`,
+`searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked`입니다. 기본 credential profile이
+설정된 provider는 자동으로 등록됩니다.
 
 자세한 내용은 [`docs/runbooks/credential-profiles.md`](./docs/runbooks/credential-profiles.md)와
 [`docs/runbooks/operator.md`](./docs/runbooks/operator.md)를 참고하세요.
@@ -338,11 +341,12 @@ VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
-export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked"
 ```
 
 現在 runtime で有効化できる credentialed provider は `marinetraffic`,
-`vesselfinder`, `aisstream`, `aishub`, `barentswatch` です。
+`vesselfinder`, `aisstream`, `aishub`, `barentswatch`,
+`searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked` です。
 
 ### エージェント設定プロンプト
 
@@ -440,11 +444,12 @@ VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
-export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked"
 ```
 
 当前可在 runtime 启用的 credentialed provider 是 `marinetraffic`,
-`vesselfinder`, `aisstream`, `aishub`, `barentswatch`。
+`vesselfinder`, `aisstream`, `aishub`, `barentswatch`,
+`searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked`。
 
 ### Agent 设置提示词
 
@@ -511,10 +516,10 @@ Current status:
 | --- | --- | --- |
 | Default | enabled with no env | `fixture` |
 | Public opt-in | `VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS` | `myshiptracking`, `shipfinder`, `tradlinx-schedule` |
-| Credentialed implemented | `VESSEL_MCP_ENABLE_BYOK_PROVIDERS` or configured default profile | `marinetraffic`, `vesselfinder`, `aisstream`, `aishub`, `barentswatch` |
-| Planned schedule APIs | cataloged, not implemented | `searates-schedules`, `linescape-schedule-api`, `routescanner-connect` |
+| Credentialed implemented | `VESSEL_MCP_ENABLE_BYOK_PROVIDERS` or configured default profile | `marinetraffic`, `vesselfinder`, `aisstream`, `aishub`, `barentswatch`, `searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked` |
+| Planned schedule APIs | cataloged, not implemented | `linescape-schedule-api` |
 | Not started commercial AIS | cataloged, not implemented | `spire-maritime`, `orbcomm-commtrace` |
-| Discovery or enterprise review | cataloged only | `openais`, `noaa-marinecadastre`, `globalfishingwatch`, `iqax-bigschedules`, `cargosmart-schedule`, `vesselapi`, `datadocked`, `poseidon-ais`, `ais-now`, `fleetmon`, `windward`, `polestar-global`, `spglobal-seaweb`, `lloyds-list-intelligence` |
+| Discovery or enterprise review | cataloged only | `openais`, `noaa-marinecadastre`, `globalfishingwatch`, `iqax-bigschedules`, `cargosmart-schedule`, `poseidon-ais`, `ais-now`, `fleetmon`, `windward`, `polestar-global`, `spglobal-seaweb`, `lloyds-list-intelligence` |
 
 The structured source of truth is
 [`config/provider-catalog.example.json`](./config/provider-catalog.example.json)
@@ -594,7 +599,11 @@ docs/           PRD, TDD, provider catalog, and runbooks
 ### Documentation
 
 - [`llms.txt`](./llms.txt) — compact agent-facing project brief.
+- [`server.json`](./server.json) — MCP Registry metadata for the
+  `io.github.tools-mcp/vessel-traffic-mcp` namespace.
 - [`AGENTS.md`](./AGENTS.md) — project hard rules.
+- [`CODE_OF_CONDUCT.md`](./CODE_OF_CONDUCT.md) — collaboration
+  expectations.
 - [`docs/PRD.md`](./docs/PRD.md) — product requirements.
 - [`docs/TDD.md`](./docs/TDD.md) — technical design.
 - [`docs/provider-catalog.md`](./docs/provider-catalog.md) — provider
@@ -612,6 +621,9 @@ docs/           PRD, TDD, provider catalog, and runbooks
   — HTTPS deployment for the Streamable HTTP MCP endpoint.
 - [`docs/runbooks/release-checklist.md`](./docs/runbooks/release-checklist.md)
   — pre-release safety checklist.
+- [`docs/runbooks/public-sharing.md`](./docs/runbooks/public-sharing.md)
+  — GitHub, MCP Registry, Smithery, Glama, PulseMCP, and launch-post
+  sharing checklist.
 - [`docs/runbooks/api-capture-reference-only.md`](./docs/runbooks/api-capture-reference-only.md)
   — reference-only boundary for raw capture sessions.
 - [`docs/runbooks/browser-api-capture-results.md`](./docs/runbooks/browser-api-capture-results.md)
@@ -636,7 +648,8 @@ and suggested GitHub topics.
 - MCP / Model Context Protocol server
 - AIS / vessel tracking / ship tracking
 - BYOK paid-provider routing (MarineTraffic, VesselFinder, AISStream,
-  AISHub, Spire, and other catalog entries)
+  AISHub, BarentsWatch, SeaRates, Routescanner, VesselAPI, Data Docked,
+  and other catalog entries)
 
 ### Contributing
 
@@ -645,20 +658,15 @@ Contributions are welcome. Please read
 non-negotiable safety rules around credentials, capture fixtures, and
 the read-only contract.
 
+Use GitHub Issues for bugs, provider requests, and authorized capture
+reviews. Use GitHub Discussions for roadmap, integration, and
+collaboration threads. The sharing checklist is in
+[`docs/runbooks/public-sharing.md`](./docs/runbooks/public-sharing.md).
+
 ### Security
 
 Do not file a public GitHub issue for a suspected vulnerability. See
 [`SECURITY.md`](./SECURITY.md) for the private reporting channel.
-
-### Autodev
-
-This repository can be driven by a local `<codex-autodev-checkout>`:
-
-```bash
-cd <codex-autodev-checkout>
-node bin/codex-autodev.js plan --config configs/vessel-traffic-mcp.json --max-tasks 3 --with-reasoning
-node bin/codex-autodev.js run --config configs/vessel-traffic-mcp.json --max-tasks 1
-```
 
 ### License
 

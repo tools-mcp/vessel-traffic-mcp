@@ -84,10 +84,20 @@ documentation examples). No real values.
       non-empty `keywords` array covering vessel-ais-mcp,
       ship-tracking-mcp, marinetraffic-mcp, claude-mcp, chatgpt-mcp,
       and codex-plugin; `repository`, `homepage`, and `bugs` URLs
-      point at the canonical GitHub repo; `author` is set; the
-      `files` allowlist contains only `dist`, `README.md`, `LICENSE`,
-      `SECURITY.md`, `CONTRIBUTING.md`, `AGENTS.md`, and `docs`. See
+      point at the canonical GitHub repo; `author` is set; `mcpName`
+      is `io.github.tools-mcp/vessel-traffic-mcp`; the `files`
+      allowlist contains only safe publication artifacts such as
+      `dist`, `README.md`, `server.json`, `LICENSE`, `SECURITY.md`,
+      `CONTRIBUTING.md`, `AGENTS.md`, and `docs`. See
       `docs/discoverability.md` for the full contract.
+- [ ] `server.json` validates against the official MCP Registry
+      schema, uses the `io.github.tools-mcp/vessel-traffic-mcp`
+      namespace, points at the canonical GitHub repo, and does not
+      contain credentials.
+- [ ] `glama.json` names only non-personal maintainer identities.
+- [ ] GitHub Issues, Discussions, issue templates, PR template, and
+      Topics are enabled according to
+      `docs/runbooks/public-sharing.md`.
 - [ ] `docs/runbooks/clients.md` (F1.AC3) and
       `docs/runbooks/codex.md` (F7.AC3) describe the same registered
       read-only tool surface as `src/server/create-server.ts`, and

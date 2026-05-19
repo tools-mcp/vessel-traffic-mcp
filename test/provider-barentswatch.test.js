@@ -526,3 +526,50 @@ test('BarentsWatch adapter declared in catalog is now implementation-status=impl
   // OAuth2 client_credentials grant to be the documented credential shape.
   assert.ok(!entry.auth.profileFields.includes('api_key'));
 });
+
+test('BarentsWatch latestPosition and area expose normalized MCP tool shapes', async () => {
+  const clock = fakeClock(Date.parse('2026-05-15T12:00:00Z'));
+  const { fetcher } = makeFakeFetcher(async (_url, _init, index) => {
+    if (index === 0) return tokenOkResponse();
+    if (index === 1) {
+      return jsonOkResponse({
+        mmsi: 257123450,
+        imoNumber: 9876543,
+        name: 'REGIONAL VESSEL',
+        latitude: 69.6,
+        longitude: 18.9,
+        speedOverGround: 8.5,
+        courseOverGround: 181,
+        msgtime: '2026-05-15T11:59:00Z',
+      });
+    }
+    return jsonOkResponse([
+      {
+        mmsi: 257123451,
+        name: 'AREA VESSEL',
+        latitude: 70.1,
+        longitude: 19.2,
+        msgtime: '2026-05-15T12:00:00Z',
+      },
+    ]);
+  });
+  const provider = createBarentsWatchProvider({
+    credentialStore: storeWithBarentsWatchCredentials(),
+    fetcher,
+    clock,
+  });
+
+  const position = await provider.latestPosition({ mmsi: '257123450' });
+  assert.equal(position.ok, true);
+  if (position.ok) {
+    assert.equal(position.data.identity.name, 'REGIONAL VESSEL');
+    assert.equal(position.data.lat, 69.6);
+  }
+
+  clock.advance(1_000);
+  const area = await provider.area({
+    boundingBox: { latMin: 69, latMax: 71, lonMin: 18, lonMax: 20 },
+  });
+  assert.equal(area.ok, true);
+  if (area.ok) assert.equal(area.data.positions[0].identity.name, 'AREA VESSEL');
+});
