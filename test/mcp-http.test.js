@@ -68,6 +68,7 @@ test('Streamable HTTP endpoint exposes fixture-backed read-only MCP tools', asyn
         'data_sources',
         'document_vessel_lookup',
         'port_calls',
+        'provider_onboarding',
         'provider_status',
         'schedule_delay_predict',
         'vessel_area',

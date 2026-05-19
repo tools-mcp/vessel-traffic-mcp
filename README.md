@@ -109,17 +109,23 @@ never appear in logs, errors, or MCP tool responses.
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
-export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked,datalastic,globalfishingwatch"
 ```
 
 Implemented credentialed runtime providers are `marinetraffic`,
 `vesselfinder`, `aisstream`, `aishub`, `barentswatch`,
-`searates-schedules`, `routescanner-connect`, `vesselapi`, and
-`datadocked`. A provider is also
+`searates-schedules`, `routescanner-connect`, `vesselapi`,
+`datadocked`, `datalastic`, and `globalfishingwatch`. A provider is also
 auto-enabled when its default credential profile is configured.
 See
 [`docs/runbooks/credential-profiles.md`](./docs/runbooks/credential-profiles.md)
 and [`docs/runbooks/operator.md`](./docs/runbooks/operator.md).
+
+Use the `provider_onboarding` MCP tool to inspect provider signup
+URLs, required env vars, configured profile status, and validation
+steps. It is read-only and never creates accounts, accepts terms,
+solves CAPTCHA, completes email verification, sets payment details, or
+issues API keys.
 
 ### Agent Prompt
 
@@ -229,16 +235,21 @@ VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
-export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked,datalastic,globalfishingwatch"
 ```
 
 현재 credential 기반으로 런타임 등록 가능한 provider는 `marinetraffic`,
 `vesselfinder`, `aisstream`, `aishub`, `barentswatch`,
-`searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked`입니다. 기본 credential profile이
+`searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked`, `datalastic`, `globalfishingwatch`입니다. 기본 credential profile이
 설정된 provider는 자동으로 등록됩니다.
 
 자세한 내용은 [`docs/runbooks/credential-profiles.md`](./docs/runbooks/credential-profiles.md)와
 [`docs/runbooks/operator.md`](./docs/runbooks/operator.md)를 참고하세요.
+
+`provider_onboarding` MCP 도구를 사용하면 provider별 가입 URL, 필요한
+env var, 현재 credential 설정 여부, 검증 단계를 확인할 수 있습니다.
+이 도구는 읽기 전용이며 계정 생성, 약관 동의, CAPTCHA, 이메일 인증,
+결제 정보 설정, API 키 발급을 대신 수행하지 않습니다.
 
 ### 에이전트 설정 프롬프트
 
@@ -341,12 +352,12 @@ VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
-export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked,datalastic,globalfishingwatch"
 ```
 
 現在 runtime で有効化できる credentialed provider は `marinetraffic`,
 `vesselfinder`, `aisstream`, `aishub`, `barentswatch`,
-`searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked` です。
+`searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked`, `datalastic`, `globalfishingwatch` です。
 
 ### エージェント設定プロンプト
 
@@ -444,12 +455,12 @@ VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
 
 ```bash
 export VESSEL_MCP_PROFILE_MARINETRAFFIC__API_KEY="<your-key>"
-export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked"
+export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,aishub,barentswatch,searates-schedules,routescanner-connect,vesselapi,datadocked,datalastic,globalfishingwatch"
 ```
 
 当前可在 runtime 启用的 credentialed provider 是 `marinetraffic`,
 `vesselfinder`, `aisstream`, `aishub`, `barentswatch`,
-`searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked`。
+`searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked`, `datalastic`, `globalfishingwatch`。
 
 ### Agent 设置提示词
 
@@ -516,10 +527,10 @@ Current status:
 | --- | --- | --- |
 | Default | enabled with no env | `fixture` |
 | Public opt-in | `VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS` | `myshiptracking`, `shipfinder`, `tradlinx-schedule` |
-| Credentialed implemented | `VESSEL_MCP_ENABLE_BYOK_PROVIDERS` or configured default profile | `marinetraffic`, `vesselfinder`, `aisstream`, `aishub`, `barentswatch`, `searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked` |
+| Credentialed implemented | `VESSEL_MCP_ENABLE_BYOK_PROVIDERS` or configured default profile | `marinetraffic`, `vesselfinder`, `aisstream`, `aishub`, `barentswatch`, `searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked`, `datalastic`, `globalfishingwatch` |
 | Planned schedule APIs | cataloged, not implemented | `linescape-schedule-api` |
 | Not started commercial AIS | cataloged, not implemented | `spire-maritime`, `orbcomm-commtrace` |
-| Discovery or enterprise review | cataloged only | `openais`, `noaa-marinecadastre`, `globalfishingwatch`, `iqax-bigschedules`, `cargosmart-schedule`, `poseidon-ais`, `ais-now`, `fleetmon`, `windward`, `polestar-global`, `spglobal-seaweb`, `lloyds-list-intelligence` |
+| Discovery or enterprise review | cataloged only | `openais`, `noaa-marinecadastre`, `iqax-bigschedules`, `cargosmart-schedule`, `poseidon-ais`, `ais-now`, `fleetmon`, `windward`, `polestar-global`, `spglobal-seaweb`, `lloyds-list-intelligence` |
 
 The structured source of truth is
 [`config/provider-catalog.example.json`](./config/provider-catalog.example.json)
@@ -544,6 +555,13 @@ Registered read-only schedule tools:
 - `carrier_schedule_search`
 - `vessel_schedule`
 - `schedule_delay_predict`
+
+Registered read-only provider/setup tools:
+
+- `provider_status`
+- `data_sources`
+- `credential_profiles`
+- `provider_onboarding`
 
 Fixture-backed checks:
 

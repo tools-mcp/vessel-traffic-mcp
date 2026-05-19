@@ -162,6 +162,20 @@ function createAppServer() {
         return;
       }
 
+      if (url.pathname === '/api/provider') {
+        if (req.method !== 'GET') {
+          json(res, 405, { ok: false, reason: 'method_not_allowed' });
+          return;
+        }
+        const [status, sources] = await Promise.all([provider.status(), provider.dataSources()]);
+        json(res, 200, {
+          ok: true,
+          status,
+          sources,
+        });
+        return;
+      }
+
       await serveStatic(req, res, url.pathname);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);

@@ -25,13 +25,14 @@ async function withInMemoryClient(run) {
   }
 }
 
-test('MCP server registers fixture-backed provider_status, data_sources, credential_profiles, and F3.AC1 vessel tools', async () => {
+test('MCP server registers fixture-backed provider/setup diagnostics and F3.AC1 vessel tools', async () => {
   await withInMemoryClient(async (client) => {
     const tools = await client.listTools();
     const toolNames = tools.tools.map((tool) => tool.name).sort();
     const providerStatusTool = tools.tools.find((tool) => tool.name === 'provider_status');
     const dataSourcesTool = tools.tools.find((tool) => tool.name === 'data_sources');
     const credentialProfilesTool = tools.tools.find((tool) => tool.name === 'credential_profiles');
+    const providerOnboardingTool = tools.tools.find((tool) => tool.name === 'provider_onboarding');
 
     assert.deepEqual(toolNames, [
       'carrier_schedule_search',
@@ -39,6 +40,7 @@ test('MCP server registers fixture-backed provider_status, data_sources, credent
       'data_sources',
       'document_vessel_lookup',
       'port_calls',
+      'provider_onboarding',
       'provider_status',
       'schedule_delay_predict',
       'vessel_area',
@@ -51,6 +53,7 @@ test('MCP server registers fixture-backed provider_status, data_sources, credent
     assert.ok(providerStatusTool);
     assert.ok(dataSourcesTool);
     assert.ok(credentialProfilesTool);
+    assert.ok(providerOnboardingTool);
     for (const tool of tools.tools) {
       assert.equal(tool.annotations.readOnlyHint, true);
       assert.equal(tool.annotations.destructiveHint, false);
@@ -64,6 +67,8 @@ test('MCP server registers fixture-backed provider_status, data_sources, credent
     assert.ok(credentialProfilesTool.outputSchema.properties.profiles);
     assert.ok(credentialProfilesTool.outputSchema.properties.summary);
     assert.ok(credentialProfilesTool.outputSchema.properties.notes);
+    assert.ok(providerOnboardingTool.outputSchema.properties.providers);
+    assert.ok(providerOnboardingTool.outputSchema.properties.safety);
   });
 });
 

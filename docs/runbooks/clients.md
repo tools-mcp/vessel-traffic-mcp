@@ -18,8 +18,9 @@ file documents the client wiring only.
 
 - **Read-only.** MCP tools must not modify provider accounts, fleets,
   billing settings, saved searches, or user profiles. The registered
-  tools — `provider_status`, `data_sources`, `credential_profiles`, and
-  the vessel/schedule query tools — all declare `readOnlyHint: true`.
+  tools — `provider_status`, `data_sources`, `credential_profiles`,
+  `provider_onboarding`, and the vessel/schedule query tools — all
+  declare `readOnlyHint: true`.
 - **Default verification stays fixture-only.** `npm run lint`,
   `npm test`, and `npm run build` exercise the fixture provider; no
   client configuration in this runbook implies a paid or live call by
@@ -51,7 +52,8 @@ instead.
 
 The current registered tool surface is fixture-backed and read-only:
 
-- `provider_status`, `data_sources`, `credential_profiles`
+- `provider_status`, `data_sources`, `credential_profiles`,
+  `provider_onboarding`
 - `vessel_search`, `vessel_name_resolve`, `document_vessel_lookup`,
   `vessel_position`, `vessel_area`, `vessel_track`, `port_calls`
 - `carrier_schedule_search`, `vessel_schedule`, `schedule_delay_predict`
@@ -208,8 +210,8 @@ npx @modelcontextprotocol/inspector node dist/index.js
 ```
 
 You should see the read-only tools list and be able to call
-`provider_status`, `data_sources`, and `credential_profiles` against
-the fixture provider.
+`provider_status`, `data_sources`, `credential_profiles`, and
+`provider_onboarding` against the fixture provider.
 
 ### Inspector against Streamable HTTP
 

@@ -96,9 +96,10 @@ it. Source URLs point to first-party developer docs.
 | Routescanner Connect API | Multimodal voyage options by LOCODE/terminal/operator with lead time and emissions | https://docs.routescanner.com/operation/operation-getvoyages |
 | Spire Maritime | Global satellite and terrestrial AIS data products | https://spire.com/maritime/solutions/standard-ais/ |
 | ORBCOMM / CommTrace / exactEarth | Beyond-coastal satellite AIS | https://api.commtrace.com/ |
-| Global Fishing Watch | Token API for fishing activity and vessel identity | https://globalfishingwatch.org/our-apis/documentation |
+| Datalastic | Trial/commercial API for live ship tracking, vessel finder, radius traffic, and vessel history | https://datalastic.com/api-reference/ |
+| Global Fishing Watch | Token API for fishing activity, vessel identity search, and public registry context | https://globalfishingwatch.org/our-apis/documentation |
 
-Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` for each provider above (MarineTraffic `shipsearch`, `exportvessel`, `exportvesseltrack`, `portcalls`, VesselFinder, SeaRates Ship Schedules, Routescanner Connect, VesselAPI, and Data Docked are `implemented` behind redacted BYOK profiles; Linescape remains `planned`; other rows are `not_started` or `discovery_only`).
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` for each provider above (MarineTraffic `shipsearch`, `exportvessel`, `exportvesseltrack`, `portcalls`, VesselFinder, SeaRates Ship Schedules, Routescanner Connect, VesselAPI, Data Docked, Datalastic, and Global Fishing Watch vessel search are `implemented` behind redacted BYOK profiles; Linescape remains `planned`; other rows are `not_started` or `discovery_only`).
 
 ### Open-Data Sources
 
@@ -152,6 +153,7 @@ credential slots so the standard `npm test` run never reaches a paid endpoint.
 | Routescanner Connect API | Voyage options between locations, operators, transfers, lead time, and CO2e | https://docs.routescanner.com/operation/operation-getvoyages |
 | VesselAPI | Commercial/trial maritime API; terrestrial AIS ship-tracking, area, historical positions, and port events; product overview at https://vesselapi.com/ship-tracking-api | https://vesselapi.com/docs/vessels |
 | Data Docked | Vessel location, historical location, port calls, details by name, route planner, weather; product site at https://datadocked.com/ | https://docs.datadocked.com/api-reference/introduction |
+| Datalastic | Live ship tracking, location traffic radius queries, vessel finder, and historical vessel data; product site at https://datalastic.com/ | https://datalastic.com/api-reference/ |
 | Poseidon AIS | Vessel details, area/radius search, historical positions | https://poseidonais.com/ |
 | ais.now | Commercial API/web platform candidate with REST API claims; validate docs, terms, and coverage before implementation | https://ais.now/ |
 | FleetMon / Kpler | Commercial maritime intelligence; treat as BYOK or authorized capture candidate only after account-specific terms review | https://www.fleetmon.com/ |

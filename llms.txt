@@ -87,7 +87,7 @@ the absolute path:
 - Implemented credentialed runtime providers:
   `marinetraffic`, `vesselfinder`, `aisstream`, `aishub`,
   `barentswatch`, `searates-schedules`, `routescanner-connect`,
-  `vesselapi`, `datadocked`.
+  `vesselapi`, `datadocked`, `datalastic`, `globalfishingwatch`.
 - Planned schedule providers:
   `linescape-schedule-api`.
 - The remaining PRD providers are cataloged for discovery, enterprise
@@ -108,6 +108,7 @@ the absolute path:
 - `provider_status`
 - `data_sources`
 - `credential_profiles`
+- `provider_onboarding`
 
 ## Important Docs
 

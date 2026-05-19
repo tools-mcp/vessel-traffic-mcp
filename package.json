@@ -49,7 +49,8 @@
     "SECURITY.md",
     "CONTRIBUTING.md",
     "AGENTS.md",
-    "docs"
+    "docs",
+    "config/provider-catalog.example.json"
   ],
   "bin": {
     "vessel-traffic-mcp": "./dist/index.js",

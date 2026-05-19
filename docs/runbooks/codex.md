@@ -18,9 +18,9 @@ rules, env-var contract, and read-only tool surface are identical.
 ## Hard rules (must hold for the Codex wiring too)
 
 - **Read-only.** The registered tools — `provider_status`,
-  `data_sources`, `credential_profiles`, `vessel_search`,
-  `vessel_name_resolve`, `document_vessel_lookup`, `vessel_position`,
-  `vessel_area`, `vessel_track`, `port_calls`,
+  `data_sources`, `credential_profiles`, `provider_onboarding`,
+  `vessel_search`, `vessel_name_resolve`, `document_vessel_lookup`,
+  `vessel_position`, `vessel_area`, `vessel_track`, `port_calls`,
   `carrier_schedule_search`, `vessel_schedule`, and
   `schedule_delay_predict` — all declare `readOnlyHint: true`. Codex
   must not be wired to a tool surface that mutates provider accounts,

@@ -75,6 +75,13 @@ The read-only `credential_profiles` MCP tool returns a payload of the form:
 The tool is annotated `readOnlyHint: true`, `destructiveHint: false`. It
 accepts no arguments and performs no network I/O.
 
+For setup guidance, call the read-only `provider_onboarding` MCP tool.
+It returns provider signup/API-doc URLs, required env vars, default
+profile labels, configured status, missing fields, and validation
+steps. It intentionally does not create accounts, accept terms, solve
+CAPTCHA, complete email verification, set payment details, or issue API
+keys.
+
 ## Hard rules
 
 - **Never log raw secrets.** Internal log messages route through
@@ -214,6 +221,8 @@ Implemented adapters ship behind credential profiles:
 | Routescanner Connect | `src/providers/routescanner.ts` | `api_key` | `VESSEL_MCP_PROFILE_ROUTESCANNER_CONNECT__API_KEY` | Header `x-api-key` |
 | VesselAPI | `src/providers/vesselapi.ts` | `api_key` | `VESSEL_MCP_PROFILE_VESSELAPI__API_KEY` | Header `Authorization: Bearer …` |
 | Data Docked | `src/providers/datadocked.ts` | `api_key` | `VESSEL_MCP_PROFILE_DATADOCKED__API_KEY` | Header `x-api-key` |
+| Datalastic | `src/providers/datalastic.ts` | `api_key` | `VESSEL_MCP_PROFILE_DATALASTIC__API_KEY` | Query parameter `api-key=…` on live requests |
+| Global Fishing Watch | `src/providers/globalfishingwatch.ts` | `bearer_token` | `VESSEL_MCP_PROFILE_GLOBALFISHINGWATCH__BEARER_TOKEN` | Header `Authorization: Bearer …` |
 
 These adapters:
 

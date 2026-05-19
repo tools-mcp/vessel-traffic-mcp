@@ -32,13 +32,15 @@ test('runtime registry enables every implemented credentialed provider through B
     'routescanner-connect',
     'vesselapi',
     'datadocked',
+    'datalastic',
+    'globalfishingwatch',
     'fixture',
   ]);
 });
 
 test('runtime registry enables implemented credentialed providers by explicit id', () => {
   const registry = createRuntimeProviderRegistry(
-    { [BYOK_PROVIDERS_ENV]: 'vesselfinder aisstream aishub barentswatch searates-schedules routescanner-connect vesselapi datadocked' },
+    { [BYOK_PROVIDERS_ENV]: 'vesselfinder aisstream aishub barentswatch searates-schedules routescanner-connect vesselapi datadocked datalastic globalfishingwatch' },
     credentialStore(),
   );
 
@@ -51,6 +53,8 @@ test('runtime registry enables implemented credentialed providers by explicit id
     'routescanner-connect',
     'vesselapi',
     'datadocked',
+    'datalastic',
+    'globalfishingwatch',
     'fixture',
   ]);
 });
@@ -68,6 +72,8 @@ test('runtime registry auto-enables implemented credentialed providers with defa
       VESSEL_MCP_PROFILE_ROUTESCANNER_CONNECT__API_KEY: 'routescanner-test-key',
       VESSEL_MCP_PROFILE_VESSELAPI__API_KEY: 'vesselapi-test-key',
       VESSEL_MCP_PROFILE_DATADOCKED__API_KEY: 'datadocked-test-key',
+      VESSEL_MCP_PROFILE_DATALASTIC__API_KEY: 'datalastic-test-key',
+      VESSEL_MCP_PROFILE_GLOBALFISHINGWATCH__BEARER_TOKEN: 'gfw-test-token',
     }),
   );
 
@@ -80,6 +86,8 @@ test('runtime registry auto-enables implemented credentialed providers with defa
     'routescanner-connect',
     'vesselapi',
     'datadocked',
+    'datalastic',
+    'globalfishingwatch',
     'fixture',
   ]);
 });

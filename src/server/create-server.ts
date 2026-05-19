@@ -6,12 +6,14 @@ import { createRuntimeProviderRegistry } from '../providers/runtime-registry.js'
 import {
   credentialProfilesOutputSchema,
   dataSourcesOutputSchema,
+  providerOnboardingOutputSchema,
   providerStatusOutputSchema,
 } from '../tools/contracts.js';
 import { carrierScheduleSearch, carrierScheduleSearchInputSchema } from '../tools/carrier-schedule-search.js';
 import { getCredentialProfiles } from '../tools/credential-profiles.js';
 import { getDataSources } from '../tools/data-sources.js';
 import { getProviderStatus } from '../tools/provider-status.js';
+import { providerOnboarding, providerOnboardingInputSchema } from '../tools/provider-onboarding.js';
 import { documentVesselLookup, documentVesselLookupInputSchema } from '../tools/document-vessel-lookup.js';
 import { portCalls, portCallsInputSchema } from '../tools/port-calls.js';
 import { scheduleDelayPredict, scheduleDelayPredictInputSchema } from '../tools/schedule-delay-predict.js';
@@ -90,6 +92,19 @@ export function createVesselMcpServer(options: CreateVesselMcpServerOptions = {}
       annotations: readOnlyAnnotations,
     },
     async () => jsonToolResult(await getCredentialProfiles(credentialStore)),
+  );
+
+  server.registerTool(
+    'provider_onboarding',
+    {
+      title: 'Provider Onboarding',
+      description:
+        'Show safe manual signup, API docs, credential env vars, configured status, and validation steps for provider access. Does not create accounts or issue credentials.',
+      inputSchema: providerOnboardingInputSchema,
+      outputSchema: providerOnboardingOutputSchema,
+      annotations: readOnlyAnnotations,
+    },
+    async (args) => jsonToolResult(await providerOnboarding({ credentialStore }, args)),
   );
 
   const deps = { registry, credentialStore };

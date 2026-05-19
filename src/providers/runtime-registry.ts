@@ -3,7 +3,9 @@ import { AISHUB_DEFAULT_LABEL, createAishubProvider } from './aishub.js';
 import { AISSTREAM_DEFAULT_LABEL, createAisStreamProvider } from './aisstream.js';
 import { BARENTSWATCH_DEFAULT_LABEL, createBarentsWatchProvider } from './barentswatch.js';
 import { createDataDockedProvider, DATADOCKED_DEFAULT_LABEL } from './datadocked.js';
+import { createDatalasticProvider, DATALASTIC_DEFAULT_LABEL } from './datalastic.js';
 import { createFixtureProvider } from './fixture.js';
+import { createGlobalFishingWatchProvider, GLOBALFISHINGWATCH_DEFAULT_LABEL } from './globalfishingwatch.js';
 import { createMarineTrafficProvider, MARINETRAFFIC_DEFAULT_LABEL } from './marinetraffic.js';
 import { createMyShipTrackingProvider } from './myshiptracking.js';
 import { createProviderRegistry, type ProviderRegistry } from './registry.js';
@@ -36,6 +38,8 @@ const credentialedProviderFactories = {
   'routescanner-connect': createRoutescannerConnectProvider,
   vesselapi: createVesselApiProvider,
   datadocked: createDataDockedProvider,
+  datalastic: createDatalasticProvider,
+  globalfishingwatch: createGlobalFishingWatchProvider,
 } as const;
 
 const credentialedProviderDefaultLabels = {
@@ -48,6 +52,8 @@ const credentialedProviderDefaultLabels = {
   'routescanner-connect': ROUTESCANNER_DEFAULT_LABEL,
   vesselapi: VESSELAPI_DEFAULT_LABEL,
   datadocked: DATADOCKED_DEFAULT_LABEL,
+  datalastic: DATALASTIC_DEFAULT_LABEL,
+  globalfishingwatch: GLOBALFISHINGWATCH_DEFAULT_LABEL,
 } as const;
 
 type CredentialedProviderId = keyof typeof credentialedProviderFactories;

@@ -109,6 +109,7 @@ contract; the operator-facing summary is:
   | `routescanner-connect` | `api_key` | `VESSEL_MCP_PROFILE_ROUTESCANNER_CONNECT__API_KEY` |
   | `vesselapi` | `api_key` | `VESSEL_MCP_PROFILE_VESSELAPI__API_KEY` |
   | `datadocked` | `api_key` | `VESSEL_MCP_PROFILE_DATADOCKED__API_KEY` |
+  | `datalastic` | `api_key` | `VESSEL_MCP_PROFILE_DATALASTIC__API_KEY` |
   | `globalfishingwatch` | `bearer_token` | `VESSEL_MCP_PROFILE_GLOBALFISHINGWATCH__BEARER_TOKEN` |
   | `spire-maritime` | `api_key` | `VESSEL_MCP_PROFILE_SPIRE__API_KEY` |
 
@@ -190,8 +191,8 @@ your MCP client:
   npx @modelcontextprotocol/inspector node dist/index.js
   ```
 
-  and list the `provider_status`, `data_sources`, and
-  `credential_profiles` tools.
+  and list the `provider_status`, `data_sources`,
+  `credential_profiles`, and `provider_onboarding` tools.
 
 Reference: `docs/runbooks/stdio-fixture-server.md`.
 
@@ -231,6 +232,10 @@ are read-only and must remain read-only:
 - `provider_status` and `data_sources` — fixture-backed diagnostics.
 - `credential_profiles` — labels-only profile summary; never raw
   secrets.
+- `provider_onboarding` — provider signup/API-doc URLs, required env
+  vars, configured status, and manual validation steps. It never
+  creates accounts, accepts terms, solves CAPTCHA, completes email
+  verification, sets payment details, or issues API keys.
 
 When live providers are added later, they must continue to honour the
 read-only contract: no fleet edits, no saved-search mutations, no

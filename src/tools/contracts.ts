@@ -1,6 +1,11 @@
 import { z } from 'zod/v4';
 
 import { credentialProfileFieldValues } from '../config/credentials.js';
+import {
+  catalogCostModelValues,
+  catalogImplementationStatusValues,
+  catalogPriorityValues,
+} from '../providers/catalog.js';
 import { providerCapabilityValues, providerTransportValues, sourceConfidenceValues } from '../providers/types.js';
 
 const providerCapabilitySchema = z.enum(providerCapabilityValues);
@@ -87,4 +92,70 @@ export const credentialProfilesOutputSchema = {
     fromLocalConfig: z.number().int().nonnegative(),
   }),
   notes: z.array(z.string()),
+};
+
+const providerOnboardingEntrySchema = z.object({
+  id: z.string(),
+  displayName: z.string(),
+  implementationStatus: z.enum(catalogImplementationStatusValues),
+  accessClass: z.string(),
+  tier: z.string(),
+  priority: z.enum(catalogPriorityValues),
+  coverage: z.string(),
+  capabilities: z.array(providerCapabilitySchema),
+  auth: z.object({
+    required: z.boolean(),
+    mode: z.string(),
+    profileFields: z.array(z.string()),
+    envVars: z.array(z.string()),
+    defaultProfileLabel: z.string().optional(),
+    configured: z.boolean(),
+    missingFields: z.array(z.string()),
+    notes: z.string().optional(),
+  }),
+  cost: z.object({
+    model: z.enum(catalogCostModelValues),
+    quotaNote: z.string().optional(),
+  }),
+  sources: z.object({
+    apiDocsUrl: z.url().optional(),
+    landingUrl: z.url().optional(),
+    signupUrl: z.url().optional(),
+    termsUrl: z.url().optional(),
+    referenceUrl: z.url().optional(),
+  }),
+  liveTest: z.object({
+    enabledFlagEnvVar: z.string(),
+    requiredEnvVars: z.array(z.string()),
+    defaultDisabled: z.literal(true),
+    notes: z.string().optional(),
+  }),
+  captureEligibility: z.string(),
+  canAutoCreateAccount: z.literal(false),
+  canAutoIssueCredential: z.literal(false),
+  onboardingMode: z.literal('manual_signup_then_local_profile'),
+  nextSteps: z.array(z.string()),
+  notes: z.string().optional(),
+});
+
+export const providerOnboardingOutputSchema = {
+  providers: z.array(providerOnboardingEntrySchema),
+  summary: z.object({
+    total: z.number().int().nonnegative(),
+    configured: z.number().int().nonnegative(),
+    missingCredentials: z.number().int().nonnegative(),
+    implemented: z.number().int().nonnegative(),
+    manualSignupRequired: z.number().int().nonnegative(),
+  }),
+  filters: z.object({
+    provider: z.string().optional(),
+    capability: providerCapabilitySchema.optional(),
+    implementedOnly: z.boolean().optional(),
+  }),
+  safety: z.object({
+    readOnly: z.literal(true),
+    autoSignup: z.literal(false),
+    autoCredentialIssuance: z.literal(false),
+    note: z.string(),
+  }),
 };

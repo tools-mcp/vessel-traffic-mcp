@@ -447,8 +447,7 @@
       "priority": "P2",
       "coverage": "Fishing activity, vessel identity, and public registry context.",
       "capabilities": [
-        "vessel_search",
-        "vessel_position"
+        "vessel_search"
       ],
       "auth": {
         "mode": "byok-profile",
@@ -468,7 +467,7 @@
         "landingUrl": "https://globalfishingwatch.org/our-apis/documentation",
         "signupUrl": "https://globalfishingwatch.org/our-apis/documentation"
       },
-      "implementationStatus": "discovery_only",
+      "implementationStatus": "implemented",
       "liveTest": {
         "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_GLOBALFISHINGWATCH",
         "requiredEnvVars": [
@@ -477,7 +476,7 @@
         "defaultDisabled": true
       },
       "captureEligibility": "needs-terms-review",
-      "notes": "Identity/context provider; not a universal live-position fallback."
+      "notes": "Official token API adapter implemented for Vessels API search against public-global-vessel-identity:latest. Identity/context provider only; not a universal live-position fallback."
     },
     {
       "id": "tradlinx-schedule",
@@ -875,6 +874,50 @@
       },
       "captureEligibility": "needs-terms-review",
       "notes": "Official BYOK adapter implemented for vessel search, latest location, area search, historical positions, and port calls. Default verification never calls the live API."
+    },
+    {
+      "id": "datalastic",
+      "displayName": "Datalastic",
+      "accessClass": "free-trial",
+      "tier": "paid-commercial",
+      "priority": "P2",
+      "coverage": "Live ship tracking, vessel finder, location traffic radius queries, and historical vessel data.",
+      "capabilities": [
+        "vessel_search",
+        "vessel_position",
+        "vessel_area",
+        "vessel_track"
+      ],
+      "auth": {
+        "mode": "byok-profile",
+        "required": true,
+        "profileFields": ["api_key"],
+        "envVars": [
+          "VESSEL_MCP_PROFILE_DATALASTIC__API_KEY"
+        ],
+        "notes": "Datalastic uses api-key as a query parameter on live requests; helper URLs and logs must omit the raw key."
+      },
+      "cost": {
+        "model": "trial",
+        "quotaNote": "Trial and subscription plans use a single API key across endpoints; live calls consume plan quota."
+      },
+      "sources": {
+        "apiDocsUrl": "https://datalastic.com/api-reference/",
+        "landingUrl": "https://datalastic.com/api-reference/",
+        "signupUrl": "https://datalastic.com/pricing/",
+        "referenceUrl": "https://datalastic.com/ship-tracking-api/"
+      },
+      "implementationStatus": "implemented",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_DATALASTIC",
+        "requiredEnvVars": [
+          "VESSEL_MCP_PROFILE_DATALASTIC__API_KEY"
+        ],
+        "defaultDisabled": true,
+        "notes": "Default tests use mocked API responses; live calls stay opt-in through explicit runtime configuration."
+      },
+      "captureEligibility": "needs-terms-review",
+      "notes": "Official BYOK/trial adapter implemented for vessel_find, vessel, vessel_inradius, and vessel_history. Default verification never calls the live API."
     },
     {
       "id": "poseidon-ais",
