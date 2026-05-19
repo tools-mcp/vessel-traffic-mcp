@@ -116,7 +116,7 @@ account registration.
 | Global Fishing Watch | Public registry context and fishing activity (token-gated open API) | https://globalfishingwatch.org/our-apis/documentation |
 | Regional government AIS portals | Various national/regional portals; prioritize official open APIs and static/historical datasets before any UI capture | Discovery only — see Provider Discovery Backlog below |
 
-Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (BarentsWatch is `implemented`; OpenAIS, NOAA MarineCadastre, Global Fishing Watch, and regional portals remain `discovery_only`).
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (BarentsWatch and Global Fishing Watch vessel search are `implemented`; OpenAIS, NOAA MarineCadastre, and regional portals remain `discovery_only`).
 
 ### Free / Community APIs
 
@@ -158,7 +158,7 @@ credential slots so the standard `npm test` run never reaches a paid endpoint.
 | ais.now | Commercial API/web platform candidate with REST API claims; validate docs, terms, and coverage before implementation | https://ais.now/ |
 | FleetMon / Kpler | Commercial maritime intelligence; treat as BYOK or authorized capture candidate only after account-specific terms review | https://www.fleetmon.com/ |
 
-Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (MarineTraffic `shipsearch`, `exportvessel`, `exportvesseltrack`, `portcalls`, VesselFinder, SeaRates Ship Schedules, Routescanner Connect, VesselAPI, and Data Docked are `implemented` behind redacted BYOK profiles; Linescape remains `planned`; the remaining commercial backlog entries are `not_started` or `discovery_only`).
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (MarineTraffic `shipsearch`, `exportvessel`, `exportvesseltrack`, `portcalls`, VesselFinder, SeaRates Ship Schedules, Routescanner Connect, VesselAPI, Data Docked, and Datalastic are `implemented` behind redacted BYOK profiles; Linescape remains `planned`; the remaining commercial backlog entries are `not_started` or `discovery_only`).
 
 ### Enterprise Providers
 
