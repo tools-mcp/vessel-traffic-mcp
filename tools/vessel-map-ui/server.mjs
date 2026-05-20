@@ -6,13 +6,17 @@ import { createServer } from 'node:http';
 import { extname, join, normalize } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { createFixtureProvider } from '../../dist/providers/fixture.js';
 import { createMyShipTrackingProvider } from '../../dist/providers/myshiptracking.js';
 
 const rootDir = fileURLToPath(new URL('.', import.meta.url));
 const publicDir = join(rootDir, 'public');
 const preferredPort = Number.parseInt(process.env.VESSEL_MAP_UI_PORT ?? '8787', 10);
 const maxPortAttempts = 10;
-const provider = createMyShipTrackingProvider();
+const liveProvider = createMyShipTrackingProvider();
+const fixtureProvider = createFixtureProvider();
+const mapUiMode = process.env.VESSEL_MAP_UI_MODE ?? 'auto';
+const fallbackEnabled = mapUiMode !== 'live';
 
 const contentTypes = {
   '.css': 'text/css; charset=utf-8',
@@ -47,7 +51,7 @@ function queryFromRaw(raw) {
   return { name: value, limit: 5 };
 }
 
-async function lookupVessel(rawQuery) {
+async function lookupWithProvider(provider, rawQuery, mode) {
   const query = rawQuery.trim();
   if (!query) {
     return {
@@ -108,6 +112,7 @@ async function lookupVessel(rawQuery) {
     status: 200,
     body: {
       ok: true,
+      mode,
       query,
       identity: {
         ...primary,
@@ -117,9 +122,42 @@ async function lookupVessel(rawQuery) {
       position: positionResult.data,
       movement: inferMovement(positionResult.data),
       source: positionResult.source,
-      sourceUrl: positionResult.source.landingUrl,
+      sourceUrl: positionResult.source.landingUrl ?? 'https://github.com/tools-mcp/vessel-traffic-mcp',
       retrievedAt: positionResult.retrievedAt,
       caveats: positionResult.caveats,
+    },
+  };
+}
+
+async function lookupVessel(rawQuery) {
+  if (mapUiMode === 'fixture') {
+    return lookupWithProvider(fixtureProvider, rawQuery, 'fixture');
+  }
+
+  const liveResult = await lookupWithProvider(liveProvider, rawQuery, 'live');
+  if (liveResult.body.ok || !fallbackEnabled) {
+    return liveResult;
+  }
+
+  const fixtureResult = await lookupWithProvider(fixtureProvider, rawQuery, 'fixture');
+  if (!fixtureResult.body.ok) {
+    return liveResult;
+  }
+
+  return {
+    status: 200,
+    body: {
+      ...fixtureResult.body,
+      fallback: {
+        fromProvider: 'myshiptracking',
+        reason: liveResult.body.reason,
+        message: liveResult.body.message,
+        sourceUrl: liveResult.body.source?.landingUrl,
+      },
+      caveats: [
+        'Live MyShipTracking lookup was unavailable; showing deterministic fixture data.',
+        ...(fixtureResult.body.caveats ?? []),
+      ],
     },
   };
 }
@@ -167,11 +205,22 @@ function createAppServer() {
           json(res, 405, { ok: false, reason: 'method_not_allowed' });
           return;
         }
-        const [status, sources] = await Promise.all([provider.status(), provider.dataSources()]);
+        const [liveStatus, liveSources, fixtureStatus, fixtureSources] = await Promise.all([
+          liveProvider.status(),
+          liveProvider.dataSources(),
+          fixtureProvider.status(),
+          fixtureProvider.dataSources(),
+        ]);
         json(res, 200, {
           ok: true,
-          status,
-          sources,
+          mode: mapUiMode,
+          fallbackEnabled,
+          status: liveStatus,
+          sources: liveSources,
+          fixture: {
+            status: fixtureStatus,
+            sources: fixtureSources,
+          },
         });
         return;
       }

@@ -11,6 +11,7 @@ const els = {
   course: document.querySelector('#course'),
   freshness: document.querySelector('#freshness'),
   vesselName: document.querySelector('#vessel-name'),
+  sourceMode: document.querySelector('#source-mode'),
   providerName: document.querySelector('#provider-name'),
   sourceLink: document.querySelector('#source-link'),
   mmsi: document.querySelector('#mmsi'),
@@ -124,6 +125,12 @@ function setLoading(isLoading) {
   els.button.querySelector('span:last-child').textContent = isLoading ? '조회 중' : '조회';
 }
 
+function setModeBadge(mode, fallback) {
+  const normalized = mode || 'unknown';
+  els.sourceMode.dataset.mode = normalized;
+  els.sourceMode.textContent = fallback ? 'FIXTURE FALLBACK' : normalized.toUpperCase();
+}
+
 function renderCaveats(caveats = []) {
   const items = caveats.length > 0 ? caveats : ['출처 링크와 관측시각을 함께 확인하세요.'];
   els.caveatList.replaceChildren(
@@ -172,7 +179,7 @@ function renderCandidates(candidates = []) {
   );
 }
 
-function renderNoData(message) {
+function renderNoData(message, sourceUrl = 'https://www.myshiptracking.com/') {
   els.movement.textContent = '조회 실패';
   els.movement.className = 'state-unknown';
   els.movementSub.textContent = '응답 없음';
@@ -180,7 +187,9 @@ function renderNoData(message) {
   els.course.textContent = '-';
   els.freshness.textContent = '-';
   els.providerName.textContent = 'No data';
-  els.sourceLink.href = 'https://www.myshiptracking.com/';
+  els.sourceLink.href = sourceUrl;
+  els.sourceLink.textContent = sourceUrl;
+  setModeBadge('unknown', false);
   els.mapTitle.textContent = 'No position';
   els.mapSubtitle.textContent = message;
   els.retrieved.textContent = '-';
@@ -199,6 +208,8 @@ function renderResult(result) {
   els.vesselName.textContent = title;
   els.providerName.textContent = source?.provider || 'provider';
   els.sourceLink.href = result.sourceUrl || source?.landingUrl || 'https://www.myshiptracking.com/';
+  els.sourceLink.textContent = result.sourceUrl || source?.landingUrl || 'https://www.myshiptracking.com/';
+  setModeBadge(result.mode, Boolean(result.fallback));
   els.movement.textContent = movement.label;
   els.movement.className = `state-${movement.tone}`;
   els.movementSub.textContent = source?.confidence ? `신뢰도 ${source.confidence}` : '신뢰도 미확인';
@@ -218,7 +229,12 @@ function renderResult(result) {
   els.mapTitle.textContent = title;
   els.mapSubtitle.textContent = `${directionalCoordinates} · ${movement.label}`;
   renderCandidates(result.candidates);
-  renderCaveats(result.caveats);
+  renderCaveats([
+    ...(result.fallback
+      ? [`${result.fallback.fromProvider} live 조회 실패: ${result.fallback.message || result.fallback.reason}`]
+      : []),
+    ...(result.caveats ?? []),
+  ]);
   lastCoordinates = `${formatNumber(lat, 5)}, ${formatNumber(lon, 5)}`;
 
   const icon = createVesselIcon(position.courseDeg, movement.tone);
@@ -248,7 +264,7 @@ async function runLookup(query) {
     const payload = await response.json();
     if (!response.ok || !payload.ok) {
       renderCandidates(payload.candidates || []);
-      renderNoData(payload.message || '조회할 수 없습니다.');
+      renderNoData(payload.message || '조회할 수 없습니다.', payload.source?.landingUrl);
       return;
     }
     renderResult(payload);
@@ -266,7 +282,17 @@ async function loadProviderState() {
     if (!response.ok || !payload.ok) throw new Error(payload.message || 'provider unavailable');
     els.providerState.textContent = payload.status.status === 'available' ? 'LIVE' : 'LIMITED';
     els.providerState.dataset.state = payload.status.status;
-    renderCaveats(payload.status.caveats);
+    if (payload.mode === 'fixture') {
+      els.providerState.textContent = 'FIXTURE';
+      els.providerState.dataset.state = 'fixture';
+    } else if (payload.fallbackEnabled) {
+      els.providerState.textContent = 'AUTO';
+      els.providerState.dataset.state = payload.status.status === 'available' ? 'available' : 'degraded';
+    }
+    renderCaveats([
+      ...(payload.fallbackEnabled ? ['Live 응답이 막히면 fixture 샘플로 전환됩니다.'] : []),
+      ...(payload.status.caveats ?? []),
+    ]);
   } catch {
     els.providerState.textContent = 'UNKNOWN';
     els.providerState.dataset.state = 'unknown';

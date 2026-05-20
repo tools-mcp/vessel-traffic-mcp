@@ -37,8 +37,8 @@
           </div>
           <div class="quick-row" aria-label="빠른 조회">
             <button type="button" data-query="EVER GIVEN">EVER GIVEN</button>
-            <button type="button" data-query="353136000">MMSI 353136000</button>
-            <button type="button" data-query="ONE INNOVATION">ONE INNOVATION</button>
+            <button type="button" data-query="PACIFIC CARRIER">PACIFIC CARRIER</button>
+            <button type="button" data-query="ATLANTIC SPIRIT">ATLANTIC SPIRIT</button>
           </div>
         </form>
 
@@ -67,13 +67,17 @@
         <section class="details" aria-label="선박 상세">
           <div class="section-heading">
             <h2 id="vessel-name">선박을 입력하세요</h2>
-            <a id="source-link" class="pill source-link" href="https://www.myshiptracking.com/" target="_blank" rel="noreferrer">
-              출처 보기
-            </a>
+            <span id="source-mode" class="mode-badge" data-mode="pending">PENDING</span>
           </div>
           <div class="source-row">
             <span>출처</span>
             <strong id="provider-name">MyShipTracking</strong>
+          </div>
+          <div class="source-row source-url-row">
+            <span>URL</span>
+            <a id="source-link" class="source-link" href="https://www.myshiptracking.com/" target="_blank" rel="noreferrer">
+              https://www.myshiptracking.com/
+            </a>
           </div>
           <dl>
             <div>
