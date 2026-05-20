@@ -15,7 +15,7 @@ package, not to local paths or private captures.
 | PulseMCP | https://www.pulsemcp.com/submit | Maybe | Blocked | Public request hit Cloudflare block on 2026-05-20; retry in browser if needed. |
 | Smithery | https://smithery.ai/ | Yes | Blocked on public HTTPS | Server card is ready; remote submission needs a stable public HTTPS `/mcp` URL. |
 | punkpeye/awesome-mcp-servers | https://github.com/punkpeye/awesome-mcp-servers | GitHub | Ready | Open PR after checking contribution format. |
-| appcypher/awesome-mcp-servers | https://github.com/appcypher/awesome-mcp-servers | GitHub | Blocked | Fork branch `tools-mcp:add-vessel-traffic-mcp` is pushed, but GitHub API returns `CreatePullRequest` permission errors; use manual compare URL. |
+| appcypher/awesome-mcp-servers | https://github.com/appcypher/awesome-mcp-servers | GitHub | Blocked | Fork branch `tools-mcp:add-vessel-traffic-mcp` is pushed, but upstream has disabled external pull requests and issues. |
 | awesome-mcp lists | GitHub search | GitHub | Ready | Submit only to maintained lists that accept PRs. |
 
 ## Common Fields
@@ -142,7 +142,8 @@ Use this bullet when submitting to curated GitHub lists:
 - [Vessel Traffic MCP](https://github.com/tools-mcp/vessel-traffic-mcp) - Read-only MCP server for vessel identity lookup, AIS-style positions, tracks, port calls, carrier schedules, vessel schedules, and delay heuristics with source attribution and BYOK provider support.
 ```
 
-For `appcypher/awesome-mcp-servers`, the fork branch is ready:
+For `appcypher/awesome-mcp-servers`, the fork branch is ready, but the
+upstream repository currently blocks external pull requests and issues:
 
 ```text
 https://github.com/appcypher/awesome-mcp-servers/compare/main...tools-mcp:awesome-mcp-servers:add-vessel-traffic-mcp
