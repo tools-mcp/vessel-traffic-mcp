@@ -23,8 +23,7 @@ import { vesselNameResolve, vesselNameResolveInputSchema } from '../tools/vessel
 import { vesselPosition, vesselPositionInputSchema } from '../tools/vessel-position.js';
 import { vesselSearch, vesselSearchInputSchema } from '../tools/vessel-search.js';
 import { vesselTrack, vesselTrackInputSchema } from '../tools/vessel-track.js';
-
-const serverVersion = '0.1.0';
+import { serverVersion } from './server-card.js';
 
 function jsonToolResult(structuredContent: Record<string, unknown>) {
   // Round-trip through JSON so text and structuredContent agree on undefined-vs-missing keys.

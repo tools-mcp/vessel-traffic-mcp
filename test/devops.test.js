@@ -71,6 +71,7 @@ test('HTTP runbook and start scripts document safe Streamable HTTP operation', (
   assert.match(script, /VESSEL_MCP_TRANSPORT:=http/);
   assert.match(script, /VESSEL_MCP_HTTP_HOST:=127\.0\.0\.1/);
   assert.match(runbook, /GET \/health/);
+  assert.match(runbook, /GET \/\.well-known\/mcp\/server-card\.json/);
   assert.match(runbook, /Authorization: Bearer <configured token>/);
   assert.match(runbook, /X-Request-Id/);
   assert.match(runbook, /do not include headers, request\s+bodies, bearer tokens/i);

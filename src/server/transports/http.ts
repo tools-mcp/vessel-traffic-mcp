@@ -13,9 +13,11 @@ import type { ProviderStatus } from '../../providers/types.js';
 import { createJsonLogger, type JsonLogger } from '../../util/logger.js';
 import { redactForLog } from '../../util/redact.js';
 import { createVesselMcpServer } from '../create-server.js';
+import { createServerCard } from '../server-card.js';
 
 const defaultMcpPath = '/mcp';
 const defaultHealthPath = '/health';
+const defaultServerCardPath = '/.well-known/mcp/server-card.json';
 const defaultMaxBodyBytes = 1024 * 1024;
 
 interface McpHttpSession {
@@ -26,6 +28,7 @@ interface McpHttpSession {
 export interface StartHttpServerOptions extends HttpRuntimeConfig {
   mcpPath?: string;
   healthPath?: string;
+  serverCardPath?: string;
   maxBodyBytes?: number;
   logger?: HttpEventLogger | false;
   registry?: ProviderRegistry;
@@ -36,6 +39,7 @@ export interface HttpServerHandle {
   origin: string;
   mcpUrl: string;
   healthUrl: string;
+  serverCardUrl: string;
   close(): Promise<void>;
 }
 
@@ -112,6 +116,7 @@ export function createMcpHttpHandler(options: StartHttpServerOptions): McpHttpHa
   const sessions = new Map<string, McpHttpSession>();
   const mcpPath = options.mcpPath ?? defaultMcpPath;
   const healthPath = options.healthPath ?? defaultHealthPath;
+  const serverCardPath = options.serverCardPath ?? defaultServerCardPath;
   const maxBodyBytes = options.maxBodyBytes ?? defaultMaxBodyBytes;
 
   return {
@@ -126,6 +131,11 @@ export function createMcpHttpHandler(options: StartHttpServerOptions): McpHttpHa
           response = withCors(new Response(null, { status: 204 }));
         } else if (path === healthPath) {
           response = withCors(handleHealthRequest(request, mcpPath));
+        } else if (path === serverCardPath) {
+          response = withCors(handleServerCardRequest(request, {
+            authRequired: Boolean(options.authToken),
+            mcpPath,
+          }));
         } else if (path !== mcpPath) {
           response = withCors(jsonResponse(404, { error: 'not_found' }));
         } else if (!isAuthorized(request, options.authToken)) {
@@ -180,6 +190,7 @@ export async function startHttpServer(options: StartHttpServerOptions): Promise<
   const logger = options.logger === undefined ? defaultHttpEventLogger : options.logger;
   const mcpPath = options.mcpPath ?? defaultMcpPath;
   const healthPath = options.healthPath ?? defaultHealthPath;
+  const serverCardPath = options.serverCardPath ?? defaultServerCardPath;
   const handler = createMcpHttpHandler({ ...options, logger });
   const httpServer = createServer(async (req, res) => {
     try {
@@ -238,6 +249,7 @@ export async function startHttpServer(options: StartHttpServerOptions): Promise<
     origin,
     mcpUrl: `${origin}${mcpPath}`,
     healthUrl: `${origin}${healthPath}`,
+    serverCardUrl: `${origin}${serverCardPath}`,
     async close() {
       await handler.close();
       await new Promise<void>((resolve, reject) => {
@@ -262,6 +274,20 @@ export async function startHttpServer(options: StartHttpServerOptions): Promise<
       });
     },
   };
+}
+
+function handleServerCardRequest(
+  request: Request,
+  options: {
+    authRequired: boolean;
+    mcpPath: string;
+  },
+): Response {
+  if (request.method === 'GET' || request.method === 'HEAD') {
+    return jsonResponse(200, createServerCard(options), undefined, request.method === 'HEAD');
+  }
+
+  return jsonResponse(405, { error: 'method_not_allowed' }, { Allow: 'GET, HEAD, OPTIONS' });
 }
 
 async function handleMcpRequest(

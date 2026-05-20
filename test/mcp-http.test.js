@@ -179,6 +179,53 @@ test('/health supports HEAD and rejects unsupported methods without requiring au
   });
 });
 
+test('/.well-known/mcp/server-card.json exposes directory-safe MCP metadata', async () => {
+  const authToken = 'server-card-test-secret';
+
+  await withHttpHandler({ authToken }, async (server) => {
+    const response = await server.handler.handle(new Request(`${origin}/.well-known/mcp/server-card.json`));
+    const card = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(card.name, 'vessel-traffic-mcp');
+    assert.equal(card.mcpName, 'io.github.tools-mcp/vessel-traffic-mcp');
+    assert.equal(card.transport.type, 'streamable-http');
+    assert.equal(card.transport.endpoint, '/mcp');
+    assert.equal(card.transport.authentication.required, true);
+    assert.equal(card.transport.authentication.type, 'bearer');
+    assert.equal(card.capabilities.tools, true);
+    assert.equal(card.capabilities.resources, false);
+    assert.equal(card.capabilities.prompts, false);
+    assert.equal(card.provenance.requiresSourceAttribution, true);
+    assert.deepEqual(card.provenance.sourceFields, ['source.provider', 'source.landingUrl']);
+    assert.doesNotMatch(JSON.stringify(card), new RegExp(authToken));
+
+    const head = await server.handler.handle(new Request(`${origin}/.well-known/mcp/server-card.json`, {
+      method: 'HEAD',
+    }));
+    assert.equal(head.status, 200);
+    assert.equal(await head.text(), '');
+
+    await withHttpClient(
+      server.handler,
+      server.mcpUrl,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      },
+      async (client) => {
+        const tools = await client.listTools();
+        assert.deepEqual(
+          card.tools.map((tool) => tool.name).sort(),
+          tools.tools.map((tool) => tool.name).sort(),
+        );
+        assert.ok(card.tools.every((tool) => tool.annotations.readOnlyHint === true));
+      },
+    );
+  });
+});
+
 test('bearer-token auth protects /mcp without protecting /health', async () => {
   const authToken = 'local-http-test-token';
 

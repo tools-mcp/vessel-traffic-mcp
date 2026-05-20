@@ -157,6 +157,7 @@ test('deployment-https runbook covers the HTTPS contract, bearer token, and a co
   // /health stays public, /mcp is bearer-gated.
   assert.match(text, /\/health/);
   assert.match(text, /\/mcp/);
+  assert.match(text, /\/\.well-known\/mcp\/server-card\.json/);
 
   // At least one concrete reverse-proxy or managed-platform topology.
   assert.match(

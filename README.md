@@ -19,11 +19,13 @@ surfaces may change.
 | Local map UI | Ready from source | `npm run start:map`, then open `http://127.0.0.1:8787` |
 | MCP Registry | Published | `io.github.tools-mcp/vessel-traffic-mcp@0.1.0` is published in the MCP Registry |
 | npm | Public | `@tools-mcp/vessel-traffic-mcp@0.1.0` is published at https://www.npmjs.com/package/@tools-mcp/vessel-traffic-mcp |
-| Glama / Smithery / PulseMCP | Submission ready | See [`docs/runbooks/public-sharing.md`](./docs/runbooks/public-sharing.md) for directory-specific steps |
+| HTTP directory metadata | Ready from source | `npm run start:http`, then fetch `http://127.0.0.1:3000/.well-known/mcp/server-card.json` |
+| Glama / PulseMCP | Indexing pending | The project is in the official MCP Registry; track directory ingestion in [`docs/runbooks/public-sharing.md`](./docs/runbooks/public-sharing.md) |
+| Smithery | HTTPS endpoint pending | The Streamable HTTP server exposes crawler-safe server-card metadata; Smithery submission still needs a stable public HTTPS `/mcp` URL |
 
-The npm package and MCP Registry metadata are public. Directory
-submissions can use the same metadata already committed in this
-repository.
+The npm package and MCP Registry metadata are public. Directory crawlers
+can use the same metadata already committed in this repository, and the
+HTTP server exposes a public server-card endpoint for remote listings.
 
 ## Languages
 

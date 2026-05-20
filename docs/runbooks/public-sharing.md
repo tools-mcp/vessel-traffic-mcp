@@ -118,13 +118,24 @@ TLS are configured.
 
 Use Smithery as a discovery/install surface after one of these is true:
 
-- A public npm package exists for local stdio installation.
-- A stable public Streamable HTTP deployment exists.
+- A stable public Streamable HTTP deployment exists and exposes:
+  - `POST /mcp`, `GET /mcp`, `DELETE /mcp`, and `OPTIONS /mcp`.
+  - `GET /.well-known/mcp/server-card.json` for crawler-safe tool and
+    package metadata.
 - A Smithery-compatible package bundle is intentionally released.
 
 Submit only the public repository URL and safe install instructions.
 Do not upload `.env`, credential profiles, HAR files, captures,
 cookies, or provider keys.
+
+Current state as of 2026-05-20:
+
+- The local HTTP server now exposes a public
+  `/.well-known/mcp/server-card.json` endpoint for directory crawlers.
+- npm stdio installation is public through
+  `@tools-mcp/vessel-traffic-mcp@0.1.0`.
+- Smithery remote submission still waits for a stable public HTTPS
+  deployment URL. Do not submit a localhost URL.
 
 ## 4. Glama
 
@@ -144,6 +155,14 @@ Install: see README.md and llms.txt
 ```
 
 ## 5. PulseMCP And Other Directories
+
+Current state as of 2026-05-20:
+
+- PulseMCP should be tracked as automatic-ingestion pending because the
+  project is already published in the official MCP Registry.
+- If the project does not appear after the directory's registry sync
+  window, use the listing text below and the public GitHub URL for a
+  manual submission or support request.
 
 Use the same short listing text for PulseMCP, MCPServers.com,
 awesome-MCP lists, Reddit `r/mcp`, Hacker News, and similar discovery

@@ -131,6 +131,10 @@ The repository also ships these directory-facing files:
   `io.github.tools-mcp/vessel-traffic-mcp` name.
 - `glama.json` — Glama directory maintainer metadata using the
   `tools-mcp` organization identity.
+- `GET /.well-known/mcp/server-card.json` on the Streamable HTTP
+  transport — crawler-safe package, tool, transport, and provenance
+  metadata for directories such as Smithery once a public HTTPS
+  deployment exists.
 - `.github/ISSUE_TEMPLATE/*` and `.github/PULL_REQUEST_TEMPLATE.md`
   — collaboration entry points for public contributors.
 

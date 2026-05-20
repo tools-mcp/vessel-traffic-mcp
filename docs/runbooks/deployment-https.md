@@ -2,12 +2,12 @@
 
 This runbook is the operator-facing guide for hosting
 `vessel-traffic-mcp`'s Streamable HTTP transport (`POST /mcp`,
-`GET/DELETE/OPTIONS /mcp`, plus public `GET/HEAD /health`) on a public
-network. It covers the supplied `Dockerfile`, the `.dockerignore`
-boundary, and three concrete HTTPS-termination topologies that satisfy
-the hard rule: the container itself only speaks HTTP, and TLS is
-always terminated by a trusted reverse proxy, load balancer, or
-platform edge in front of it.
+`GET/DELETE/OPTIONS /mcp`, plus public `GET/HEAD /health` and
+`GET/HEAD /.well-known/mcp/server-card.json`) on a public network. It
+covers the supplied `Dockerfile`, the `.dockerignore` boundary, and
+three concrete HTTPS-termination topologies that satisfy the hard rule:
+the container itself only speaks HTTP, and TLS is always terminated by
+a trusted reverse proxy, load balancer, or platform edge in front of it.
 
 Cross-reference runbooks:
 
@@ -96,6 +96,12 @@ Health probe (no bearer required):
 curl -sf http://127.0.0.1:3000/health
 ```
 
+Directory metadata probe (no bearer required):
+
+```sh
+curl -sf http://127.0.0.1:3000/.well-known/mcp/server-card.json
+```
+
 MCP probe (bearer required when `VESSEL_MCP_AUTH_TOKEN` is set):
 
 ```sh
@@ -134,6 +140,12 @@ server {
     # Public health probe — keep cheap and unauthenticated.
     location = /health {
         proxy_pass http://127.0.0.1:3000/health;
+        proxy_set_header Host $host;
+    }
+
+    # Public MCP directory metadata — no bearer token required.
+    location = /.well-known/mcp/server-card.json {
+        proxy_pass http://127.0.0.1:3000/.well-known/mcp/server-card.json;
         proxy_set_header Host $host;
     }
 
@@ -178,6 +190,11 @@ mcp.example.com {
 
     @health path /health
     handle @health {
+        reverse_proxy 127.0.0.1:3000
+    }
+
+    @serverCard path /.well-known/mcp/server-card.json
+    handle @serverCard {
         reverse_proxy 127.0.0.1:3000
     }
 
@@ -227,6 +244,10 @@ checklist:
 - Health check: point the platform liveness/readiness probe at
   `/health`. The Docker `HEALTHCHECK` in the image also works on
   hosts that honour it.
+- Directory metadata: expose
+  `/.well-known/mcp/server-card.json` through the same HTTPS edge so
+  MCP directories can inspect tool/package metadata without receiving
+  provider credentials or bearer-token material.
 - Concurrency: this server is stateless across requests for
   fixture-backed tools; horizontal scaling is safe. When live
   providers are added, ensure their `RateLimitPolicy` `scope`

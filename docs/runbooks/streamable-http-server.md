@@ -56,6 +56,11 @@ VESSEL_MCP_HTTP_HOST=0.0.0.0 VESSEL_MCP_HTTP_PORT=3000 scripts/run-http-server.s
 - `GET /health`: public health check. It returns server name, status, transport,
   and MCP path. It does not expose bearer-token or provider credential state.
 - `HEAD /health`: public health check with no response body.
+- `GET /.well-known/mcp/server-card.json`: public directory metadata for MCP
+  crawlers such as Smithery. It lists transport, package, tool, and provenance
+  metadata without exposing bearer-token or provider credential material.
+- `HEAD /.well-known/mcp/server-card.json`: public directory metadata check with
+  no response body.
 - `POST /mcp`: Streamable HTTP MCP JSON-RPC requests.
 - `GET /mcp` and `DELETE /mcp`: Streamable HTTP session operations.
 - `OPTIONS /mcp`: CORS preflight for browser-capable remote MCP clients.
