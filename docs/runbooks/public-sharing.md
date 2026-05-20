@@ -190,6 +190,14 @@ mcp, ais, ship-tracking, vessel-tracking, maritime, logistics, byok,
 claude, chatgpt, codex
 ```
 
+Detailed overseas launch copy, directory submission fields, Product
+Hunt text, and community-specific drafts live in:
+
+- [`docs/marketing/launch-kit.md`](../marketing/launch-kit.md)
+- [`docs/marketing/directory-submissions.md`](../marketing/directory-submissions.md)
+- [`docs/marketing/community-posts.md`](../marketing/community-posts.md)
+- [`docs/marketing/product-hunt.md`](../marketing/product-hunt.md)
+
 ## 6. Launch Checklist
 
 Before posting anywhere:

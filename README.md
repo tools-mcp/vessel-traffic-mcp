@@ -26,6 +26,8 @@ surfaces may change.
 The npm package and MCP Registry metadata are public. Directory crawlers
 can use the same metadata already committed in this repository, and the
 HTTP server exposes a public server-card endpoint for remote listings.
+Launch copy and directory submission material live in
+[`docs/marketing`](./docs/marketing/launch-kit.md).
 
 ## Languages
 
