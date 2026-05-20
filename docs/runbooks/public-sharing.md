@@ -57,6 +57,8 @@ Current state as of 2026-05-20:
 
 - `mcp-publisher validate server.json` passes against the official
   registry validator.
+- `mcp-publisher publish server.json` published
+  `io.github.tools-mcp/vessel-traffic-mcp@0.1.0` to the MCP Registry.
 - `@tools-mcp/vessel-traffic-mcp@0.1.0` is public on npm.
 - `npm access get status @tools-mcp/vessel-traffic-mcp` reports
   `public`.
@@ -66,14 +68,12 @@ Current state as of 2026-05-20:
   repository.url --json` returns the published package metadata after
   npm registry propagation.
 
-Publication blocker:
+Publication note:
 
-- MCP Registry publication is blocked on GitHub organization membership
-  visibility. The registry token authenticated as the current GitHub
-  user can publish `io.github.seokmogu/*`, but rejected
-  `io.github.tools-mcp/vessel-traffic-mcp` with a 403 until the
-  `tools-mcp` organization membership is made public or another
-  approved registry identity is used.
+- MCP Registry publication under `io.github.tools-mcp/*` requires the
+  authenticated GitHub identity to have public membership in the
+  `tools-mcp` GitHub organization. That membership was made public
+  before the successful registry publish.
 
 Manual publication sequence already completed for npm:
 
@@ -101,8 +101,8 @@ Manual publication sequence already completed for npm:
    npm publish --access public
    ```
 
-MCP Registry publication sequence after GitHub organization membership
-visibility is approved:
+MCP Registry publication sequence completed after GitHub organization
+membership visibility was approved:
 
 ```bash
 tmp/bin/mcp-publisher login github
