@@ -14,7 +14,7 @@ package, not to local paths or private captures.
 | mcpservers.org | https://mcpservers.org/en/submit | No | Submitted | Submitted on 2026-05-20 as free listing; response id `2577`, status `pending`. |
 | PulseMCP | https://www.pulsemcp.com/submit | Maybe | Blocked | Public request hit Cloudflare block on 2026-05-20; retry in browser if needed. |
 | Smithery | https://smithery.ai/ | Yes | Blocked on public HTTPS | Server card is ready; remote submission needs a stable public HTTPS `/mcp` URL. |
-| punkpeye/awesome-mcp-servers | https://github.com/punkpeye/awesome-mcp-servers | GitHub | Ready | Open PR after checking contribution format. |
+| punkpeye/awesome-mcp-servers | https://github.com/punkpeye/awesome-mcp-servers | GitHub | Submitted | PR opened on 2026-05-20: https://github.com/punkpeye/awesome-mcp-servers/pull/6664 |
 | appcypher/awesome-mcp-servers | https://github.com/appcypher/awesome-mcp-servers | GitHub | Blocked | Fork branch `tools-mcp:add-vessel-traffic-mcp` is pushed, but upstream has disabled external pull requests and issues. |
 | awesome-mcp lists | GitHub search | GitHub | Ready | Submit only to maintained lists that accept PRs. |
 
@@ -140,6 +140,12 @@ Use this bullet when submitting to curated GitHub lists:
 
 ```markdown
 - [Vessel Traffic MCP](https://github.com/tools-mcp/vessel-traffic-mcp) - Read-only MCP server for vessel identity lookup, AIS-style positions, tracks, port calls, carrier schedules, vessel schedules, and delay heuristics with source attribution and BYOK provider support.
+```
+
+Submitted:
+
+```text
+punkpeye/awesome-mcp-servers: https://github.com/punkpeye/awesome-mcp-servers/pull/6664
 ```
 
 For `appcypher/awesome-mcp-servers`, the fork branch is ready, but the
