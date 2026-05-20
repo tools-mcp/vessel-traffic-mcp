@@ -132,6 +132,9 @@ Current state as of 2026-05-20:
 
 - The local HTTP server now exposes a public
   `/.well-known/mcp/server-card.json` endpoint for directory crawlers.
+  The card includes Smithery-compatible `serverInfo`,
+  `authentication`, `tools`, `resources`, and `prompts` fields plus
+  project-specific provenance metadata.
 - npm stdio installation is public through
   `@tools-mcp/vessel-traffic-mcp@0.1.0`.
 - Smithery remote submission still waits for a stable public HTTPS

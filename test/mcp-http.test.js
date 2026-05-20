@@ -187,15 +187,25 @@ test('/.well-known/mcp/server-card.json exposes directory-safe MCP metadata', as
     const card = await response.json();
 
     assert.equal(response.status, 200);
+    assert.deepEqual(card.serverInfo, {
+      name: 'vessel-traffic-mcp',
+      version: '0.1.0',
+    });
     assert.equal(card.name, 'vessel-traffic-mcp');
     assert.equal(card.mcpName, 'io.github.tools-mcp/vessel-traffic-mcp');
     assert.equal(card.transport.type, 'streamable-http');
     assert.equal(card.transport.endpoint, '/mcp');
     assert.equal(card.transport.authentication.required, true);
     assert.equal(card.transport.authentication.type, 'bearer');
+    assert.deepEqual(card.authentication, {
+      required: true,
+      schemes: ['bearer'],
+    });
     assert.equal(card.capabilities.tools, true);
     assert.equal(card.capabilities.resources, false);
     assert.equal(card.capabilities.prompts, false);
+    assert.deepEqual(card.resources, []);
+    assert.deepEqual(card.prompts, []);
     assert.equal(card.provenance.requiresSourceAttribution, true);
     assert.deepEqual(card.provenance.sourceFields, ['source.provider', 'source.landingUrl']);
     assert.doesNotMatch(JSON.stringify(card), new RegExp(authToken));

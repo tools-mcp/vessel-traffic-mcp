@@ -132,6 +132,10 @@ export interface ServerCardOptions {
 export function createServerCard(options: ServerCardOptions): Record<string, unknown> {
   return {
     schemaVersion: '1.0',
+    serverInfo: {
+      name: 'vessel-traffic-mcp',
+      version: serverVersion,
+    },
     name: 'vessel-traffic-mcp',
     mcpName: 'io.github.tools-mcp/vessel-traffic-mcp',
     title: 'Vessel Traffic MCP',
@@ -148,6 +152,10 @@ export function createServerCard(options: ServerCardOptions): Record<string, unk
         required: options.authRequired,
         type: options.authRequired ? 'bearer' : 'none',
       },
+    },
+    authentication: {
+      required: options.authRequired,
+      schemes: options.authRequired ? ['bearer'] : [],
     },
     packages: [
       {
@@ -169,6 +177,8 @@ export function createServerCard(options: ServerCardOptions): Record<string, unk
       inputSchema: tool.inputSchema ? z.toJSONSchema(tool.inputSchema) : emptyObjectJsonSchema(),
       annotations: readOnlyAnnotations,
     })),
+    resources: [],
+    prompts: [],
     provenance: {
       requiresSourceAttribution: true,
       sourceFields: ['source.provider', 'source.landingUrl'],
