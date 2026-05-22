@@ -111,7 +111,7 @@ Discoverability metadata is covered by deterministic tests in
    point at the canonical GitHub URL.
 3. `files` allowlists only safe artifacts (`dist`, `README.md`,
   `LICENSE`, `SECURITY.md`, `CONTRIBUTING.md`, `AGENTS.md`,
-  `server.json`, `docs`)
+  `server.json`, `glama.json`, `docs`)
    and never lists operator-sensitive paths.
 4. The metadata contains no credential-shaped strings.
 5. README links back here and surfaces the Topics section.
@@ -130,7 +130,7 @@ The repository also ships these directory-facing files:
 - `server.json` — official MCP Registry metadata using the
   `io.github.tools-mcp/vessel-traffic-mcp` name.
 - `glama.json` — Glama directory maintainer metadata using the
-  `tools-mcp` organization identity.
+  `seokmogu` GitHub username for organization-repository verification.
 - `GET /.well-known/mcp/server-card.json` on the Streamable HTTP
   transport — crawler-safe package, tool, transport, and provenance
   metadata for directories such as Smithery once a public HTTPS

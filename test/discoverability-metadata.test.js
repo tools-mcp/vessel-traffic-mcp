@@ -154,7 +154,15 @@ test('package.json declares a files allowlist for future publication', () => {
   // We must never publish src/, test/, captures/, fixtures/, or any
   // potentially sensitive operator-local directories. dist/ + the canonical
   // open-source assets are sufficient.
-  const required = ['dist', 'README.md', 'LICENSE', 'SECURITY.md', 'CONTRIBUTING.md'];
+  const required = [
+    'dist',
+    'README.md',
+    'server.json',
+    'glama.json',
+    'LICENSE',
+    'SECURITY.md',
+    'CONTRIBUTING.md',
+  ];
   for (const entry of required) {
     assert.ok(
       pkg.files.includes(entry),

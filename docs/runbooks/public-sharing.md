@@ -142,9 +142,9 @@ Current state as of 2026-05-20:
 
 ## 4. Glama
 
-The root `glama.json` declares the repository-level maintainer as the
-`tools-mcp` organization, not an individual account. Use it when
-submitting the repo to Glama's MCP directory.
+The root `glama.json` includes the `seokmogu` GitHub username so Glama
+can verify maintainer authority for the `tools-mcp` organization
+repository. Use it when submitting the repo to Glama's MCP directory.
 
 Submission payload:
 

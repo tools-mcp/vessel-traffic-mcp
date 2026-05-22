@@ -46,6 +46,7 @@
     "dist",
     "README.md",
     "server.json",
+    "glama.json",
     "llms.txt",
     "LICENSE",
     "NOTICE",

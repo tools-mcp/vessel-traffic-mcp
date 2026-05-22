@@ -87,14 +87,15 @@ documentation examples). No real values.
       point at the canonical GitHub repo; `author` is set; `mcpName`
       is `io.github.tools-mcp/vessel-traffic-mcp`; the `files`
       allowlist contains only safe publication artifacts such as
-      `dist`, `README.md`, `server.json`, `LICENSE`, `SECURITY.md`,
-      `CONTRIBUTING.md`, `AGENTS.md`, and `docs`. See
+      `dist`, `README.md`, `server.json`, `glama.json`, `LICENSE`,
+      `SECURITY.md`, `CONTRIBUTING.md`, `AGENTS.md`, and `docs`. See
       `docs/discoverability.md` for the full contract.
 - [ ] `server.json` validates against the official MCP Registry
       schema, uses the `io.github.tools-mcp/vessel-traffic-mcp`
       namespace, points at the canonical GitHub repo, and does not
       contain credentials.
-- [ ] `glama.json` names only non-personal maintainer identities.
+- [ ] `glama.json` includes a GitHub username that can authenticate as a
+      maintainer for Glama organization-repository verification.
 - [ ] GitHub Issues, Discussions, issue templates, PR template, and
       Topics are enabled according to
       `docs/runbooks/public-sharing.md`.

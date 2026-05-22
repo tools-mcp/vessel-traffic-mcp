@@ -97,7 +97,7 @@ The root `glama.json` already declares:
 ```json
 {
   "$schema": "https://glama.ai/mcp/schemas/server.json",
-  "maintainers": ["tools-mcp"]
+  "maintainers": ["seokmogu", "tools-mcp"]
 }
 ```
 
