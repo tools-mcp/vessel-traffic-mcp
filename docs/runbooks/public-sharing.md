@@ -197,6 +197,7 @@ Hunt text, and community-specific drafts live in:
 - [`docs/marketing/directory-submissions.md`](../marketing/directory-submissions.md)
 - [`docs/marketing/community-posts.md`](../marketing/community-posts.md)
 - [`docs/marketing/product-hunt.md`](../marketing/product-hunt.md)
+- [`docs/marketing/outreach-status.md`](../marketing/outreach-status.md)
 
 ## 6. Launch Checklist
 

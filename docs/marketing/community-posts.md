@@ -3,6 +3,87 @@
 Use these drafts for overseas community launch posts. Tailor the first
 sentence to each community and avoid posting identical text everywhere.
 
+## Korean Communities - OKKY / GeekNews / Velog / Brunch
+
+Title:
+
+```text
+Vessel Traffic MCP를 오픈소스로 공개했습니다 - 선박 위치, AIS, 해운 스케줄을 MCP로 조회
+```
+
+Body:
+
+```text
+선박 조회와 해운 스케줄 확인을 AI 클라이언트에서 바로 사용할 수 있게 하는
+Vessel Traffic MCP를 공개했습니다.
+
+GitHub:
+https://github.com/tools-mcp/vessel-traffic-mcp
+
+npm:
+https://www.npmjs.com/package/@tools-mcp/vessel-traffic-mcp
+
+할 수 있는 일:
+
+- 선박명, MMSI, IMO, callsign으로 선박 검색
+- AIS 스타일 최신 위치 조회
+- 특정 해역 bounding box 내 선박 조회
+- 항적, 기항 이력, 선박 스케줄 조회
+- 출발/도착 항 기준 carrier schedule 검색
+- 간단한 schedule delay heuristic 실행
+
+Claude, ChatGPT, Codex, MCP Inspector 등 MCP 클라이언트에서 쓸 수 있고,
+로컬 stdio 서버와 Streamable HTTP 서버를 모두 지원합니다.
+
+설계 원칙은 read-only와 source attribution입니다. 공개/라이브 provider 응답에는
+`source.provider`와 `source.landingUrl`을 넣어서 사용자가 원 출처를 확인할 수 있게 했습니다.
+상용 provider는 BYOK 방식으로만 사용하고, 기본 테스트는 sanitized fixture만 사용합니다.
+
+설치:
+
+```bash
+npm install -g @tools-mcp/vessel-traffic-mcp
+VESSEL_MCP_TRANSPORT=stdio vessel-traffic-mcp
+```
+
+해운/물류 현업에서 어떤 workflow가 가장 쓸모 있을지 피드백을 받고 싶습니다.
+예를 들면 ETA 확인, 선박/항차 추적, port-call 모니터링, B/L 문서에서 선박 후보 추출,
+carrier schedule 비교 같은 사용 사례입니다.
+```
+
+## Korean Maritime / Logistics Communities
+
+Title:
+
+```text
+AI 클라이언트에서 선박 위치와 해운 스케줄을 조회하는 오픈소스 MCP 서버
+```
+
+Body:
+
+```text
+Vessel Traffic MCP라는 오픈소스 프로젝트를 공개했습니다.
+목표는 Claude, ChatGPT, Codex 같은 MCP 지원 AI 클라이언트에서 선박/해운 데이터를
+읽기 전용으로 조회하는 것입니다.
+
+GitHub:
+https://github.com/tools-mcp/vessel-traffic-mcp
+
+주요 기능:
+
+- 선박명, MMSI, IMO 기반 선박 식별
+- 최신 AIS 스타일 위치 조회
+- 항적/기항 이력 조회
+- carrier schedule, vessel schedule 조회
+- 지연 가능성에 대한 단순 heuristic
+- 응답마다 출처 provider와 source URL 제공
+
+원 데이터를 숨기거나 재브랜딩하지 않고, 사용자가 원 출처를 직접 확인할 수 있게 하는 쪽으로
+설계했습니다. 상용 데이터 provider는 사용자가 본인 키를 넣는 BYOK 방식만 지원합니다.
+
+물류/포워딩/해운 쪽에서 실제로 필요한 기능이 무엇인지 의견을 듣고 싶습니다.
+```
+
 ## Hacker News - Show HN
 
 Title:
