@@ -707,5 +707,4 @@ Do not file a public GitHub issue for a suspected vulnerability. See
 
 ### License
 
-[MIT](./LICENSE) — see the license for the full text, including the
-no-warranty and not-for-navigation notices.
+[MIT](./LICENSE). See [NOTICE](./NOTICE) for the not-for-navigation notice.
