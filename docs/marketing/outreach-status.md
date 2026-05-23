@@ -1,6 +1,6 @@
 # Outreach Status
 
-Snapshot date: 2026-05-23 KST
+Snapshot date: 2026-05-24 KST
 
 ## Current Public Surfaces
 
@@ -11,9 +11,9 @@ Snapshot date: 2026-05-23 KST
 
 ## Current Metrics
 
-- GitHub Traffic API, last 14 days: 602 clones, 172 unique cloners.
-- GitHub Traffic API, last 14 days: 9 views, 5 unique visitors.
-- npm downloads, 2026-05-15 through 2026-05-21: 59.
+- GitHub Traffic API, last 14 days: 651 clones, 190 unique cloners.
+- GitHub Traffic API, last 14 days: 15 views, 6 unique visitors.
+- npm downloads, 2026-05-15 through 2026-05-23: 66.
 - GitHub stars/forks/watchers: 0/0/0 at the time of this snapshot.
 
 GitHub clone traffic does not identify who cloned the repository. It only
@@ -30,8 +30,20 @@ window.
   `npm run build` passed.
 - MCP.Directory submission was already sent.
 - mcpservers.org submission was already sent and is pending review.
+- ServerHub listing is live:
+  https://www.serverhub.digital/servers/vessel-traffic-mcp
+- VaultPlane listing is live:
+  https://www.vaultplane.com/server/vessel-traffic-mcp
+- MCPRepository submission is queued for validation:
+  https://mcprepository.com/tools-mcp/vessel-traffic-mcp
+- Protodex / MCP Market issue submission is open:
+  https://github.com/LuciferForge/mcp-directory/issues/9
 - `punkpeye/awesome-mcp-servers` PR is open:
   https://github.com/punkpeye/awesome-mcp-servers/pull/6664
+- `TensorBlock/awesome-mcp-servers` PR is open:
+  https://github.com/TensorBlock/awesome-mcp-servers/pull/583
+- `YuzeHao2023/Awesome-MCP-Servers` PR is open:
+  https://github.com/YuzeHao2023/Awesome-MCP-Servers/pull/258
 - MCP Find PR is open:
   https://github.com/MCPFind/mcp-find/pull/47
   Its GitHub Actions status is `action_required` because fork workflows require
@@ -53,6 +65,14 @@ window.
   a logged-in browser session if automatic registry ingestion does not pick up
   the project.
 - Smithery submission should wait for a stable public HTTPS `/mcp` endpoint.
+- Cline MCP Marketplace should wait until a real Cline setup test passes,
+  because its issue template requires confirming that Cline can set up the
+  server using only README and/or `llms-install.md`.
+- Docker MCP Registry should wait until local `task`, `go`, and Docker tooling
+  are available for the required validation/build commands.
+- MCP Market, AllMCPservers.com, MCP Server Hub, BestMCP, and MCP Server Spot
+  need manual browser/account/CAPTCHA/backlink handling rather than API
+  submission.
 
 ## Community Posting Targets
 

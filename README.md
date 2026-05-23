@@ -92,6 +92,9 @@ Full client setup lives in
 details live in [`docs/runbooks/codex.md`](./docs/runbooks/codex.md).
 Source-checkout config snippets are in
 [Shared MCP Config Snippets](#shared-mcp-config-snippets).
+Marketplace and AI-client submission helpers live in
+[`llms-install.md`](./llms-install.md), [`LAUNCHGUIDE.md`](./LAUNCHGUIDE.md),
+and [`assets/logo-400.png`](./assets/logo-400.png).
 
 ## What It Exposes
 
@@ -177,6 +180,9 @@ and [`docs/runbooks/deployment-https.md`](./docs/runbooks/deployment-https.md).
 | npm | Public | `@tools-mcp/vessel-traffic-mcp@0.1.0` at https://www.npmjs.com/package/@tools-mcp/vessel-traffic-mcp |
 | GitHub Release | Published | https://github.com/tools-mcp/vessel-traffic-mcp/releases/tag/v0.1.0 |
 | MCP Registry | Published | `io.github.tools-mcp/vessel-traffic-mcp@0.1.0` in the [official registry](https://registry.modelcontextprotocol.io/?q=io.github.tools-mcp%2Fvessel-traffic-mcp) |
+| ServerHub | Listed | https://www.serverhub.digital/servers/vessel-traffic-mcp |
+| VaultPlane | Listed | https://www.vaultplane.com/server/vessel-traffic-mcp |
+| MCPRepository | Submitted | Queued for validation at https://mcprepository.com/tools-mcp/vessel-traffic-mcp |
 | Local map UI | Ready from source | `npm run start:map`, then open `http://127.0.0.1:8787` |
 | HTTP directory metadata | Ready from source | `npm run start:http`, then fetch `/.well-known/mcp/server-card.json` |
 | Glama / PulseMCP | Submission/indexing pending | Track in [`docs/runbooks/public-sharing.md`](./docs/runbooks/public-sharing.md) and [`docs/marketing/outreach-status.md`](./docs/marketing/outreach-status.md) |
