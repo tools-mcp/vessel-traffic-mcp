@@ -32,13 +32,20 @@ window.
 - mcpservers.org submission was already sent and is pending review.
 - `punkpeye/awesome-mcp-servers` PR is open:
   https://github.com/punkpeye/awesome-mcp-servers/pull/6664
+- MCP Find is ready for a GitHub PR submission. No existing issue or PR was
+  found for this project on 2026-05-23.
+- mcp.so is ready for a GitHub issue submission. No existing issue was found
+  for this project on 2026-05-23.
 
 ## Active Blockers
 
 - Glama does not yet return a page or API record for
-  `tools-mcp/vessel-traffic-mcp`.
+  `tools-mcp/vessel-traffic-mcp`; the API returns `not_found` and the score
+  badge URL returns 404 as of 2026-05-23.
 - The awesome-mcp-servers PR is labeled `missing-glama` until a Glama listing
   exists and the PR entry includes the Glama score badge.
+- MCPCentral submission requires sign-in and should be handled with the
+  official `mcp-publisher` flow against `https://registry.mcpcentral.io`.
 - PulseMCP manual submission previously hit Cloudflare and should be retried in
   a logged-in browser session if automatic registry ingestion does not pick up
   the project.

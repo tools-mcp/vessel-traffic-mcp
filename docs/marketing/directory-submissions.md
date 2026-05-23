@@ -8,11 +8,14 @@ package, not to local paths or private captures.
 
 | Target | URL | Account Needed | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Glama | https://glama.ai/ | Likely yes | Watch | Repository has `glama.json` and is published to the official MCP Registry; wait for Glama indexing. |
+| Glama | https://glama.ai/ | Yes | Blocked | Rechecked on 2026-05-23: API returns `not_found`, badge URL returns 404, and the browser `Add Server` flow requires Glama/GitHub login before a listing exists. |
 | FindMCP | https://findmcp.dev/ | Likely yes | Watch | `/submit` currently resolves to the public directory page; no direct submission endpoint found. |
+| MCP Find | https://mcpfind.org/submit | GitHub | Ready | Accepts `community-servers.yml` PRs. No existing issue or PR found for `vessel-traffic-mcp` on 2026-05-23. |
 | MCP.Directory | https://mcp.directory/ | No | Submitted | Submitted on 2026-05-20 via `/api/submit-server`; response: `Server submitted for review!`. |
 | mcpservers.org | https://mcpservers.org/en/submit | No | Submitted | Submitted on 2026-05-20 as free listing; response id `2577`, status `pending`. |
 | PulseMCP | https://www.pulsemcp.com/submit | Maybe | Blocked | Public request hit Cloudflare block on 2026-05-20; retry in browser if needed. |
+| MCPCentral | https://mcpcentral.io/submit-server | Yes | Account required | Submit page redirects to sign-in. Current site recommends `mcp-publisher login github --registry https://registry.mcpcentral.io` before publish. |
+| mcp.so | https://mcp.so/ | GitHub | Ready | `chatmcp/mcpso` issues are enabled. No existing issue found for `vessel-traffic-mcp` or `@tools-mcp/vessel-traffic-mcp` on 2026-05-23. |
 | Smithery | https://smithery.ai/ | Yes | Blocked on public HTTPS | Server card is ready; remote submission needs a stable public HTTPS `/mcp` URL. |
 | punkpeye/awesome-mcp-servers | https://github.com/punkpeye/awesome-mcp-servers | GitHub | Submitted | PR opened on 2026-05-20: https://github.com/punkpeye/awesome-mcp-servers/pull/6664 |
 | appcypher/awesome-mcp-servers | https://github.com/appcypher/awesome-mcp-servers | GitHub | Blocked | Fork branch `tools-mcp:add-vessel-traffic-mcp` is pushed, but upstream has disabled external pull requests and issues. |
@@ -106,6 +109,29 @@ The root `glama.json` already declares:
 Use the common fields above. If a long description is accepted, use the long
 description from `docs/marketing/launch-kit.md`.
 
+## MCP Find
+
+Add this entry to `community-servers.yml`:
+
+```yaml
+  - name: "Vessel Traffic MCP"
+    github_url: "https://github.com/tools-mcp/vessel-traffic-mcp"
+    package_name: "@tools-mcp/vessel-traffic-mcp"
+    description: "Read-only MCP server for vessel identity lookup, AIS-style positions, tracks, port calls, carrier schedules, vessel schedules, and delay heuristics with source attribution and BYOK provider support."
+    package_type: "npm"
+    category: "other"
+```
+
+## mcp.so
+
+Use this GitHub issue title in `chatmcp/mcpso`:
+
+```text
+[Submit] Vessel Traffic MCP - Read-only maritime AIS and schedule tools
+```
+
+Use the common fields above plus the package and registry links.
+
 ## PulseMCP
 
 Check whether the server appears after MCP Registry ingestion. If not, submit:
@@ -154,3 +180,17 @@ upstream repository currently blocks external pull requests and issues:
 ```text
 https://github.com/appcypher/awesome-mcp-servers/compare/main...tools-mcp:awesome-mcp-servers:add-vessel-traffic-mcp
 ```
+
+## mcp-submit Dry Run
+
+`npx --yes mcp-submit --dry-run` on 2026-05-23 detected this package as
+`io.github.tools-mcp/vessel-traffic-mcp v0.1.0 (0 tools, stdio)`.
+
+Do not run the tool unfiltered:
+
+- Official MCP Registry, MCPCentral, and Docker MCP Registry providers are
+  currently marked ready by detection, but their implementation returns
+  integration-pending failures.
+- `punkpeye/awesome-mcp-servers` is already submitted and blocked on Glama.
+- `appcypher/awesome-mcp-servers` is already blocked by upstream PR settings.
+- Browser providers use the system `open` command; use Chrome manually instead.
