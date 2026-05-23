@@ -10,12 +10,12 @@ package, not to local paths or private captures.
 | --- | --- | --- | --- | --- |
 | Glama | https://glama.ai/ | Yes | Blocked | Rechecked on 2026-05-23: API returns `not_found`, badge URL returns 404, and the browser `Add Server` flow requires Glama/GitHub login before a listing exists. |
 | FindMCP | https://findmcp.dev/ | Likely yes | Watch | `/submit` currently resolves to the public directory page; no direct submission endpoint found. |
-| MCP Find | https://mcpfind.org/submit | GitHub | Ready | Accepts `community-servers.yml` PRs. No existing issue or PR found for `vessel-traffic-mcp` on 2026-05-23. |
+| MCP Find | https://mcpfind.org/submit | GitHub | Submitted | PR opened on 2026-05-24: https://github.com/MCPFind/mcp-find/pull/47. Checks are `action_required` pending maintainer approval for fork workflows; Vercel also reports authorization required. |
 | MCP.Directory | https://mcp.directory/ | No | Submitted | Submitted on 2026-05-20 via `/api/submit-server`; response: `Server submitted for review!`. |
 | mcpservers.org | https://mcpservers.org/en/submit | No | Submitted | Submitted on 2026-05-20 as free listing; response id `2577`, status `pending`. |
 | PulseMCP | https://www.pulsemcp.com/submit | Maybe | Blocked | Public request hit Cloudflare block on 2026-05-20; retry in browser if needed. |
 | MCPCentral | https://mcpcentral.io/submit-server | Yes | Account required | Submit page redirects to sign-in. Current site recommends `mcp-publisher login github --registry https://registry.mcpcentral.io` before publish. |
-| mcp.so | https://mcp.so/ | GitHub | Ready | `chatmcp/mcpso` issues are enabled. No existing issue found for `vessel-traffic-mcp` or `@tools-mcp/vessel-traffic-mcp` on 2026-05-23. |
+| mcp.so | https://mcp.so/ | GitHub | Submitted | Issue opened on 2026-05-24: https://github.com/chatmcp/mcpso/issues/2482 |
 | Smithery | https://smithery.ai/ | Yes | Blocked on public HTTPS | Server card is ready; remote submission needs a stable public HTTPS `/mcp` URL. |
 | punkpeye/awesome-mcp-servers | https://github.com/punkpeye/awesome-mcp-servers | GitHub | Submitted | PR opened on 2026-05-20: https://github.com/punkpeye/awesome-mcp-servers/pull/6664 |
 | appcypher/awesome-mcp-servers | https://github.com/appcypher/awesome-mcp-servers | GitHub | Blocked | Fork branch `tools-mcp:add-vessel-traffic-mcp` is pushed, but upstream has disabled external pull requests and issues. |
@@ -122,6 +122,12 @@ Add this entry to `community-servers.yml`:
     category: "other"
 ```
 
+Submitted:
+
+```text
+https://github.com/MCPFind/mcp-find/pull/47
+```
+
 ## mcp.so
 
 Use this GitHub issue title in `chatmcp/mcpso`:
@@ -131,6 +137,12 @@ Use this GitHub issue title in `chatmcp/mcpso`:
 ```
 
 Use the common fields above plus the package and registry links.
+
+Submitted:
+
+```text
+https://github.com/chatmcp/mcpso/issues/2482
+```
 
 ## PulseMCP
 

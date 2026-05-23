@@ -32,10 +32,13 @@ window.
 - mcpservers.org submission was already sent and is pending review.
 - `punkpeye/awesome-mcp-servers` PR is open:
   https://github.com/punkpeye/awesome-mcp-servers/pull/6664
-- MCP Find is ready for a GitHub PR submission. No existing issue or PR was
-  found for this project on 2026-05-23.
-- mcp.so is ready for a GitHub issue submission. No existing issue was found
-  for this project on 2026-05-23.
+- MCP Find PR is open:
+  https://github.com/MCPFind/mcp-find/pull/47
+  Its GitHub Actions status is `action_required` because fork workflows require
+  maintainer approval; the visible Vercel failure is an authorization gate, not
+  a catalog YAML validation failure.
+- mcp.so issue submission is open:
+  https://github.com/chatmcp/mcpso/issues/2482
 
 ## Active Blockers
 
