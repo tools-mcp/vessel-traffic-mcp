@@ -194,6 +194,7 @@ Detailed overseas launch copy, directory submission fields, Product
 Hunt text, and community-specific drafts live in:
 
 - [`docs/marketing/launch-kit.md`](../marketing/launch-kit.md)
+- [`docs/marketing/help-us-spread.md`](../marketing/help-us-spread.md)
 - [`docs/marketing/directory-submissions.md`](../marketing/directory-submissions.md)
 - [`docs/marketing/community-posts.md`](../marketing/community-posts.md)
 - [`docs/marketing/product-hunt.md`](../marketing/product-hunt.md)

@@ -9,6 +9,14 @@ Snapshot date: 2026-05-24 KST
 - npm: https://www.npmjs.com/package/@tools-mcp/vessel-traffic-mcp
 - MCP Registry: `io.github.tools-mcp/vessel-traffic-mcp`
 
+## Community Enablement
+
+- README now links to a sharing kit for people who can forward the project to
+  MCP, logistics, shipping, and trade audiences:
+  [`docs/marketing/help-us-spread.md`](./help-us-spread.md).
+- The sharing kit gives 3-minute, 15-minute, and 1-hour contribution options
+  plus copy/paste Korean and English outreach text.
+
 ## Current Metrics
 
 - GitHub Traffic API, last 14 days: 651 clones, 190 unique cloners.

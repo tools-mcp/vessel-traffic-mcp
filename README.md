@@ -54,6 +54,7 @@ surfaces may change.
 - [Install In An MCP Client](#install-in-an-mcp-client)
 - [What It Exposes](#what-it-exposes)
 - [Provider Model](#provider-model)
+- [Help Spread](#help-spread)
 - [From Source](#from-source)
 - [Remote HTTP Setup](#remote-http-setup)
 - [Current Distribution](#current-distribution)
@@ -124,6 +125,17 @@ Use the `provider_onboarding` MCP tool to inspect provider signup URLs,
 required env vars, configured profile status, and validation steps. It
 is read-only and never creates accounts, accepts terms, solves CAPTCHA,
 completes email verification, sets payment details, or issues API keys.
+
+## Help Spread
+
+If this could help someone building MCP tools, shipping/logistics software,
+or AI workflows around maritime data, share the repository and ask for real
+workflow feedback. A copy/paste sharing kit lives in
+[`docs/marketing/help-us-spread.md`](./docs/marketing/help-us-spread.md).
+
+Useful help includes trying the npm install, posting a tailored community
+write-up, requesting a provider adapter, or explaining a real forwarding,
+trade, port-call, vessel ETA, or carrier-schedule workflow.
 
 ## From Source
 
@@ -240,6 +252,10 @@ After restarting the MCP client, verify with:
 `source.landingUrl`을 포함해야 합니다. 이 프로젝트의 목적은 원
 서비스 유입과 출처 노출을 제공하는 것이며, 출처를 숨기거나
 재브랜딩하는 것이 아닙니다.
+
+공유를 도와줄 사람에게 보낼 짧은 문구와 커뮤니티용 글 초안은
+[`docs/marketing/help-us-spread.md`](./docs/marketing/help-us-spread.md)에
+정리되어 있습니다.
 
 ### 빠른 시작
 

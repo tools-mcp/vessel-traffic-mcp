@@ -3,6 +3,9 @@
 Use these drafts for overseas community launch posts. Tailor the first
 sentence to each community and avoid posting identical text everywhere.
 
+For smaller asks that other people can forward, use
+[`help-us-spread.md`](./help-us-spread.md).
+
 ## Korean Communities - OKKY / GeekNews / Velog / Brunch
 
 Title:
