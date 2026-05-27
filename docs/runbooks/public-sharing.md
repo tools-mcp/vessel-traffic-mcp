@@ -145,6 +145,14 @@ Current state as of 2026-05-20:
 The root `glama.json` includes the `seokmogu` GitHub username so Glama
 can verify maintainer authority for the `tools-mcp` organization
 repository. Use it when submitting the repo to Glama's MCP directory.
+As of 2026-05-27, the public listing URL and score badge still return
+404 until Glama indexes the server.
+
+Awesome-list badge markdown:
+
+```markdown
+[![tools-mcp/vessel-traffic-mcp MCP server](https://glama.ai/mcp/servers/tools-mcp/vessel-traffic-mcp/badges/score.svg)](https://glama.ai/mcp/servers/tools-mcp/vessel-traffic-mcp)
+```
 
 Submission payload:
 

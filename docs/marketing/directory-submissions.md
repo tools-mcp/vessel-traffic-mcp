@@ -8,7 +8,7 @@ package, not to local paths or private captures.
 
 | Target | URL | Account Needed | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Glama | https://glama.ai/ | Yes | Blocked | Rechecked on 2026-05-23: API returns `not_found`, badge URL returns 404, and the browser `Add Server` flow requires Glama/GitHub login before a listing exists. |
+| Glama | https://glama.ai/ | Yes | Login required | Rechecked on 2026-05-27: public listing URL and score badge still return 404. The browser `Add Server` flow is the current submission path and requires Glama/GitHub login before a listing exists. |
 | FindMCP | https://findmcp.dev/ | Likely yes | Watch | `/submit` currently resolves to the public directory page; no direct submission endpoint found. |
 | MCP Find | https://mcpfind.org/submit | GitHub | Submitted | PR opened on 2026-05-24: https://github.com/MCPFind/mcp-find/pull/47. Checks are `action_required` pending maintainer approval for fork workflows; Vercel also reports authorization required. |
 | MCP.Directory | https://mcp.directory/ | No | Submitted | Submitted on 2026-05-20 via `/api/submit-server`; response: `Server submitted for review!`. |
@@ -102,6 +102,18 @@ VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx
 ```
 
 ## Glama
+
+Listing URL:
+
+```text
+https://glama.ai/mcp/servers/tools-mcp/vessel-traffic-mcp
+```
+
+Score badge markdown for awesome-list PRs:
+
+```markdown
+[![tools-mcp/vessel-traffic-mcp MCP server](https://glama.ai/mcp/servers/tools-mcp/vessel-traffic-mcp/badges/score.svg)](https://glama.ai/mcp/servers/tools-mcp/vessel-traffic-mcp)
+```
 
 Use:
 

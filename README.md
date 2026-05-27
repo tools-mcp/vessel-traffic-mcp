@@ -197,7 +197,8 @@ and [`docs/runbooks/deployment-https.md`](./docs/runbooks/deployment-https.md).
 | MCPRepository | Submitted | Queued for validation at https://mcprepository.com/tools-mcp/vessel-traffic-mcp |
 | Local map UI | Ready from source | `npm run start:map`, then open `http://127.0.0.1:8787` |
 | HTTP directory metadata | Ready from source | `npm run start:http`, then fetch `/.well-known/mcp/server-card.json` |
-| Glama / PulseMCP | Submission/indexing pending | Track in [`docs/runbooks/public-sharing.md`](./docs/runbooks/public-sharing.md) and [`docs/marketing/outreach-status.md`](./docs/marketing/outreach-status.md) |
+| Glama | Listing required | Public listing URL and score badge are reserved at https://glama.ai/mcp/servers/tools-mcp/vessel-traffic-mcp; submit through Glama's Add Server flow if it is not indexed yet |
+| PulseMCP | Submission/indexing pending | Track in [`docs/runbooks/public-sharing.md`](./docs/runbooks/public-sharing.md) and [`docs/marketing/outreach-status.md`](./docs/marketing/outreach-status.md) |
 | Smithery | HTTPS endpoint pending | Needs a stable public HTTPS `/mcp` URL |
 
 Launch copy and directory submission material live in

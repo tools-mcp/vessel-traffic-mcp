@@ -1,6 +1,6 @@
 # Outreach Status
 
-Snapshot date: 2026-05-24 KST
+Snapshot date: 2026-05-27 KST
 
 ## Current Public Surfaces
 
@@ -66,11 +66,13 @@ window.
 
 ## Active Blockers
 
-- Glama does not yet return a page or API record for
-  `tools-mcp/vessel-traffic-mcp`; the API returns `not_found` and the score
-  badge URL returns 404 as of 2026-05-23.
+- Glama does not yet return a page for
+  `tools-mcp/vessel-traffic-mcp`; the public listing URL and score badge URL
+  still return 404 as of 2026-05-27.
 - The awesome-mcp-servers PR is labeled `missing-glama` until a Glama listing
-  exists and the PR entry includes the Glama score badge.
+  exists. The PR entry should keep the Glama score badge immediately after the
+  server link:
+  `[![tools-mcp/vessel-traffic-mcp MCP server](https://glama.ai/mcp/servers/tools-mcp/vessel-traffic-mcp/badges/score.svg)](https://glama.ai/mcp/servers/tools-mcp/vessel-traffic-mcp)`.
 - MCPCentral submission requires sign-in and should be handled with the
   official `mcp-publisher` flow against `https://registry.mcpcentral.io`.
 - PulseMCP manual submission previously hit Cloudflare and should be retried in
