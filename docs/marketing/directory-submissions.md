@@ -8,7 +8,7 @@ package, not to local paths or private captures.
 
 | Target | URL | Account Needed | Status | Notes |
 | --- | --- | --- | --- | --- |
-| Glama | https://glama.ai/ | Yes | Login required | Rechecked on 2026-05-27: public listing URL and score badge still return 404. The browser `Add Server` flow is the current submission path and requires Glama/GitHub login before a listing exists. |
+| Glama | https://glama.ai/ | Yes | Submitted for review | Submitted on 2026-05-27 through the logged-in browser `Add Server` flow. Glama server count changed from 25,463 to 25,464 after submission; public listing URL and score badge still return 404 until review/indexing completes. |
 | FindMCP | https://findmcp.dev/ | Likely yes | Watch | `/submit` currently resolves to the public directory page; no direct submission endpoint found. |
 | MCP Find | https://mcpfind.org/submit | GitHub | Submitted | PR opened on 2026-05-24: https://github.com/MCPFind/mcp-find/pull/47. Checks are `action_required` pending maintainer approval for fork workflows; Vercel also reports authorization required. |
 | MCP.Directory | https://mcp.directory/ | No | Submitted | Submitted on 2026-05-20 via `/api/submit-server`; response: `Server submitted for review!`. |
@@ -108,6 +108,11 @@ Listing URL:
 ```text
 https://glama.ai/mcp/servers/tools-mcp/vessel-traffic-mcp
 ```
+
+Submitted on 2026-05-27 through the logged-in Glama `Add MCP Server`
+flow. The registry count increased from 25,463 to 25,464 after submission,
+but the public listing and badge URL still returned 404 immediately after
+submission.
 
 Score badge markdown for awesome-list PRs:
 
@@ -241,6 +246,6 @@ Do not run the tool unfiltered:
 - Official MCP Registry, MCPCentral, and Docker MCP Registry providers are
   currently marked ready by detection, but their implementation returns
   integration-pending failures.
-- `punkpeye/awesome-mcp-servers` is already submitted and blocked on Glama.
+- `punkpeye/awesome-mcp-servers` is already submitted with the Glama badge.
 - `appcypher/awesome-mcp-servers` is already blocked by upstream PR settings.
 - Browser providers use the system `open` command; use Chrome manually instead.

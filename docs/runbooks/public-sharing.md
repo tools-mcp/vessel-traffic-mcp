@@ -145,8 +145,10 @@ Current state as of 2026-05-20:
 The root `glama.json` includes the `seokmogu` GitHub username so Glama
 can verify maintainer authority for the `tools-mcp` organization
 repository. Use it when submitting the repo to Glama's MCP directory.
-As of 2026-05-27, the public listing URL and score badge still return
-404 until Glama indexes the server.
+Submitted through the logged-in Glama `Add MCP Server` flow on 2026-05-27.
+The registry server count increased from 25,463 to 25,464 after submission,
+but the public listing URL and score badge still returned 404 immediately
+after submission until Glama completes review/indexing.
 
 Awesome-list badge markdown:
 
@@ -158,10 +160,10 @@ Submission payload:
 
 ```text
 Repository: https://github.com/tools-mcp/vessel-traffic-mcp
-Name: Vessel Traffic MCP
-Summary: Read-only MCP server for vessel AIS-style position data,
-carrier schedules, vessel schedules, and delay heuristics with source
-attribution and BYOK provider support.
+Name: vessel-traffic-mcp
+Summary: Read-only MCP server for vessel identity lookup, AIS-style
+positions, tracks, port calls, carrier schedules, vessel schedules, and delay
+heuristics with source attribution and BYOK provider support.
 Install: see README.md and llms.txt
 ```
 

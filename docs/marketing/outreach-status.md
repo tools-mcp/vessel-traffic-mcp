@@ -66,12 +66,12 @@ window.
 
 ## Active Blockers
 
-- Glama does not yet return a page for
-  `tools-mcp/vessel-traffic-mcp`; the public listing URL and score badge URL
-  still return 404 as of 2026-05-27.
-- The awesome-mcp-servers PR is labeled `missing-glama` until a Glama listing
-  exists. The PR entry should keep the Glama score badge immediately after the
-  server link:
+- Glama was submitted through the logged-in `Add MCP Server` flow on
+  2026-05-27. The registry server count increased from 25,463 to 25,464 after
+  submission, but the public listing URL and score badge URL still return 404
+  until review/indexing completes.
+- The awesome-mcp-servers PR now keeps the Glama score badge immediately after
+  the server link and has the `has-glama` label:
   `[![tools-mcp/vessel-traffic-mcp MCP server](https://glama.ai/mcp/servers/tools-mcp/vessel-traffic-mcp/badges/score.svg)](https://glama.ai/mcp/servers/tools-mcp/vessel-traffic-mcp)`.
 - MCPCentral submission requires sign-in and should be handled with the
   official `mcp-publisher` flow against `https://registry.mcpcentral.io`.
