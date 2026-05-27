@@ -183,11 +183,21 @@ test('codex runbook TOML snippets parse as valid TOML-shaped mcp_servers entries
     'codex runbook must include a TOML block with the [mcp_servers.vessel-traffic-mcp] table, command="node", args containing dist/index.js, and VESSEL_MCP_TRANSPORT="stdio"',
   );
 
-  // Every TOML block that mentions the vessel-traffic-mcp server (including
+  // Stdio TOML blocks that mention the vessel-traffic-mcp server (including
   // any standalone env-table example) must set VESSEL_MCP_TRANSPORT="stdio"
-  // and must not declare a different command than "node".
+  // and must not declare a different command than "node". URL-only remote
+  // MCP blocks are allowed because current Codex can register remote servers
+  // directly with a `url` field.
   const wired = tomlBlocks.filter((b) => b.includes('mcp_servers.vessel-traffic-mcp'));
+  assert.ok(
+    wired.some((block) => /url\s*=\s*"https:\/\/<your-public-host>\/mcp"/.test(block)),
+    'codex runbook must include a URL-based remote MCP TOML block',
+  );
   for (const block of wired) {
+    if (/url\s*=/.test(block) && !/command\s*=/.test(block)) {
+      assert.doesNotMatch(block, /VESSEL_MCP_AUTH_TOKEN|Authorization:\s*Bearer/i);
+      continue;
+    }
     assert.match(
       block,
       /VESSEL_MCP_TRANSPORT\s*=\s*"stdio"/,

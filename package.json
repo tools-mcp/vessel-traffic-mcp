@@ -2,7 +2,7 @@
   "name": "@tools-mcp/vessel-traffic-mcp",
   "mcpName": "io.github.tools-mcp/vessel-traffic-mcp",
   "version": "0.1.0",
-  "description": "Read-only Model Context Protocol (MCP) server for vessel AIS / ship tracking data — connects Claude, ChatGPT, Claude Code, and Codex plugin workflows to MarineTraffic, VesselFinder, AISStream, AISHub, and other authorized maritime data providers through a normalized BYOK interface.",
+  "description": "Read-only Model Context Protocol (MCP) server for vessel AIS / ship tracking data — connects Claude, ChatGPT, Claude Code, Codex, and Gemini MCP workflows to MarineTraffic, VesselFinder, AISStream, AISHub, and other authorized maritime data providers through a normalized BYOK interface.",
   "license": "MIT",
   "author": "vessel-traffic-mcp maintainers <smgu@futhing.com>",
   "type": "module",
@@ -18,8 +18,14 @@
     "claude-mcp",
     "chatgpt-mcp",
     "codex-plugin",
+    "gemini-mcp",
+    "maritime-mcp",
+    "shipping-mcp",
+    "ais-mcp",
+    "mcp-server",
     "ais",
     "vessel",
+    "vessel-position",
     "vessel-tracking",
     "ship-tracking",
     "marinetraffic",
@@ -34,7 +40,7 @@
     "anthropic",
     "openai"
   ],
-  "homepage": "https://github.com/tools-mcp/vessel-traffic-mcp#readme",
+  "homepage": "https://tools-mcp.github.io/vessel-traffic-mcp/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tools-mcp/vessel-traffic-mcp.git"

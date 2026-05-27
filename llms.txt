@@ -5,6 +5,7 @@
 > delay heuristics.
 
 Repository: https://github.com/tools-mcp/vessel-traffic-mcp
+Agent discovery page: https://tools-mcp.github.io/vessel-traffic-mcp/
 License: MIT
 Runtime: Node.js 22+, TypeScript, ESM
 Default transport: stdio for local MCP clients
@@ -28,6 +29,17 @@ the following:
 7. Restart the MCP client.
 8. Verify by asking for `EVER GIVEN` current position with source URL,
    and for a carrier schedule from `KRPUS` to `NLRTM` with source URL.
+
+## Search-Style Agent Flow
+
+For agents or products that expect generic connector tools, use:
+
+1. `search` with query `EVER GIVEN`.
+2. `fetch` with the returned `vessel:mmsi:*`, `vessel:imo:*`, or
+   `vessel:name:*` id.
+3. Include `source.provider`, `source.landingUrl`, `observedAt`,
+   `retrievedAt`, `freshnessSeconds`, confidence, and coverage caveats.
+4. State that AIS-style data is not for safety-critical navigation.
 
 ## Codex CLI Config
 
@@ -109,10 +121,14 @@ the absolute path:
 - `data_sources`
 - `credential_profiles`
 - `provider_onboarding`
+- `search`
+- `fetch`
 
 ## Important Docs
 
 - `README.md`: full setup, provider notes, and agent install prompt.
+- `docs/index.html`: static page for ChatGPT, Codex, Claude, Gemini,
+  and search-engine discovery.
 - `server.json`: MCP Registry metadata for
   `io.github.tools-mcp/vessel-traffic-mcp`.
 - `AGENTS.md`: non-negotiable repository rules.

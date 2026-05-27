@@ -1,12 +1,13 @@
 # MCP Client Setup Runbook (F1.AC3)
 
 This runbook is the single client-facing entry point for connecting an MCP
-client to `vessel-traffic-mcp`. It covers four supported clients:
+client to `vessel-traffic-mcp`. It covers these supported clients:
 
 1. **Claude Desktop** (local stdio)
 2. **Claude Code** (local stdio)
 3. **ChatGPT remote MCP** (Streamable HTTP at `/mcp`)
-4. **Generic MCP Inspector** (`@modelcontextprotocol/inspector`)
+4. **Gemini CLI / Gemini Code Assist** (`mcpServers` settings)
+5. **Generic MCP Inspector** (`@modelcontextprotocol/inspector`)
 
 Transport-level mechanics live in
 [`stdio-fixture-server.md`](./stdio-fixture-server.md) and
@@ -173,6 +174,14 @@ In the ChatGPT remote MCP connector UI, configure:
 | Authentication | Bearer token: `<the same value as VESSEL_MCP_AUTH_TOKEN>` |
 | Transport | Streamable HTTP |
 
+For ChatGPT, OpenAI Responses API, and search-style connector flows,
+`vessel-traffic-mcp` also exposes generic read-only `search` and
+`fetch` wrappers. They map natural-language vessel queries to the
+vessel identity and latest-position tools while preserving
+`source.provider`, `source.landingUrl`, `retrievedAt`, freshness,
+confidence, and no-navigation caveats. Keep the vessel-specific tools
+enabled as well when the client supports full MCP tool selection.
+
 Health probe (no auth):
 
 ```bash
@@ -196,6 +205,53 @@ platform HTTPS topologies, and token rotation — see
 [`deployment-https.md`](./deployment-https.md).
 
 Reference: [`streamable-http-server.md`](./streamable-http-server.md).
+
+## Gemini CLI and Gemini Code Assist (stdio or HTTP)
+
+Gemini CLI and Gemini Code Assist discover MCP servers from Gemini's
+settings JSON. For a local stdio install using the published npm
+package, add a server entry like this:
+
+```jsonc
+{
+  "mcpServers": {
+    "vessel-traffic-mcp": {
+      "command": "npx",
+      "args": ["-y", "@tools-mcp/vessel-traffic-mcp"],
+      "env": {
+        "VESSEL_MCP_TRANSPORT": "stdio",
+        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx"
+      },
+      "timeout": 30000
+    }
+  }
+}
+```
+
+For a remote Streamable HTTP deployment, use Gemini's HTTP MCP shape
+and keep credentials in local settings or the operator environment:
+
+```jsonc
+{
+  "mcpServers": {
+    "vessel-traffic-mcp": {
+      "httpUrl": "https://<your-public-host>/mcp",
+      "headers": {
+        "Authorization": "Bearer <your-token>"
+      },
+      "timeout": 30000
+    }
+  }
+}
+```
+
+Use the same smoke prompt as other agents:
+
+```text
+Use Vessel Traffic MCP. Search for EVER GIVEN, fetch the best result,
+and include source.provider, source.landingUrl, observedAt, retrievedAt,
+freshnessSeconds, confidence, coverage caveats, and a not-for-navigation note.
+```
 
 ## Generic MCP Inspector
 

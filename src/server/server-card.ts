@@ -1,6 +1,7 @@
 import { z } from 'zod/v4';
 
 import { carrierScheduleSearchInputSchema } from '../tools/carrier-schedule-search.js';
+import { agentFetchInputSchema, agentSearchInputSchema } from '../tools/agent-search.js';
 import { documentVesselLookupInputSchema } from '../tools/document-vessel-lookup.js';
 import { portCallsInputSchema } from '../tools/port-calls.js';
 import { providerOnboardingInputSchema } from '../tools/provider-onboarding.js';
@@ -29,6 +30,20 @@ interface ToolCardDefinition {
 }
 
 export const vesselMcpToolCards: readonly ToolCardDefinition[] = [
+  {
+    name: 'search',
+    title: 'Search Vessel Traffic MCP',
+    description:
+      'Search this MCP server for vessel or ship-tracking results by natural-language vessel name, MMSI, or IMO. Returns result ids for fetch plus source, freshness, confidence, and navigation caveats.',
+    inputSchema: agentSearchInputSchema,
+  },
+  {
+    name: 'fetch',
+    title: 'Fetch Vessel Traffic MCP Result',
+    description:
+      'Fetch an agent-readable vessel result returned by search. Use for ChatGPT/OpenAI, Claude, Codex, Gemini, and other search-style MCP clients that expect search/fetch tools.',
+    inputSchema: agentFetchInputSchema,
+  },
   {
     name: 'provider_status',
     title: 'Provider Status',
@@ -143,7 +158,7 @@ export function createServerCard(options: ServerCardOptions): Record<string, unk
     description:
       'Read-only MCP server for vessel identity, AIS-style positions, tracks, port calls, carrier schedules, vessel schedules, and delay heuristics.',
     repository: 'https://github.com/tools-mcp/vessel-traffic-mcp',
-    website: 'https://github.com/tools-mcp/vessel-traffic-mcp#readme',
+    website: 'https://tools-mcp.github.io/vessel-traffic-mcp/',
     license: 'MIT',
     transport: {
       type: 'streamable-http',
@@ -196,6 +211,11 @@ export function createServerCard(options: ServerCardOptions): Record<string, unk
       'claude',
       'chatgpt',
       'codex',
+      'gemini',
+      'vessel-ais-mcp',
+      'chatgpt-mcp',
+      'claude-mcp',
+      'gemini-mcp',
     ],
   };
 }

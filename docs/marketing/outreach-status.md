@@ -1,10 +1,11 @@
 # Outreach Status
 
-Snapshot date: 2026-05-27 KST
+Snapshot date: 2026-05-28 KST
 
 ## Current Public Surfaces
 
 - GitHub: https://github.com/tools-mcp/vessel-traffic-mcp
+- Agent landing page: https://tools-mcp.github.io/vessel-traffic-mcp/
 - GitHub release: https://github.com/tools-mcp/vessel-traffic-mcp/releases/tag/v0.1.0
 - npm: https://www.npmjs.com/package/@tools-mcp/vessel-traffic-mcp
 - MCP Registry: `io.github.tools-mcp/vessel-traffic-mcp`
@@ -34,6 +35,11 @@ window.
 
 ## Completed Distribution Work
 
+- A static agent discovery page now targets ChatGPT, Codex, Claude, Gemini,
+  vessel AIS MCP, ship tracking MCP, and BYOK maritime provider searches:
+  https://tools-mcp.github.io/vessel-traffic-mcp/
+- The MCP server exposes read-only `search` and `fetch` wrappers for
+  search-style agent connector flows, in addition to the vessel-specific tools.
 - npm package `@tools-mcp/vessel-traffic-mcp@0.1.0` is public.
 - Official MCP Registry entry is active.
 - GitHub topics are configured for MCP, vessel AIS, ship tracking, maritime,

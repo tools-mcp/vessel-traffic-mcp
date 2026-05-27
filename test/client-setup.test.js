@@ -40,11 +40,12 @@ test('client setup runbook self-identifies against F1.AC3', () => {
   assert.match(text, /F1\.AC3/, 'runbook should self-identify against the acceptance criterion');
 });
 
-test('client setup runbook covers all four required clients', () => {
+test('client setup runbook covers required clients', () => {
   const text = readRunbook();
   assert.match(text, /## Claude Desktop/i);
   assert.match(text, /## Claude Code/i);
   assert.match(text, /## ChatGPT remote MCP/i);
+  assert.match(text, /## Gemini CLI and Gemini Code Assist/i);
   assert.match(text, /## Generic MCP Inspector/i);
 });
 
@@ -74,6 +75,8 @@ test('client setup runbook names the registered read-only tool surface', () => {
   assert.match(text, /provider_status/);
   assert.match(text, /data_sources/);
   assert.match(text, /credential_profiles/);
+  assert.match(text, /\bsearch\b/);
+  assert.match(text, /\bfetch\b/);
   assert.match(text, /readOnlyHint/);
   assert.match(text, /read-only/i);
 });

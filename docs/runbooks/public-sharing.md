@@ -13,6 +13,12 @@ Canonical repository:
 https://github.com/tools-mcp/vessel-traffic-mcp
 ```
 
+Agent discovery landing page:
+
+```text
+https://tools-mcp.github.io/vessel-traffic-mcp/
+```
+
 Repository settings to keep enabled:
 
 - Public visibility.
@@ -135,6 +141,9 @@ Current state as of 2026-05-20:
   The card includes Smithery-compatible `serverInfo`,
   `authentication`, `tools`, `resources`, and `prompts` fields plus
   project-specific provenance metadata.
+- The static GitHub Pages landing page lives in `docs/index.html` and
+  targets agent/search discovery phrases such as vessel AIS MCP, ship
+  tracking MCP, ChatGPT MCP, Codex MCP, Claude MCP, and Gemini MCP.
 - npm stdio installation is public through
   `@tools-mcp/vessel-traffic-mcp@0.1.0`.
 - Smithery remote submission still waits for a stable public HTTPS
@@ -197,7 +206,7 @@ Recommended tags:
 
 ```text
 mcp, ais, ship-tracking, vessel-tracking, maritime, logistics, byok,
-claude, chatgpt, codex
+claude, chatgpt, codex, gemini
 ```
 
 Detailed overseas launch copy, directory submission fields, Product
@@ -218,6 +227,8 @@ Before posting anywhere:
 - `npm run lint`, `npm test`, and `npm run build` pass.
 - `README.md`, `llms.txt`, `CONTRIBUTING.md`, and `SECURITY.md` are
   current.
+- `docs/index.html`, `docs/robots.txt`, and `docs/sitemap.xml` point at
+  the public agent landing page.
 - `server.json` and `package.json#mcpName` use the
   `io.github.tools-mcp/vessel-traffic-mcp` namespace.
 - No tracked file contains API keys, bearer tokens, cookies, raw HAR

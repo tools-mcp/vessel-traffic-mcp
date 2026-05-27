@@ -9,7 +9,7 @@
     "source": "github",
     "id": "1241577906"
   },
-  "websiteUrl": "https://github.com/tools-mcp/vessel-traffic-mcp#readme",
+  "websiteUrl": "https://tools-mcp.github.io/vessel-traffic-mcp/",
   "license": "MIT",
   "tags": [
     "mcp",
@@ -21,7 +21,10 @@
     "byok",
     "claude",
     "chatgpt",
-    "codex"
+    "codex",
+    "gemini",
+    "search",
+    "fetch"
   ],
   "packages": [
     {

@@ -7,13 +7,14 @@ plugin workflows the project targets.
 It covers F7.AC2: *"Add package, repository, and documentation
 metadata so the project is searchable for vessel AIS MCP, ship
 tracking MCP, MarineTraffic MCP, Claude MCP, ChatGPT MCP, and Codex
-plugin workflows."*
+plugin workflows."* This page extends that same contract to Gemini MCP
+and search-style `search`/`fetch` agent workflows.
 
 ## Target search surfaces
 
 A maritime/MCP operator searching for "how do I plug AIS data into
-Claude / ChatGPT / Codex" should be able to find this project from any
-of these phrases:
+Claude / ChatGPT / Codex / Gemini" should be able to find this project
+from any of these phrases:
 
 - **vessel AIS MCP** — generic AIS-feed MCP servers
 - **ship tracking MCP** — broader ship/vessel position MCP servers
@@ -24,6 +25,9 @@ of these phrases:
 - **ChatGPT MCP** — ChatGPT remote-MCP connector users
 - **Codex plugin** — Codex / OpenAI plugin / Codex marketplace
   workflows
+- **Gemini MCP** — Gemini CLI and Gemini Code Assist MCP setup
+- **maritime MCP** and **shipping MCP** — broader logistics and carrier
+  schedule workflows
 
 The metadata below maps each search surface to a concrete
 package/repository/docs field so the project stays findable as the
@@ -33,7 +37,7 @@ MCP ecosystem grows.
 
 | Field        | Why it exists                                                                 |
 | ------------ | ----------------------------------------------------------------------------- |
-| `keywords`   | npm/registry search hits for `vessel-ais-mcp`, `ship-tracking-mcp`, `marinetraffic-mcp`, `claude-mcp`, `chatgpt-mcp`, `codex-plugin`, plus generic `mcp`, `ais`, `vessel`, and `marinetraffic`. |
+| `keywords`   | npm/registry search hits for `vessel-ais-mcp`, `ship-tracking-mcp`, `marinetraffic-mcp`, `claude-mcp`, `chatgpt-mcp`, `codex-plugin`, `gemini-mcp`, `maritime-mcp`, `shipping-mcp`, `ais-mcp`, and generic `mcp`, `mcp-server`, `ais`, `vessel`, and `marinetraffic`. |
 | `description`| Short one-liner that surfaces in npm/GitHub search snippets — mentions MCP, AIS, vessel/ship, Claude/ChatGPT/Codex, and BYOK. |
 | `mcpName`    | Official MCP Registry namespace: `io.github.tools-mcp/vessel-traffic-mcp`. |
 | `repository` | Git+HTTPS URL pointing at the canonical GitHub repo so registries can link back. |
@@ -66,6 +70,11 @@ on the repository page. Suggested topics:
 - `claude-mcp`
 - `chatgpt-mcp`
 - `codex-plugin`
+- `gemini-mcp`
+- `maritime-mcp`
+- `shipping-mcp`
+- `ais-mcp`
+- `mcp-server`
 - `ais`
 - `vessel-tracking`
 - `marinetraffic`
@@ -78,6 +87,9 @@ form a connected graph so a visitor landing on README from any
 search engine can reach the operator/security/contribution surfaces
 in one click:
 
+- [`docs/index.html`](./index.html) — static GitHub Pages landing page
+  for agent search, install snippets, golden prompts, robots metadata,
+  sitemap metadata, and ChatGPT/Codex/Claude/Gemini discovery phrases.
 - [`README.md`](../README.md) — open-source positioning, MCP feature
   summary, and links into every runbook.
 - [`SECURITY.md`](../SECURITY.md) — private vulnerability reporting.
@@ -115,7 +127,9 @@ Discoverability metadata is covered by deterministic tests in
    and never lists operator-sensitive paths.
 4. The metadata contains no credential-shaped strings.
 5. README links back here and surfaces the Topics section.
-6. F7.AC2 and the F7 parent feature are `status: implemented`, while
+6. `docs/index.html`, `docs/robots.txt`, and `docs/sitemap.xml` expose
+   the public landing page at `https://tools-mcp.github.io/vessel-traffic-mcp/`.
+7. F7.AC2 and the F7 parent feature are `status: implemented`, while
    `package.json` remains npm-publication ready with public access and
    a `prepublishOnly` verification gate.
 
@@ -129,6 +143,8 @@ The repository also ships these directory-facing files:
 
 - `server.json` — official MCP Registry metadata using the
   `io.github.tools-mcp/vessel-traffic-mcp` name.
+- `docs/index.html`, `docs/robots.txt`, and `docs/sitemap.xml` —
+  GitHub Pages static search surface for assistant agents and crawlers.
 - `glama.json` — Glama directory maintainer metadata using the
   `seokmogu` GitHub username for organization-repository verification.
 - `GET /.well-known/mcp/server-card.json` on the Streamable HTTP

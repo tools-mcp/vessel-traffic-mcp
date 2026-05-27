@@ -18,6 +18,7 @@
 
 <p align="center">
   <a href="https://registry.modelcontextprotocol.io/?q=io.github.tools-mcp%2Fvessel-traffic-mcp"><img alt="MCP Registry: published" src="https://img.shields.io/badge/MCP%20Registry-published-0f766e"></a>
+  <a href="https://tools-mcp.github.io/vessel-traffic-mcp/"><img alt="Agent landing page" src="https://img.shields.io/badge/Agent%20Landing%20Page-live-08736d"></a>
   <a href="https://github.com/tools-mcp/vessel-traffic-mcp/issues"><img alt="GitHub issues" src="https://img.shields.io/github/issues/tools-mcp/vessel-traffic-mcp"></a>
   <a href="https://github.com/tools-mcp/vessel-traffic-mcp/network/members"><img alt="GitHub forks" src="https://img.shields.io/github/forks/tools-mcp/vessel-traffic-mcp"></a>
 </p>
@@ -36,6 +37,7 @@ normalized maritime-data tool surface.
 
 Use it when an agent needs to:
 
+- search/fetch vessel context through generic connector-style MCP tools;
 - resolve a vessel from a name, MMSI, IMO, callsign, or bill-of-lading text;
 - ask where a vessel is, where it has been, or which vessels are in an area;
 - search container-shipping schedules by port pair or vessel;
@@ -52,6 +54,7 @@ surfaces may change.
 ## Contents
 
 - [Install In An MCP Client](#install-in-an-mcp-client)
+- [Agent Discovery Page](#agent-discovery-page)
 - [What It Exposes](#what-it-exposes)
 - [Provider Model](#provider-model)
 - [Help Spread](#help-spread)
@@ -97,10 +100,27 @@ Marketplace and AI-client submission helpers live in
 [`llms-install.md`](./llms-install.md), [`LAUNCHGUIDE.md`](./LAUNCHGUIDE.md),
 and [`assets/logo-400.png`](./assets/logo-400.png).
 
+## Agent Discovery Page
+
+The public landing page for assistant-agent search and install snippets is:
+
+https://tools-mcp.github.io/vessel-traffic-mcp/
+
+Use that URL when sharing the project as a **vessel AIS MCP**, **ship tracking
+MCP**, **ChatGPT MCP**, **Codex MCP**, **Claude MCP**, or **Gemini MCP** server.
+The page includes a golden prompt for the `EVER GIVEN` scenario and client
+snippets for local stdio and remote Streamable HTTP setup.
+
+Assistant services do not automatically discover arbitrary MCP servers. The
+operator must connect this MCP first; after that, the tool descriptions,
+`search`/`fetch` wrappers, and vessel-specific tools give the agent a clear
+path from a ship-name prompt to source-attributed results.
+
 ## What It Exposes
 
 | Area | Read-only tools |
 | --- | --- |
+| Search-style connector flow | `search`, `fetch` |
 | Vessel identity | `vessel_search`, `vessel_name_resolve`, `document_vessel_lookup` |
 | AIS-style movement | `vessel_position`, `vessel_area`, `vessel_track` |
 | Port activity | `port_calls` |
@@ -189,6 +209,7 @@ and [`docs/runbooks/deployment-https.md`](./docs/runbooks/deployment-https.md).
 | Surface | Status | Access |
 | --- | --- | --- |
 | GitHub | Public | https://github.com/tools-mcp/vessel-traffic-mcp |
+| Agent landing page | Public | https://tools-mcp.github.io/vessel-traffic-mcp/ |
 | npm | Public | `@tools-mcp/vessel-traffic-mcp@0.1.0` at https://www.npmjs.com/package/@tools-mcp/vessel-traffic-mcp |
 | GitHub Release | Published | https://github.com/tools-mcp/vessel-traffic-mcp/releases/tag/v0.1.0 |
 | MCP Registry | Published | `io.github.tools-mcp/vessel-traffic-mcp@0.1.0` in the [official registry](https://registry.modelcontextprotocol.io/?q=io.github.tools-mcp%2Fvessel-traffic-mcp) |
@@ -709,6 +730,8 @@ docs/           PRD, TDD, provider catalog, and runbooks
 ### Documentation
 
 - [`llms.txt`](./llms.txt) — compact agent-facing project brief.
+- [`docs/index.html`](./docs/index.html) — static agent discovery page
+  published through GitHub Pages.
 - [`server.json`](./server.json) — MCP Registry metadata for the
   `io.github.tools-mcp/vessel-traffic-mcp` namespace.
 - [`AGENTS.md`](./AGENTS.md) — project hard rules.
@@ -755,6 +778,7 @@ and suggested GitHub topics.
 - Claude MCP (Claude Desktop, Claude Code)
 - ChatGPT MCP (ChatGPT remote MCP connector)
 - Codex plugin (Codex / OpenAI plugin / marketplace workflows)
+- Gemini MCP (Gemini CLI and Gemini Code Assist)
 - MCP / Model Context Protocol server
 - AIS / vessel tracking / ship tracking
 - BYOK paid-provider routing (MarineTraffic, VesselFinder, AISStream,

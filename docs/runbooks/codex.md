@@ -22,7 +22,8 @@ rules, env-var contract, and read-only tool surface are identical.
   `vessel_search`, `vessel_name_resolve`, `document_vessel_lookup`,
   `vessel_position`, `vessel_area`, `vessel_track`, `port_calls`,
   `carrier_schedule_search`, `vessel_schedule`, and
-  `schedule_delay_predict` — all declare `readOnlyHint: true`. Codex
+  `schedule_delay_predict`, plus the connector-style `search` and
+  `fetch` wrappers — all declare `readOnlyHint: true`. Codex
   must not be wired to a tool surface that mutates provider accounts,
   fleets, billing settings, saved searches, or user profiles.
 - **Default verification stays fixture-only.** `npm run lint`,
@@ -145,6 +146,26 @@ topologies, and token rotation — lives in
 [`deployment-https.md`](./deployment-https.md).
 
 Reference: [`streamable-http-server.md`](./streamable-http-server.md).
+
+Current Codex builds also support URL-based MCP registration. For a
+public HTTPS deployment, use the CLI form:
+
+```bash
+codex mcp add vesselTraffic --url https://<your-public-host>/mcp
+codex mcp list
+```
+
+Or add the equivalent URL entry to `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.vessel-traffic-mcp]
+url = "https://<your-public-host>/mcp"
+```
+
+The remote endpoint must still enforce the same token/OAuth boundary
+used by ChatGPT remote MCP. Do not place bearer tokens in this
+repository; keep them in the local Codex config, an ignored profile
+file, or the operator's secret store.
 
 ## Codex plugin manifest / marketplace metadata
 

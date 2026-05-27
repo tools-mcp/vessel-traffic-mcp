@@ -39,10 +39,12 @@ test('MCP server registers fixture-backed provider/setup diagnostics and F3.AC1 
       'credential_profiles',
       'data_sources',
       'document_vessel_lookup',
+      'fetch',
       'port_calls',
       'provider_onboarding',
       'provider_status',
       'schedule_delay_predict',
+      'search',
       'vessel_area',
       'vessel_name_resolve',
       'vessel_position',
@@ -58,7 +60,8 @@ test('MCP server registers fixture-backed provider/setup diagnostics and F3.AC1 
       assert.equal(tool.annotations.readOnlyHint, true);
       assert.equal(tool.annotations.destructiveHint, false);
       assert.equal(tool.inputSchema.type, 'object');
-      assert.deepEqual(tool.inputSchema.required ?? [], []);
+      const expectedRequired = tool.name === 'search' ? ['query'] : tool.name === 'fetch' ? ['id'] : [];
+      assert.deepEqual(tool.inputSchema.required ?? [], expectedRequired);
     }
     assert.ok(providerStatusTool.outputSchema.properties.providers);
     assert.ok(providerStatusTool.outputSchema.properties.summary);

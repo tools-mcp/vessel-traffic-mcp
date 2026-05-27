@@ -14,6 +14,7 @@ import { getCredentialProfiles } from '../tools/credential-profiles.js';
 import { getDataSources } from '../tools/data-sources.js';
 import { getProviderStatus } from '../tools/provider-status.js';
 import { providerOnboarding, providerOnboardingInputSchema } from '../tools/provider-onboarding.js';
+import { agentFetch, agentFetchInputSchema, agentSearch, agentSearchInputSchema } from '../tools/agent-search.js';
 import { documentVesselLookup, documentVesselLookupInputSchema } from '../tools/document-vessel-lookup.js';
 import { portCalls, portCallsInputSchema } from '../tools/port-calls.js';
 import { scheduleDelayPredict, scheduleDelayPredictInputSchema } from '../tools/schedule-delay-predict.js';
@@ -107,6 +108,30 @@ export function createVesselMcpServer(options: CreateVesselMcpServerOptions = {}
   );
 
   const deps = { registry, credentialStore };
+
+  server.registerTool(
+    'search',
+    {
+      title: 'Search Vessel Traffic MCP',
+      description:
+        'Search this MCP server for vessel or ship-tracking results by natural-language vessel name, MMSI, or IMO. Returns result ids for fetch plus source, freshness, confidence, and navigation caveats.',
+      inputSchema: agentSearchInputSchema,
+      annotations: readOnlyAnnotations,
+    },
+    async (args) => jsonToolResult(await agentSearch(deps, args)),
+  );
+
+  server.registerTool(
+    'fetch',
+    {
+      title: 'Fetch Vessel Traffic MCP Result',
+      description:
+        'Fetch an agent-readable vessel result returned by search. Use for ChatGPT/OpenAI, Claude, Codex, Gemini, and other search-style MCP clients that expect search/fetch tools.',
+      inputSchema: agentFetchInputSchema,
+      annotations: readOnlyAnnotations,
+    },
+    async (args) => jsonToolResult(await agentFetch(deps, args)),
+  );
 
   server.registerTool(
     'vessel_search',

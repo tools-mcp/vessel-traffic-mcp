@@ -4,6 +4,10 @@
 
 https://github.com/tools-mcp/vessel-traffic-mcp
 
+## Agent discovery page
+
+https://tools-mcp.github.io/vessel-traffic-mcp/
+
 ## What this server does
 
 Vessel Traffic MCP is a read-only MCP server for maritime and logistics
@@ -63,7 +67,15 @@ VESSEL_MCP_TRANSPORT=stdio node dist/index.js
 
 Then connect from the MCP client and list tools. The server should expose
 read-only vessel, position, track, port call, carrier schedule, vessel
-schedule, and delay heuristic tools.
+schedule, delay heuristic, and search/fetch connector tools.
+
+For search-style agent products, a good smoke test is:
+
+```text
+Use Vessel Traffic MCP. Search for EVER GIVEN, fetch the best result,
+and include source.provider, source.landingUrl, observedAt, retrievedAt,
+freshnessSeconds, confidence, coverage caveats, and a not-for-navigation note.
+```
 
 ## Notes for Cline marketplace review
 

@@ -14,8 +14,10 @@ import { normalizeVesselName } from '../dist/tools/vessel-name-resolve.js';
 const F3_TOOL_NAMES = Object.freeze([
   'carrier_schedule_search',
   'document_vessel_lookup',
+  'fetch',
   'port_calls',
   'schedule_delay_predict',
+  'search',
   'vessel_area',
   'vessel_name_resolve',
   'vessel_position',
@@ -56,7 +58,7 @@ async function assertRejected(client, params, pattern) {
   assert.match(errorText, pattern, `error text did not match expected pattern for ${params.name}`);
 }
 
-test('F3.AC1 registers all read-only vessel and schedule tools with empty required arrays', async () => {
+test('F3.AC1 registers all read-only vessel and schedule tools with expected required inputs', async () => {
   await withClient(async (client) => {
     const tools = await client.listTools();
     const names = tools.tools.map((t) => t.name).sort();
@@ -66,7 +68,8 @@ test('F3.AC1 registers all read-only vessel and schedule tools with empty requir
       assert.equal(tool.annotations.readOnlyHint, true, `${expected} must be readOnly`);
       assert.equal(tool.annotations.destructiveHint, false, `${expected} must be non-destructive`);
       assert.equal(tool.inputSchema.type, 'object', `${expected} inputSchema must be an object`);
-      assert.deepEqual(tool.inputSchema.required ?? [], [], `${expected} top-level required must be empty`);
+      const expectedRequired = expected === 'search' ? ['query'] : expected === 'fetch' ? ['id'] : [];
+      assert.deepEqual(tool.inputSchema.required ?? [], expectedRequired, `${expected} top-level required mismatch`);
     }
   });
 });
@@ -82,6 +85,36 @@ test('vessel_search returns fixture matches when fallbackPolicy=allow-fixture', 
     assert.equal(payload.data.matches.length, 1);
     assert.equal(payload.data.matches[0].mmsi, '477806100');
     assert.equal(payload.source.provider, 'fixture');
+  });
+});
+
+test('search and fetch wrappers support search-style MCP clients', async () => {
+  await withClient(async (client) => {
+    const searchResult = await client.callTool({
+      name: 'search',
+      arguments: { query: 'EVER GIVEN', fallbackPolicy: 'allow-fixture' },
+    });
+    const searchPayload = parseStructured(searchResult);
+
+    assert.deepEqual(Object.keys(searchPayload), ['results']);
+    assert.ok(Array.isArray(searchPayload.results));
+    assert.ok(searchPayload.results.length >= 1);
+    assert.match(searchPayload.results[0].id, /^vessel:(?:mmsi|imo|name):/);
+    assert.equal(searchPayload.results[0].metadata.source.provider, 'fixture');
+    assert.equal(searchPayload.results[0].metadata.notForNavigation, true);
+
+    const fetchResult = await client.callTool({
+      name: 'fetch',
+      arguments: { id: searchPayload.results[0].id, fallbackPolicy: 'allow-fixture' },
+    });
+    const fetchPayload = parseStructured(fetchResult);
+
+    assert.deepEqual(Object.keys(fetchPayload).sort(), ['id', 'metadata', 'text', 'title', 'url']);
+    assert.equal(fetchPayload.metadata.ok, true);
+    assert.equal(fetchPayload.metadata.source.provider, 'fixture');
+    assert.equal(fetchPayload.metadata.notForNavigation, true);
+    assert.match(fetchPayload.text, /source\.provider=fixture/);
+    assert.match(fetchPayload.text, /Not for navigation/);
   });
 });
 

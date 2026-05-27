@@ -5,6 +5,9 @@ import { test } from 'node:test';
 const PACKAGE_URL = new URL('../package.json', import.meta.url);
 const README_URL = new URL('../README.md', import.meta.url);
 const DISCOVERABILITY_URL = new URL('../docs/discoverability.md', import.meta.url);
+const STATIC_PAGE_URL = new URL('../docs/index.html', import.meta.url);
+const ROBOTS_URL = new URL('../docs/robots.txt', import.meta.url);
+const SITEMAP_URL = new URL('../docs/sitemap.xml', import.meta.url);
 const CHECKLIST_URL = new URL('../docs/runbooks/release-checklist.md', import.meta.url);
 const REQUIREMENTS_URL = new URL('../docs/autodev/requirements.yaml', import.meta.url);
 
@@ -15,7 +18,7 @@ function read(url) {
 // Discoverability phrases mandated by F7.AC2. The brief calls these out as
 // the search surfaces the project must be findable under: "vessel AIS MCP",
 // "ship tracking MCP", "MarineTraffic MCP", "Claude MCP", "ChatGPT MCP",
-// and "Codex plugin" workflows.
+// "Codex plugin", and "Gemini MCP" workflows.
 const DISCOVERABILITY_PHRASES = [
   'vessel AIS MCP',
   'ship tracking MCP',
@@ -23,6 +26,7 @@ const DISCOVERABILITY_PHRASES = [
   'Claude MCP',
   'ChatGPT MCP',
   'Codex plugin',
+  'Gemini MCP',
 ];
 
 // Credential-shape patterns mirror open-source-release.test.js so the
@@ -74,6 +78,10 @@ test('package.json keywords cover every F7.AC2 discoverability phrase', () => {
     'vessel',
     'marinetraffic',
     'codex',
+    'gemini-mcp',
+    'maritime-mcp',
+    'shipping-mcp',
+    'mcp-server',
   ]) {
     assert.ok(
       lowered.includes(expected),
@@ -107,8 +115,8 @@ test('package.json declares repository, homepage, bugs, and author metadata', ()
   assert.ok(typeof pkg.homepage === 'string', 'package.json must declare a homepage');
   assert.match(
     pkg.homepage,
-    /^https:\/\/github\.com\/[^/]+\/vessel-traffic-mcp(#[^\s]*)?$/,
-    'homepage must point at the GitHub repository',
+    /^https:\/\/tools-mcp\.github\.io\/vessel-traffic-mcp\/$/,
+    'homepage must point at the public agent discovery page',
   );
 
   assert.equal(typeof pkg.bugs, 'object', 'package.json must declare a bugs object');
@@ -252,6 +260,42 @@ test('README links to the discoverability doc and lists discoverability topics',
     /docs\/discoverability\.md/,
     'README must link to docs/discoverability.md',
   );
+});
+
+test('static agent discovery page is crawler-friendly and agent-oriented', () => {
+  const html = read(STATIC_PAGE_URL);
+  assert.match(html, /<title>Vessel Traffic MCP/i);
+  assert.match(html, /ship tracking MCP/i);
+  assert.match(html, /vessel AIS MCP/i);
+  assert.match(html, /ChatGPT/i);
+  assert.match(html, /Codex/i);
+  assert.match(html, /Claude/i);
+  assert.match(html, /Gemini/i);
+  assert.match(html, /BYOK/i);
+  assert.match(html, /search/i);
+  assert.match(html, /fetch/i);
+  assert.match(html, /EVER GIVEN/i);
+  assert.match(html, /source\.provider/);
+  assert.match(html, /source\.landingUrl/);
+  assert.match(html, /freshnessSeconds/);
+  assert.match(html, /not for safety-critical navigation|Not for navigation/i);
+  assert.match(html, /application\/ld\+json/);
+  assert.match(html, /https:\/\/tools-mcp\.github\.io\/vessel-traffic-mcp\//);
+
+  for (const { name, re } of CREDENTIAL_PATTERNS) {
+    assert.doesNotMatch(html, re, `static page must not contain a ${name}-shaped string`);
+  }
+});
+
+test('static page exposes robots.txt and sitemap.xml for search indexing', () => {
+  const robots = read(ROBOTS_URL);
+  const sitemap = read(SITEMAP_URL);
+
+  assert.match(robots, /User-agent: \*/);
+  assert.match(robots, /Allow: \//);
+  assert.match(robots, /Sitemap: https:\/\/tools-mcp\.github\.io\/vessel-traffic-mcp\/sitemap\.xml/);
+  assert.match(sitemap, /<loc>https:\/\/tools-mcp\.github\.io\/vessel-traffic-mcp\/<\/loc>/);
+  assert.match(sitemap, /<lastmod>2026-05-28<\/lastmod>/);
 });
 
 test('release checklist verifies package.json discoverability metadata', () => {
