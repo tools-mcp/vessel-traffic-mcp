@@ -18,6 +18,21 @@ Cross-reference runbooks:
 - `docs/runbooks/credential-profiles.md` — BYOK env vars and the
   gitignored local profile overlay.
 
+## Current distribution decision
+
+As of 2026-08-24, the maintainers distribute this project as public source and
+an npm package, but **do not operate a shared public HTTPS `/mcp` endpoint**.
+The Streamable HTTP implementation is for an operator-owned deployment that
+has its own domain, bearer-token secret, provider permissions, rate-limit
+plan, and incident owner.
+
+Do not represent the local server-card route or these deployment examples as a
+public remote connector. A directory listing or client integration may name a
+remote URL only after that operator has deployed it behind HTTPS, verified
+`/health` and authenticated `/mcp`, and accepted the associated provider and
+operational responsibilities. Until then, local stdio is the supported
+installation path for ordinary users.
+
 ## Hard rules (must hold for every deployment)
 
 - **HTTPS is non-negotiable for any non-loopback bind.** Do not expose

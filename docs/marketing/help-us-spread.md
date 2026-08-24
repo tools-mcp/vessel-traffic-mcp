@@ -58,7 +58,7 @@ Install with an MCP client:
       "args": ["-y", "@tools-mcp/vessel-traffic-mcp"],
       "env": {
         "VESSEL_MCP_TRANSPORT": "stdio",
-        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx"
+        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx,aisfriends"
       }
     }
   }
@@ -81,6 +81,20 @@ Useful feedback:
 
 Leave feedback in the public discussion:
 https://github.com/tools-mcp/vessel-traffic-mcp/discussions/8
+
+## Workflow Baseline And Feedback Boundary
+
+The following are product-reference workflows drawn from the project brief.
+They are **not** evidence of active user adoption or completed user research.
+Use them to make a specific feedback request, and mark any later feedback with
+the client, data-provider class, and workflow context that the contributor
+actually used.
+
+| Workflow | Intended outcome | Current boundary | Feedback to ask for |
+| --- | --- | --- | --- |
+| B/L or shipping-document to vessel candidate | Resolve a vessel name, MMSI, or IMO into ranked candidates with supporting context. | Ambiguous candidates must request confirmation; no document or credential is retained. | Which document fields and confidence explanation make the result trustworthy? |
+| Vessel, ETA, and port-call exception check | Review source-attributed position, track, or port-call context for a known vessel. | AIS coverage and freshness may be incomplete; it is never navigation guidance. | Which status, time window, or exception signal changes an operational decision? |
+| Port-pair or vessel schedule comparison | Find carrier schedules for a route or vessel and return the original source URL. | Provider coverage, terms, and data freshness vary; commercial sources remain BYOK. | Which route, carrier, and schedule comparison is used often enough to justify follow-up? |
 
 ## 1 Hour Help
 

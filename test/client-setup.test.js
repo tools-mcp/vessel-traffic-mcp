@@ -93,6 +93,17 @@ test('client setup runbook keeps the no-secret, no-bypass posture', () => {
   assert.match(text, /stdout is the MCP protocol stream/i);
 });
 
+test('client setup runbook separates local protocol proof from third-party client acceptance', () => {
+  const text = readRunbook();
+
+  assert.match(text, /## Verification matrix and claim boundary/i);
+  assert.match(text, /test\/mcp-stdio\.test\.js/);
+  assert.match(text, /test\/mcp-http\.test\.js/);
+  assert.match(text, /test\/client-setup\.test\.js/);
+  assert.match(text, /does not claim that\s+an arbitrary user's authenticated/i);
+  assert.match(text, /operator-owned,\s*HTTPS-protected `\/mcp` endpoint/i);
+});
+
 test('client setup runbook does not leak credential-shaped strings', () => {
   const text = readRunbook();
   assert.doesNotMatch(text, /eyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}/, 'no JWTs');

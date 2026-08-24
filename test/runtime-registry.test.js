@@ -102,6 +102,7 @@ test('runtime registry still keeps public providers opt-in and separate from BYO
   );
 
   assert.deepEqual(registry.providers().map((provider) => provider.id), [
+    'aisfriends',
     'myshiptracking',
     'shipfinder',
     'tradlinx-schedule',

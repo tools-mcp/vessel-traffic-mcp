@@ -42,7 +42,7 @@ Use this config for clients that accept JSON server definitions:
       "args": ["-y", "@tools-mcp/vessel-traffic-mcp"],
       "env": {
         "VESSEL_MCP_TRANSPORT": "stdio",
-        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx"
+        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx,aisfriends"
       }
     }
   }

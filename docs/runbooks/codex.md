@@ -86,7 +86,7 @@ args = ["/absolute/path/to/vessel-traffic-mcp/dist/index.js"]
 
 [mcp_servers.vessel-traffic-mcp.env]
 VESSEL_MCP_TRANSPORT = "stdio"
-VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS = "myshiptracking,tradlinx"
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS = "myshiptracking,tradlinx,aisfriends"
 ```
 
 BYOK profile env vars (only when you have explicit authorization for

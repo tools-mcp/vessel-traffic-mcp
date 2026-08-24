@@ -23,7 +23,7 @@ the following:
    absolute path to `dist/index.js`.
 5. Set `VESSEL_MCP_TRANSPORT=stdio`.
 6. For public opt-in providers, set
-   `VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx`.
+   `VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends`.
    Add `shipfinder` only when the user accepts browser-verification
    no-data responses from that provider.
 7. Restart the MCP client.
@@ -53,7 +53,7 @@ args = ["/absolute/path/to/vessel-traffic-mcp/dist/index.js"]
 
 [mcp_servers.vessel-traffic-mcp.env]
 VESSEL_MCP_TRANSPORT = "stdio"
-VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS = "myshiptracking,tradlinx"
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS = "myshiptracking,tradlinx,aisfriends"
 ```
 
 ## Claude Desktop / Claude Code Config
@@ -69,7 +69,7 @@ the absolute path:
       "args": ["/absolute/path/to/vessel-traffic-mcp/dist/index.js"],
       "env": {
         "VESSEL_MCP_TRANSPORT": "stdio",
-        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx"
+        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx,aisfriends"
       }
     }
   }
@@ -95,7 +95,7 @@ the absolute path:
 
 - Default runtime: `fixture`.
 - Public opt-in runtime providers:
-  `myshiptracking`, `shipfinder`, `tradlinx-schedule`.
+  `aisfriends`, `myshiptracking`, `shipfinder`, `tradlinx-schedule`.
 - Implemented credentialed runtime providers:
   `marinetraffic`, `vesselfinder`, `aisstream`, `aishub`,
   `barentswatch`, `searates-schedules`, `routescanner-connect`,

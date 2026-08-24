@@ -51,7 +51,7 @@ cd vessel-traffic-mcp
 npm ci
 npm run build
 VESSEL_MCP_TRANSPORT=stdio \
-VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx \
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends \
 npm start
 ```
 
@@ -59,7 +59,7 @@ MCP clients should point to the absolute path of `dist/index.js` and set:
 
 ```text
 VESSEL_MCP_TRANSPORT=stdio
-VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends
 ```
 
 ## Demo Script

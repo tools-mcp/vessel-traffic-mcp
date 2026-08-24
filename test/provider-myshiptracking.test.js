@@ -397,6 +397,7 @@ test('Runtime registry keeps fixture-only default and enables public adapters by
 
   const all = createRuntimeProviderRegistry({ [PUBLIC_PROVIDERS_ENV]: 'all' });
   assert.deepEqual(all.providers().map((provider) => provider.id), [
+    'aisfriends',
     'myshiptracking',
     'shipfinder',
     'tradlinx-schedule',

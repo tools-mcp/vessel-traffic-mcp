@@ -7,6 +7,8 @@ tmp/
 !.env.example
 *.log
 *.har
+.playwright-cli/
+output/
 captures/raw/
 captures/private/
 state/
