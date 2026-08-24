@@ -128,9 +128,9 @@ fallback for terrestrial AIS coverage probes.
 | --- | --- | --- |
 | AISStream | Best-effort global terrestrial AIS WebSocket stream | https://aisstream.io/ |
 | AISHub | Contributor-pooled terrestrial AIS network; one-request-per-minute member API | https://www.aishub.net/api |
-| AIS Friends | Community/contributor API candidate; validate registration, contribution requirements, API terms, and whether data redistribution is allowed | Discovery only — see Provider Discovery Backlog below |
+| AIS Friends | Community/contributor public map bounding-box positions; area feed only, no identity resolver | https://www.aisfriends.com/ |
 
-Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (AISStream and AISHub are `implemented`; AIS Friends is `discovery_only`).
+Implementation status: see `entries[].implementationStatus` in `config/provider-catalog.example.json` (AISStream, AISHub, and the AIS Friends `vessel_area` adapter are `implemented`; AIS Friends remains opt-in while terms, quota, and redistribution policy are reviewed).
 
 ### Commercial BYOK APIs
 
@@ -189,19 +189,21 @@ Always prefer an official API once one becomes available.
 | MyShipTracking web UI | Public browser endpoint candidate implemented as an opt-in adapter for autocomplete, selected-MMSI latest position, and bounding-box area rows. Prefer the official API for production contracts; public results must expose the MyShipTracking source URL. |
 | ShipFinder | Public browser API candidate implemented as an explicit opt-in adapter for captured autocomplete and `GetShip` shapes; keep it out of default routing until terms/rate review and browser-verification behavior are settled. Structured catalog id: `shipfinder`. |
 | ShipXplorer | Web UI/API candidate. Validate whether a supported ship API exists and whether UI capture is allowed. |
-| MarineVesselTraffic / similar map sites | Web UI candidates. Discovery-only until terms and technical feasibility are documented. |
+| MarineVesselTraffic / similar map sites | MarineVesselTraffic embeds AIS Friends public map data, but its own search autocomplete returned HTTP 403 in browser capture and must not be bypassed. |
 | FleetMon web UI | Treat as BYOK or authorized capture candidate only after account-specific terms review (<https://www.fleetmon.com/>). |
-| AIS Friends web UI | Community/contributor candidate; capture only after validating registration, contribution requirements, API terms, and redistribution policy. |
+| AIS Friends web UI | Public bounding-box map feed implemented as an explicit opt-in `vessel_area` adapter (`aisfriends`); validate terms, contribution requirements, quota, and redistribution policy before production use. |
 | Tradelinx Schedule web UI | Public Korean logistics schedule candidate for FCL/LCL route lookup. Browser capture on 2026-05-18 found no-login schedule/detail endpoint shapes; `carrier_schedule_search` is implemented as an explicit opt-in public provider (`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=tradlinx`) and should preserve a user-facing source URL (`https://www.tradlinx.com/ko/schedule?tab=fcl`, `https://www.tradlinx.com/ko/schedule?tab=lcl`). |
 
 Implementation status: web-only candidates are not part of the default routing
-fallback chain. MyShipTracking and ShipFinder are implemented as explicit
-opt-in public providers for browser-captured vessel lookup shapes; both remain
-disabled by default while terms/rate behavior is under review. Tradelinx
-schedule now has an explicit opt-in `carrier_schedule_search` adapter for
-captured FCL/LCL route endpoints; the vesselSchedule/detail/contact endpoints
-remain documented but are not promoted as standalone user-facing tools. Other
-web-only candidates remain tracked by capture-queue tickets. See
+fallback chain. MyShipTracking, ShipFinder, and AIS Friends are implemented as
+explicit opt-in public providers for browser-observed shapes; AIS Friends is
+limited to `vessel_area` bounding-box rows and has no search or single-vessel
+resolver. These adapters remain disabled by default while terms/rate behavior is
+under review. Tradelinx schedule now has an explicit opt-in
+`carrier_schedule_search` adapter for captured FCL/LCL route endpoints; the
+vesselSchedule/detail/contact endpoints remain documented but are not promoted
+as standalone user-facing tools. Other web-only candidates remain tracked by
+capture-queue tickets. See
 `Provider Discovery Backlog` below.
 
 ## Provider Discovery Backlog

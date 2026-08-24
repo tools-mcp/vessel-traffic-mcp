@@ -179,6 +179,15 @@ test('deployment-https runbook covers the HTTPS contract, bearer token, and a co
   assert.match(text, /docker build[\s\S]{0,200}?(operator-only|not\s+(part\s+of\s+)?default CI|not.*in.*CI)/i);
 });
 
+test('deployment runbook distinguishes local HTTP capability from a public hosted endpoint', () => {
+  const text = read(RUNBOOK_URL);
+
+  assert.match(text, /##\s+Current distribution decision/i);
+  assert.match(text, /do not operate a shared public HTTPS\s+`?\/mcp`? endpoint/i);
+  assert.match(text, /operator-owned deployment/i);
+  assert.match(text, /local stdio is the supported[\s\S]*?installation path for ordinary users/i);
+});
+
 test('deployment runbook does not embed credential-shaped strings', () => {
   const text = read(RUNBOOK_URL);
   for (const { name, re } of CREDENTIAL_PATTERNS) {

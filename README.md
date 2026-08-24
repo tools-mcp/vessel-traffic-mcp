@@ -57,6 +57,7 @@ surfaces may change.
 - [Agent Discovery Page](#agent-discovery-page)
 - [What It Exposes](#what-it-exposes)
 - [Provider Model](#provider-model)
+- [Responsible Use And Third-Party Rights](#responsible-use-and-third-party-rights)
 - [Help Spread](#help-spread)
 - [From Source](#from-source)
 - [Remote HTTP Setup](#remote-http-setup)
@@ -77,7 +78,7 @@ stdio MCP client, use the npm package:
       "args": ["-y", "@tools-mcp/vessel-traffic-mcp"],
       "env": {
         "VESSEL_MCP_TRANSPORT": "stdio",
-        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx"
+        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx,aisfriends"
       }
     }
   }
@@ -137,7 +138,7 @@ data source.
 | Provider group | How it is enabled | Notes |
 | --- | --- | --- |
 | Fixture | default | deterministic tests and demos; no network, accounts, or API keys |
-| Public opt-in | `VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx` | public web adapters with source attribution |
+| Public opt-in | `VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends` | public web adapters with source attribution |
 | BYOK commercial/community APIs | `VESSEL_MCP_ENABLE_BYOK_PROVIDERS=...` plus `VESSEL_MCP_PROFILE_*` env vars | user-owned credentials only; secrets are redacted from logs, errors, and MCP responses |
 | Remote deployment | `VESSEL_MCP_TRANSPORT=http` | Streamable HTTP at `/mcp`; set `VESSEL_MCP_AUTH_TOKEN` for `Authorization: Bearer <token>` |
 
@@ -145,6 +146,32 @@ Use the `provider_onboarding` MCP tool to inspect provider signup URLs,
 required env vars, configured profile status, and validation steps. It
 is read-only and never creates accounts, accepts terms, solves CAPTCHA,
 completes email verification, sets payment details, or issues API keys.
+
+## Responsible Use And Third-Party Rights
+
+This project is provided as open-source infrastructure for public-interest
+interoperability, workflow testing, and source-attributed maritime data access.
+It does not grant any right to copy, redistribute, rebrand, bypass, or misuse
+third-party services, databases, maps, trademarks, copyrighted material, API
+responses, or provider content.
+
+Users are responsible for how they configure and operate the software, including
+their compliance with applicable law, provider terms, account permissions,
+rate limits, data licenses, and internal company policies. Do not use this
+project to bypass authentication, paywalls, CAPTCHA, access controls, robots
+policies, or commercial restrictions.
+
+The authors and contributors respect the rights and terms of all referenced
+services and data providers. Live and public-provider responses are designed
+to preserve attribution through `source.provider` and `source.landingUrl` and
+to route users back to the original source. If a rights holder, service
+operator, or affected party reports a substantiated concern, the maintainers
+will review it promptly and, where appropriate, modify, disable, or remove the
+affected adapter, documentation, fixture, or reference.
+
+The software is provided under the MIT license, without warranty. Nothing in
+this README is legal advice or a substitute for reviewing the terms that apply
+to your own use case.
 
 ## Help Spread
 
@@ -167,7 +194,7 @@ npm run lint
 npm test
 npm run build
 VESSEL_MCP_TRANSPORT=stdio \
-VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx \
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends \
 npm start
 ```
 
@@ -249,7 +276,7 @@ run `npm run build`, then add the MCP server to the local MCP client
 using an absolute path to `dist/index.js`.
 
 Use `VESSEL_MCP_TRANSPORT=stdio` and enable public providers with
-`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx`.
+`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends`.
 
 Do not commit local MCP client config files, env files, API keys,
 cookies, HAR files, browser sessions, or raw captures. Do not copy
@@ -331,11 +358,12 @@ npm run start:http
 브라우저 캡처 기반 공개 adapter는 명시적으로 켜야 합니다.
 
 ```bash
-VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends npm start
 ```
 
 - `myshiptracking`: 선박 자동완성, 선택 MMSI 기반 최신 위치, 지도 영역 조회.
 - `tradlinx`: FCL/LCL 선사 스케줄 조회.
+- `aisfriends`: 공개 지도 bounding-box 기반 영역 위치 조회. 선박명 검색은 지원하지 않습니다.
 - `shipfinder`: 명시적 provider 라우팅용 선박 자동완성 및 상세 API 형태.
 
 응답에는 항상 원 출처 provider와 사용자가 열 수 있는 출처 URL을
@@ -364,6 +392,31 @@ env var, 현재 credential 설정 여부, 검증 단계를 확인할 수 있습�
 이 도구는 읽기 전용이며 계정 생성, 약관 동의, CAPTCHA, 이메일 인증,
 결제 정보 설정, API 키 발급을 대신 수행하지 않습니다.
 
+### 책임 있는 사용 및 제3자 권리
+
+이 프로젝트는 공익적 상호운용성, 업무 자동화 실험, 출처가 표시되는
+해운/선박 데이터 접근을 돕기 위해 오픈소스로 공개되었습니다. 이
+프로젝트는 제3자 서비스, 데이터베이스, 지도, 상표, 저작물, API 응답,
+provider 콘텐츠를 복제, 재배포, 재브랜딩, 우회, 오용할 권리를 부여하지
+않습니다.
+
+소프트웨어를 어떻게 설정하고 사용하는지는 사용자 책임입니다. 사용자는
+관련 법령, provider 약관, 계정 권한, rate limit, 데이터 라이선스, 내부
+회사 정책을 직접 확인하고 준수해야 합니다. 인증, 유료 기능, CAPTCHA,
+접근 제어, robots 정책, 상업적 제한을 우회하기 위해 이 프로젝트를
+사용해서는 안 됩니다.
+
+작성자와 기여자는 참조된 모든 서비스와 데이터 provider의 권리와 약관을
+존중합니다. live/public provider 응답은 `source.provider`와
+`source.landingUrl`로 원 출처를 표시하고, 사용자가 원 서비스를 확인할 수
+있도록 설계되었습니다. 권리자, 서비스 운영자, 또는 관련 당사자가 근거
+있는 문제를 제기하면 maintainer는 신속히 검토하고, 필요한 경우 해당
+adapter, 문서, fixture, reference를 수정, 비활성화, 또는 제거하겠습니다.
+
+이 소프트웨어는 MIT 라이선스에 따라 보증 없이 제공됩니다. 이 README의
+문구는 법률 자문이 아니며, 각 사용 사례에 적용되는 약관과 법적 의무를
+검토하는 일을 대체하지 않습니다.
+
 ### 에이전트 설정 프롬프트
 
 다른 코딩 에이전트에게 이 MCP를 설치하게 할 때 사용할 프롬프트입니다.
@@ -377,7 +430,7 @@ stdio MCP 서버로 설치하고 설정해줘.
 `dist/index.js`의 절대경로를 등록해라.
 
 `VESSEL_MCP_TRANSPORT=stdio`를 사용하고,
-`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx`를 설정해라.
+`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends`를 설정해라.
 
 로컬 MCP 클라이언트 설정 파일, env 파일, API 키, 쿠키, HAR 파일,
 브라우저 세션, raw capture는 커밋하지 마라. 다른 머신의 credential을
@@ -450,12 +503,13 @@ npm run start:http
 ブラウザキャプチャ由来の公開 adapter は明示的に有効化します。
 
 ```bash
-VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends npm start
 ```
 
 - `myshiptracking`: 船舶オートコンプリート、選択 MMSI からの最新位置、
   地図範囲検索。
 - `tradlinx`: FCL/LCL の船会社スケジュール検索。
+- `aisfriends`: 公開地図の bounding-box ベースのエリア位置検索。船名検索は未対応。
 - `shipfinder`: 明示的 provider ルーティング用の船舶検索と詳細 API 形状。
 
 ### BYOK Provider
@@ -485,7 +539,7 @@ https://github.com/tools-mcp/vessel-traffic-mcp を、このマシンの
 ローカル MCP クライアントに登録してください。
 
 `VESSEL_MCP_TRANSPORT=stdio` を使い、
-`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx` を設定してください。
+`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends` を設定してください。
 
 ローカル MCP クライアント設定、env ファイル、API キー、Cookie、HAR、
 ブラウザセッション、raw capture を commit しないでください。他の
@@ -554,11 +608,12 @@ npm run start:http
 浏览器捕获得到的公开 adapter 需要显式启用。
 
 ```bash
-VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx npm start
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends npm start
 ```
 
 - `myshiptracking`: 船舶自动完成、按选定 MMSI 查询最新位置、地图范围查询。
 - `tradlinx`: FCL/LCL 承运人航线计划查询。
+- `aisfriends`: 基于公开地图 bounding-box 的区域位置查询；不支持船名搜索。
 - `shipfinder`: 用于显式 provider 路由的船舶搜索和详情 API 形状。
 
 ### BYOK Provider
@@ -588,7 +643,7 @@ export VESSEL_MCP_ENABLE_BYOK_PROVIDERS="marinetraffic,vesselfinder,aisstream,ai
 注册服务器。
 
 使用 `VESSEL_MCP_TRANSPORT=stdio`，并设置
-`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx`。
+`VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=myshiptracking,tradlinx,aisfriends`。
 
 不要提交本地 MCP 客户端配置、env 文件、API key、cookie、HAR 文件、
 浏览器 session 或 raw capture。不要从其他机器复制 credentials。
@@ -611,7 +666,7 @@ args = ["/absolute/path/to/vessel-traffic-mcp/dist/index.js"]
 
 [mcp_servers.vessel-traffic-mcp.env]
 VESSEL_MCP_TRANSPORT = "stdio"
-VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS = "myshiptracking,tradlinx"
+VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS = "myshiptracking,tradlinx,aisfriends"
 ```
 
 Claude Desktop / Claude Code config:
@@ -624,7 +679,7 @@ Claude Desktop / Claude Code config:
       "args": ["/absolute/path/to/vessel-traffic-mcp/dist/index.js"],
       "env": {
         "VESSEL_MCP_TRANSPORT": "stdio",
-        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx"
+        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx,aisfriends"
       }
     }
   }
@@ -639,7 +694,7 @@ Current status:
 | Group | Runtime status | Providers |
 | --- | --- | --- |
 | Default | enabled with no env | `fixture` |
-| Public opt-in | `VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS` | `myshiptracking`, `shipfinder`, `tradlinx-schedule` |
+| Public opt-in | `VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS` | `aisfriends`, `myshiptracking`, `shipfinder`, `tradlinx-schedule` |
 | Credentialed implemented | `VESSEL_MCP_ENABLE_BYOK_PROVIDERS` or configured default profile | `marinetraffic`, `vesselfinder`, `aisstream`, `aishub`, `barentswatch`, `searates-schedules`, `routescanner-connect`, `vesselapi`, `datadocked`, `datalastic`, `globalfishingwatch` |
 | Planned schedule APIs | cataloged, not implemented | `linescape-schedule-api` |
 | Not started commercial AIS | cataloged, not implemented | `spire-maritime`, `orbcomm-commtrace` |

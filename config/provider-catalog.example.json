@@ -328,6 +328,40 @@
       "captureEligibility": "needs-terms-review"
     },
     {
+      "id": "aisfriends",
+      "displayName": "AIS Friends",
+      "accessClass": "community",
+      "tier": "community",
+      "priority": "P2",
+      "coverage": "Community/contributor public map bounding-box positions; coverage and freshness depend on contributor receivers and public map limits.",
+      "capabilities": [
+        "vessel_area"
+      ],
+      "auth": {
+        "mode": "none",
+        "required": false,
+        "profileFields": [],
+        "envVars": [],
+        "notes": "Browser capture found no API key in the AIS Friends bounding-box map feed. Runtime use is explicit opt-in through VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS=aisfriends."
+      },
+      "cost": {
+        "model": "community",
+        "quotaNote": "Public map feed; no committed API quota. Use conservative pacing and source attribution."
+      },
+      "sources": {
+        "landingUrl": "https://www.aisfriends.com/"
+      },
+      "implementationStatus": "implemented",
+      "liveTest": {
+        "enabledFlagEnvVar": "VESSEL_MCP_LIVE_TEST_AISFRIENDS",
+        "requiredEnvVars": [],
+        "defaultDisabled": true,
+        "notes": "Default tests use mocked browser-observed bounding-box responses. Live calls stay opt-in through explicit runtime configuration."
+      },
+      "captureEligibility": "needs-terms-review",
+      "notes": "Implemented only for vessel_area via the AIS Friends bounding-box feed. MarineVesselTraffic autocomplete returned HTTP 403 in browser capture and is not used or bypassed."
+    },
+    {
       "id": "barentswatch",
       "displayName": "BarentsWatch / Norwegian Coastal Administration",
       "accessClass": "open",

@@ -42,7 +42,7 @@
         },
         {
           "name": "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS",
-          "default": "myshiptracking,tradlinx",
+          "default": "myshiptracking,tradlinx,aisfriends",
           "description": "Optional comma-separated public providers to enable at runtime."
         }
       ]

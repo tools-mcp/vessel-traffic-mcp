@@ -1,5 +1,6 @@
 import type { CredentialStore } from '../config/credentials.js';
 import { AISHUB_DEFAULT_LABEL, createAishubProvider } from './aishub.js';
+import { createAisFriendsProvider } from './aisfriends.js';
 import { AISSTREAM_DEFAULT_LABEL, createAisStreamProvider } from './aisstream.js';
 import { BARENTSWATCH_DEFAULT_LABEL, createBarentsWatchProvider } from './barentswatch.js';
 import { createDataDockedProvider, DATADOCKED_DEFAULT_LABEL } from './datadocked.js';
@@ -21,6 +22,7 @@ export const PUBLIC_PROVIDERS_ENV = 'VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS';
 export const BYOK_PROVIDERS_ENV = 'VESSEL_MCP_ENABLE_BYOK_PROVIDERS';
 
 const publicProviderFactories = {
+  aisfriends: createAisFriendsProvider,
   myshiptracking: createMyShipTrackingProvider,
   shipfinder: createShipFinderProvider,
   'tradlinx-schedule': createTradlinxScheduleProvider,
@@ -75,6 +77,10 @@ function parsePublicProviderIds(value: string | undefined): Set<PublicProviderId
   }
 
   for (const token of tokens) {
+    if (token === 'ais-friends' || token === 'marinevesseltraffic') {
+      enabled.add('aisfriends');
+      continue;
+    }
     if (token === 'tradlinx') {
       enabled.add('tradlinx-schedule');
       continue;

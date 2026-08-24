@@ -75,7 +75,7 @@ checkout.
       "args": ["/absolute/path/to/vessel-traffic-mcp/dist/index.js"],
       "env": {
         "VESSEL_MCP_TRANSPORT": "stdio",
-        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx"
+        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx,aisfriends"
       }
     }
   }
@@ -220,7 +220,7 @@ package, add a server entry like this:
       "args": ["-y", "@tools-mcp/vessel-traffic-mcp"],
       "env": {
         "VESSEL_MCP_TRANSPORT": "stdio",
-        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx"
+        "VESSEL_MCP_ENABLE_PUBLIC_PROVIDERS": "myshiptracking,tradlinx,aisfriends"
       },
       "timeout": 30000
     }
@@ -360,6 +360,26 @@ honour the same contract: no fleet edits, no saved-search mutations,
 no account changes. Missing AIS coverage, stale positions, and
 no-data provider responses are valid result states, not infrastructure
 errors.
+
+## Verification matrix and claim boundary
+
+The project verifies the MCP protocol contract locally; it does not claim that
+an arbitrary user's authenticated Claude, ChatGPT, Codex, or Gemini account
+has connected successfully. Keep those two levels of evidence separate.
+
+| Surface | Reproducible evidence in this repository | What it proves | What it does not prove |
+| --- | --- | --- | --- |
+| Local stdio | `test/mcp-stdio.test.js` | A real SDK client can initialize the built stdio server, list its read-only tools, and call fixture-backed flows. | A user's desktop client configuration or account state. |
+| Streamable HTTP | `test/mcp-http.test.js` | Health, server-card, bearer rejection/acceptance, CORS, request IDs, and tool discovery work through the HTTP handler. | A public HTTPS deployment; none is operated by the maintainers at this time. |
+| Client configuration | This runbook and `test/client-setup.test.js` | The documented Claude, Claude Code, Codex, Gemini, and MCP Inspector settings use the package's actual binary and env-var contract. | A completed sign-in or connector approval in a third-party client. |
+
+For a client-owned acceptance check, first run the deterministic test suite,
+then use the applicable config in this runbook with the fixture-only default.
+Record the client name, transport, tool-list result, and one source-attributed
+query result. Do not record credentials, browser sessions, or raw provider
+responses. A remote-client check additionally requires an operator-owned,
+HTTPS-protected `/mcp` endpoint; see
+[`deployment-https.md`](./deployment-https.md).
 
 ## Verifying this runbook
 
